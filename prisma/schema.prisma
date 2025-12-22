@@ -1,22 +1,212 @@
+datasource db {
+  provider = "postgresql"
+}
+
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+model User {
+  id       Int     @id @default(autoincrement())
+  email    String  @unique
+  name     String?
+  password String?
+  role     Role
+
+  studentCourses        StudentCourse[]
+  submissions           ExerciseSubmission[]
+  attempts              ExerciseAttempt[]
+  assignmentSubmissions AssignmentSubmission[]
+  notifications         Notification[]
+  announcementReads     AnnouncementRead[]
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String?
-  email     String   @unique
-  role      Role     @default(STUDENT)
-  createdAt DateTime @default(now())
+model StudentCourse {
+  id               Int               @id @default(autoincrement())
+  userId           Int
+  courseId         Int
+  completedLessons CompletedLesson[]
+
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+  student   Student? @relation(fields: [studentId], references: [id])
+  studentId Int?
+}
+
+model CompletedLesson {
+  id              Int @id @default(autoincrement())
+  studentCourseId Int
+  lessonId        Int
+
+  studentCourse StudentCourse @relation(fields: [studentCourseId], references: [id])
+  lesson        Lesson        @relation(fields: [lessonId], references: [id])
 }
 
 enum Role {
   STUDENT
   TEACHER
   ADMIN
+}
+
+model Course {
+  id             Int             @id @default(autoincrement())
+  title          String
+  description    String
+  imageUrl       String?
+  duration       Int
+  createdAt      DateTime        @default(now())
+  modules        Module[]
+  studentCourses StudentCourse[]
+  announcements  Announcement[] // ← relation inverse ajoutée
+}
+
+model Module {
+  id       Int      @id @default(autoincrement())
+  courseId Int
+  course   Course   @relation(fields: [courseId], references: [id])
+  order    Int
+  title    String
+  lessons  Lesson[]
+}
+
+model Lesson {
+  id               Int               @id @default(autoincrement())
+  moduleId         Int
+  order            Int
+  title            String
+  content          String
+  description      String? // ← ajouter
+  videoUrl         String?
+  pdfUrl           String?
+  module           Module            @relation(fields: [moduleId], references: [id])
+  completedLessons CompletedLesson[]
+
+  exercises             Exercise[]
+  assignmentSubmissions AssignmentSubmission[]
+}
+
+model Exercise {
+  id       Int          @id @default(autoincrement())
+  lessonId Int
+  lesson   Lesson       @relation(fields: [lessonId], references: [id])
+  order    Int          @default(0)
+  question String
+  answer   String
+  type     ExerciseType @default(TEXT)
+
+  points   Int      @default(10)
+  deadline DateTime
+
+  submissions ExerciseSubmission[]
+  attempts    ExerciseAttempt[]
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+}
+
+enum ExerciseType {
+  TEXT
+  QCM
+  BOOLEAN
+}
+
+model ExerciseSubmission {
+  id         Int      @id @default(autoincrement())
+  exerciseId Int
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  answer      String?
+  submittedAt DateTime?
+
+  score  Int              @default(0)
+  status SubmissionStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([exerciseId, userId])
+}
+
+model ExerciseAttempt {
+  id          Int       @id @default(autoincrement())
+  studentId   Int
+  exerciseId  Int
+  score       Int?
+  answer      String?
+  submittedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  student  User     @relation(fields: [studentId], references: [id])
+  exercise Exercise @relation(fields: [exerciseId], references: [id])
+}
+
+model AssignmentSubmission {
+  id             Int              @id @default(autoincrement())
+  userId         Int
+  lessonId       Int
+  fileUrl        String
+  status         SubmissionStatus @default(PENDING)
+  score          Int?
+  feedback       String?
+  studentComment String?
+  createdAt      DateTime         @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+
+  @@unique([userId, lessonId])
+}
+
+enum SubmissionStatus {
+  PENDING
+  GRADED
+  LATE
+}
+
+model Announcement {
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String
+  videoUrl  String?
+  courseId  Int
+  createdAt DateTime @default(now())
+
+  course Course             @relation(fields: [courseId], references: [id])
+  reads  AnnouncementRead[]
+}
+
+model Student {
+  id    Int    @id @default(autoincrement())
+  name  String
+  email String @unique
+
+  studentCourses    StudentCourse[]
+  announcementReads AnnouncementRead[]
+}
+
+model AnnouncementRead {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  announcementId Int
+  readAt         DateTime @default(now())
+
+  user         User         @relation(fields: [userId], references: [id])
+  announcement Announcement @relation(fields: [announcementId], references: [id])
+  student      Student?     @relation(fields: [studentId], references: [id])
+  studentId    Int?
+
+  @@unique([userId, announcementId])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
