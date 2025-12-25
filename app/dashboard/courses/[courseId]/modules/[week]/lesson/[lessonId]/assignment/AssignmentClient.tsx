@@ -1,24 +1,43 @@
 "use client";
 
+import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Upload, FileText } from "lucide-react";
 
-export default function AssignmentClient({
-  lessonId,
-  userId,
-}: {
-  lessonId: number;
-  userId: number;
-}) {
+export default function AssignmentClient({ userId }: { userId: number }) {
+  // 1️⃣ Récupérer lessonId depuis l'URL et le typer
+  const params = useParams() as { lessonId?: string };
+  const lessonId = Number(params.lessonId);
+
+  if (isNaN(lessonId)) {
+    return <div className="p-4 text-red-600">Leçon invalide</div>;
+  }
+
+  // 2️⃣ États pour formulaire
   const [file, setFile] = useState<File | null>(null);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
 
+  // 3️⃣ Gestion de la soumission
   const handleSubmit = async () => {
     if (!file) {
       setMessage("Veuillez sélectionner un fichier.");
+      setError(true);
+      return;
+    }
+
+    // Vérification type MIME
+    if (!["application/pdf", "application/zip"].includes(file.type)) {
+      setMessage("Seuls les fichiers PDF ou ZIP sont autorisés.");
+      setError(true);
+      return;
+    }
+
+    // Vérification taille max (10 Mo)
+    if (file.size > 10 * 1024 * 1024) {
+      setMessage("Le fichier est trop volumineux (max 10 Mo).");
       setError(true);
       return;
     }
@@ -57,6 +76,7 @@ export default function AssignmentClient({
     }
   };
 
+  // 4️⃣ Interface utilisateur
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4">
       <div className="w-full max-w-xl bg-yellow-50 border border-yellow-200 rounded-xl shadow-lg p-8">
@@ -64,7 +84,6 @@ export default function AssignmentClient({
           Soumettre le devoir
         </h1>
 
-        {/* 👉 Texte ajouté ici */}
         <p className="text-gray-700 mb-6 text-lg">
           Téléversez votre travail final et ajoutez un commentaire si nécessaire.
         </p>
@@ -97,6 +116,7 @@ export default function AssignmentClient({
           onChange={(e) => setComment(e.target.value)}
         />
 
+        {/* Bouton */}
         <button
           onClick={handleSubmit}
           disabled={loading || !file}
@@ -105,12 +125,11 @@ export default function AssignmentClient({
           {loading ? "Soumission..." : "Envoyer le devoir"}
         </button>
 
+        {/* Message */}
         {message && (
           <div
             className={`mt-4 p-3 rounded text-center ${
-              error
-                ? "bg-red-100 text-red-700"
-                : "bg-green-100 text-green-700"
+              error ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"
             }`}
           >
             {message}
