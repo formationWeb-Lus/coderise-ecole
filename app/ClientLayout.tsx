@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { SessionProvider } from "next-auth/react";
 import {
   Menu,
@@ -17,54 +17,96 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function ClientLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
+  const [unreadAnnouncements, setUnreadAnnouncements] = useState(0);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  // 🔔 Charger le nombre d'annonces non lues
+  const loadUnreadAnnouncements = async () => {
+    try {
+      const res = await fetch("/dashboard/student/api/student/announcements/unread-count");
+      const data = await res.json();
+      setUnreadAnnouncements(data.unreadCount || 0);
+    } catch (error) {
+      console.error("Erreur chargement annonces", error);
+    }
+  };
+
+  // 🔔 Charger le nombre de notifications non lues
+  const loadUnreadNotifications = async () => {
+    try {
+      const res = await fetch("/dashboard/student/api/student/notifications/list");
+      const data = await res.json();
+      const unreadCount = data.filter((n: any) => !n.isRead).length;
+      setUnreadNotifications(unreadCount);
+    } catch (error) {
+      console.error("Erreur chargement notifications", error);
+    }
+  };
+
+  useEffect(() => {
+    loadUnreadAnnouncements();
+    loadUnreadNotifications();
+  }, []);
 
   const NavLinks = () => (
-    <nav className="flex flex-col space-y-1 mt-4">
-      <SidebarLink href="/dashboard/student" icon={<Home size={18} />}>
+    <nav className="flex flex-col space-y-1 mt-3">
+      <SidebarLink href="/dashboard/student" icon={<Home size={16} />}>
         Tableau de bord
       </SidebarLink>
 
-      <SidebarLink href="/dashboard/student/courses" icon={<BookOpen size={18} />}>
+      <SidebarLink href="/dashboard/student/courses" icon={<BookOpen size={16} />}>
         Mes cours
       </SidebarLink>
-      
-      <SidebarLink href="/dashboard/student/grades" icon={<GraduationCap size={18} />}>
-        Grades
+
+      <SidebarLink href="/dashboard/student/grades" icon={<GraduationCap size={16} />}>
+        Notes
       </SidebarLink>
+
       
-      <SidebarLink href="/dashboard/enrollments" icon={<ClipboardList size={18} />}>
+      {/* 🔔 Annonces avec badge */}
+      <SidebarLink href="/dashboard/student/announcements" icon={<Megaphone size={16} />}>
+        <span className="flex items-center gap-2">
+          Annonces
+          {unreadAnnouncements > 0 && (
+            <span className="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+              {unreadAnnouncements}
+            </span>
+          )}
+        </span>
+      </SidebarLink>
+
+      {/* 🔔 Notifications avec badge */}
+      <SidebarLink href="/dashboard/student/notifications" icon={<Bell size={16} />}>
+        <span className="flex items-center gap-2">
+          Notifications
+          {unreadNotifications > 0 && (
+            <span className="bg-red-600 text-white text-xs px-2 py-0.5 rounded-full font-bold">
+              {unreadNotifications}
+            </span>
+          )}
+        </span>
+      </SidebarLink>
+
+      <SidebarLink href="/dashboard/enrollment" icon={<ClipboardList size={16} />}>
         Inscriptions
       </SidebarLink>
 
+      <hr className="my-2 border-blue-900" />
 
-      <hr className="my-3 border-blue-500" />
-
-      <SidebarLink href="/dashboard/student/students" icon={<Users size={18} />}>
+      <SidebarLink href="/dashboard/student/students" icon={<Users size={16} />}>
         Étudiants
       </SidebarLink>
 
-      <SidebarLink href="/dashboard/student/teachers" icon={<UserCog size={18} />}>
-        Enseignants
-      </SidebarLink>
-
-      <SidebarLink href="/dashboard/student/announcements" icon={<Megaphone size={18} />}>
-        Annonces
-      </SidebarLink>
-
-      <SidebarLink href="/dashboard/student/notifications" icon={<Bell size={18} />}>
-        Notifications
+      <SidebarLink href="/dashboard/student/help" icon={<UserCog size={16} />}>
+     Contactez Nous
       </SidebarLink>
 
 
-      <hr className="my-3 border-blue-500" />
+      <hr className="my-2 border-blue-900" />
 
-      <SidebarLink href="/dashboard/profile" icon={<User size={18} />}>
+      <SidebarLink href="/dashboard/profile" icon={<User size={16} />}>
         Profil
       </SidebarLink>
     </nav>
@@ -73,59 +115,54 @@ export default function ClientLayout({
   return (
     <SessionProvider>
       <div className="min-h-screen flex bg-gray-100">
-
         {/* 🟦 SIDEBAR DESKTOP */}
-        <aside className="hidden md:flex w-64 flex-col bg-blue-700 text-orange-400 min-h-screen">
-          <h1 className="text-2xl font-bold px-6 py-6 border-b border-blue-500 text-orange-300">
+        <aside className="hidden md:flex flex-col bg-[#0a1b2d] text-yellow-200 min-h-screen w-max">
+          <h1 className="text-xl font-bold px-4 py-4 border-b border-blue-900 text-yellow-300">
             Titien
           </h1>
-          <div className="flex-1 px-4">
+          <div className="flex-1 px-2">
             <NavLinks />
           </div>
         </aside>
 
         {/* 📱 HEADER MOBILE */}
-        <header className="md:hidden fixed top-0 left-0 right-0 z-40 bg-blue-500 border-b border-blue-500 p-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-orange-300">
-            Titien
-          </h1>
+        <header className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0a1b2d] border-b border-blue-900 p-3 flex items-center justify-between">
+          <h1 className="text-lg font-bold text-yellow-300">Titien</h1>
 
           {open ? (
             <X
-              size={28}
+              size={24}
               onClick={() => setOpen(false)}
-              className="cursor-pointer text-orange-400"
+              className="cursor-pointer text-yellow-200"
             />
           ) : (
             <Menu
-              size={28}
+              size={24}
               onClick={() => setOpen(true)}
-              className="cursor-pointer text-orange-400"
+              className="cursor-pointer text-yellow-200"
             />
           )}
         </header>
 
         {/* 📱 SIDEBAR MOBILE */}
         {open && (
-          <aside className="md:hidden fixed top-16 left-0 w-64 h-full bg-blue-700 text-orange-400 shadow-lg z-40">
-            <div className="px-4">
+          <aside className="md:hidden fixed top-14 left-0 h-full bg-[#0a1b2d] text-yellow-200 shadow-lg z-40 w-max">
+            <div className="px-2 py-3">
               <NavLinks />
             </div>
           </aside>
         )}
 
         {/* 🟩 CONTENU */}
-        <main className="flex-1 p-6 mt-16 md:mt-0">
-          <div className="max-w-6xl mx-auto">
-            {children}
-          </div>
+        <main className="flex-1 p-4 mt-14 md:mt-0">
+          <div className="max-w-6xl mx-auto">{children}</div>
         </main>
       </div>
     </SessionProvider>
   );
 }
 
-/* 🔹 Lien Sidebar stylé */
+/* 🔹 Lien Sidebar */
 function SidebarLink({
   href,
   icon,
@@ -139,9 +176,9 @@ function SidebarLink({
     <Link
       href={href}
       className="
-        flex items-center gap-3 px-4 py-2 rounded-md
-        text-orange-400
-        hover:bg-blue-400 hover:text-orange-300
+        flex items-center gap-2 px-3 py-1.5 rounded-md
+        text-yellow-200
+        hover:bg-blue-800 hover:text-yellow-300
         transition-all duration-200
       "
     >

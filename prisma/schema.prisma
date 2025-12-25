@@ -77,6 +77,7 @@ model Lesson {
   content          String
   description      String? // ← ajouter
   videoUrl         String?
+   videoDescription String?   // 👈 AJOUT ICI
   pdfUrl           String?
   module           Module            @relation(fields: [moduleId], references: [id])
   completedLessons CompletedLesson[]

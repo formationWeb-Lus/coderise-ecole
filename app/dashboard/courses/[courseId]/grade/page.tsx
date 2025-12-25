@@ -41,13 +41,11 @@ export default function CourseGradesPage() {
         const data: Grade[] = await res.json();
         setGrades(data);
 
-        // 🧮 Nouveau calcul basé sur les points réels
         const totalEarned = data.reduce((acc, g) => acc + g.score, 0);
         const totalPossible = data.reduce((acc, g) => acc + g.maxPoints, 0);
-
-        const pct = totalPossible > 0 ? (totalEarned / totalPossible) * 100 : 0;
-
-        setPercentage(pct);
+        setPercentage(
+          totalPossible > 0 ? (totalEarned / totalPossible) * 100 : 0
+        );
       } catch (err) {
         console.error(err);
         setError("Erreur lors du chargement des notes.");
@@ -65,24 +63,72 @@ export default function CourseGradesPage() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Notes du cours</h1>
+      <h1 className="text-3xl font-bold mb-2 text-yellow-900">
+        Notes du cours
+      </h1>
 
-      <p className="mb-4 text-lg">
-        Pourcentage global : {percentage.toFixed(2)}%
+      <p className="mb-6 text-lg font-semibold text-gray-700">
+        Pourcentage global :{" "}
+        <span className="text-green-700">
+          {percentage.toFixed(2)}%
+        </span>
       </p>
 
       {grades.length === 0 ? (
         <p>Aucune note disponible pour ce cours.</p>
       ) : (
-        grades.map((g) => (
-          <div key={g.exerciseId} className="border p-4 mb-3 rounded">
-            <p>Exercice {g.exerciseId}</p>
-            <p>
-              Score : {g.score} / {g.maxPoints}
-            </p>
-            <p>Status : {g.status}</p>
-          </div>
-        ))
+        <div className="space-y-4">
+          {grades.map((g) => {
+            const isGreenLesson = g.exerciseId === 1 || g.exerciseId === 5;
+
+            return (
+              <div
+                key={g.exerciseId}
+                className={`p-4 rounded-lg border shadow-sm transition
+                  ${
+                    isGreenLesson
+                      ? "bg-green-50 border-green-300"
+                      : "bg-yellow-50 border-yellow-300"
+                  }
+                `}
+              >
+                {/* Titre de la leçon */}
+                <p
+                  className={`text-lg font-bold mb-1 cursor-pointer underline
+                    ${
+                      isGreenLesson
+                        ? "text-green-700 hover:text-green-900"
+                        : "text-yellow-700 hover:text-yellow-900"
+                    }
+                  `}
+                >
+                  Lesson {g.exerciseId} – SQL Topic
+                </p>
+
+                <p className="text-gray-700">
+                  Score :{" "}
+                  <span className="font-semibold">
+                    {g.score} / {g.maxPoints}
+                  </span>
+                </p>
+
+                <p
+                  className={`font-semibold mt-1
+                    ${
+                      g.status === "GRADED"
+                        ? "text-green-700"
+                        : g.status === "LATE"
+                        ? "text-red-600"
+                        : "text-gray-600"
+                    }
+                  `}
+                >
+                  Statut : {g.status}
+                </p>
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

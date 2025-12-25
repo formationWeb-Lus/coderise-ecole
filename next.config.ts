@@ -6,6 +6,17 @@ const nextConfig = {
   },
   typescript: { ignoreBuildErrors: true },
   eslint: { ignoreDuringBuilds: true },
+
+  // 🔹 Ajouter cette partie pour next/image
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**", // autorise tous les chemins
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

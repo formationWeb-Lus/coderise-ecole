@@ -1,57 +1,79 @@
 "use client";
-import { useState } from "react";
 
+import { useEffect, useState } from "react";
 
-interface Props {
-  submissionId: number;
-  studentName: string;
-  lessonName: string;
+interface Notification {
+  id: number;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
 }
 
-export default function GradeAssignment({ submissionId, studentName, lessonName }: Props) {
-  const [score, setScore] = useState<number>(0);
-  const [feedback, setFeedback] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
+export default function NotificationsPage() {
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleGrade = async () => {
+  const fetchNotifications = async () => {
     try {
-      const res = await fetch("/api/admin/gradeSubmission", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ submissionId, score, feedback }),
-      });
+      const res = await fetch("/dashboard/student/api/student/notifications/list");
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Erreur serveur");
-      setMessage(`Devoir gradé avec succès. Notification envoyée à ${studentName}.`);
-    } catch (err: any) {
-      setMessage(`Erreur : ${err.message}`);
+      setNotifications(data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchNotifications();
+  }, []);
+
+  const markAsRead = async (id: number) => {
+    try {
+      await fetch("/dashboard/student/api/student/notifications/mark-read", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notificationId: id }),
+      });
+      setNotifications(prev =>
+        prev.map(n => (n.id === id ? { ...n, isRead: true } : n))
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  if (loading) return <p>Chargement des notifications...</p>;
+
+  if (notifications.length === 0) return <p>Aucune notification pour le moment.</p>;
+
   return (
-    <div style={{ border: "1px solid #ccc", padding: "20px", marginBottom: "20px" }}>
-      <h3>
-        Grade Submission - {studentName} ({lessonName})
-      </h3>
-      <div>
-        <label>Score: </label>
-        <input
-          type="number"
-          value={score}
-          onChange={(e) => setScore(Number(e.target.value))}
-        />
-      </div>
-      <div>
-        <label>Feedback: </label>
-        <textarea
-          value={feedback}
-          onChange={(e) => setFeedback(e.target.value)}
-        />
-      </div>
-      <button onClick={handleGrade} style={{ marginTop: "10px" }}>
-        Enregistrer et Notifier
-      </button>
-      {message && <p>{message}</p>}
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4 text-yellow-800">Notifications</h1>
+      <ul className="space-y-3">
+        {notifications.map(n => (
+          <li
+            key={n.id}
+            className={`p-4 border rounded-md cursor-pointer transition ${
+              n.isRead ? "bg-gray-100" : "bg-yellow-100"
+            }`}
+            onClick={() => !n.isRead && markAsRead(n.id)}
+          >
+            <h2 className="font-semibold">{n.title}</h2>
+            <p className="text-gray-700">{n.message}</p>
+            <p className="text-xs text-gray-500 mt-1">
+              {new Date(n.createdAt).toLocaleString()}
+            </p>
+            {!n.isRead && (
+              <span className="inline-block bg-red-600 text-white px-2 py-0.5 rounded-full text-xs font-bold mt-1">
+                Nouveau
+              </span>
+            )}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }

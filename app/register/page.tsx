@@ -1,17 +1,22 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"STUDENT" | "TEACHER" | "ADMIN">("STUDENT");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage("");
+    setLoading(true);
 
     try {
       const res = await fetch("/api/register", {
@@ -23,17 +28,26 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (res.ok) {
-        setMessage("Compte créé avec succès !");
+        setMessage("Compte créé avec succès ! Redirection en cours...");
+
+        // Nettoyage du formulaire
         setName("");
         setEmail("");
         setPassword("");
         setRole("STUDENT");
+
+        // ⏳ Petite pause puis redirection vers l'inscription aux cours
+        setTimeout(() => {
+          router.push("/dashboard/enrollment");
+        }, 1500);
       } else {
         setMessage(data.error || "Erreur lors de la création du compte");
       }
     } catch (error) {
       setMessage("Erreur serveur");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,10 +57,14 @@ export default function RegisterPage() {
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded shadow-md w-full max-w-md"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center">Créer un compte</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Créer un compte
+        </h2>
 
         {message && (
-          <div className="mb-4 text-center text-red-500">{message}</div>
+          <div className="mb-4 text-center text-blue-600 font-semibold">
+            {message}
+          </div>
         )}
 
         <input
@@ -57,6 +75,7 @@ export default function RegisterPage() {
           className="w-full p-2 mb-4 border rounded"
           required
         />
+
         <input
           type="email"
           placeholder="Email"
@@ -65,6 +84,7 @@ export default function RegisterPage() {
           className="w-full p-2 mb-4 border rounded"
           required
         />
+
         <input
           type="password"
           placeholder="Mot de passe"
@@ -88,9 +108,11 @@ export default function RegisterPage() {
 
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition"
+          disabled={loading}
+          className="w-full bg-blue-500 text-white p-2 rounded
+                     hover:bg-blue-600 transition disabled:opacity-50"
         >
-          S’inscrire
+          {loading ? "Création en cours..." : "S’inscrire"}
         </button>
       </form>
     </div>

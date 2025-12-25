@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import GradeAssignment from "@/components/GradeAssignment";
 
 export default async function AdminSubmissionsPage() {
   const submissions = await prisma.assignmentSubmission.findMany({
@@ -10,40 +11,46 @@ export default async function AdminSubmissionsPage() {
   });
 
   return (
-    <div>
-      <h1 className="text-xl font-bold">All Submissions</h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold mb-6">Toutes les soumissions</h1>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Lesson</th>
-            <th>File</th>
-            <th>Status</th>
-            <th>Date</th>
-          </tr>
-        </thead>
+      {submissions.map((s) => (
+        <div
+          key={s.id}
+          className="border rounded-lg p-4 mb-6 bg-white shadow"
+        >
+          <div className="mb-3">
+            <p>
+              <strong>Étudiant :</strong> {s.user.name}
+            </p>
+            <p>
+              <strong>Leçon :</strong> {s.lesson.title}
+            </p>
+            <p>
+              <strong>Date :</strong>{" "}
+              {s.createdAt.toLocaleString()}
+            </p>
+            <p>
+              <strong>Statut :</strong> {s.status}
+            </p>
 
-        <tbody>
-          {submissions.map((s) => (
-            <tr key={s.id}>
-              <td>{s.user.name}</td>
-              <td>{s.lesson.title}</td>
-              <td>
-                <a
-                  href={s.fileUrl}
-                  target="_blank"
-                  className="text-blue-500 underline"
-                >
-                  View File
-                </a>
-              </td>
-              <td>{s.status}</td>
-              <td>{s.createdAt.toLocaleString()}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <a
+              href={s.fileUrl}
+              target="_blank"
+              className="text-blue-600 underline block mt-2"
+            >
+              📄 Voir le fichier
+            </a>
+          </div>
+
+          {/* 🔔 FORMULAIRE DE NOTATION + NOTIFICATION */}
+          <GradeAssignment
+            submissionId={s.id}
+            studentName={s.user.name ?? "Étudiant"}
+            lessonName={s.lesson.title}
+          />
+        </div>
+      ))}
     </div>
   );
 }

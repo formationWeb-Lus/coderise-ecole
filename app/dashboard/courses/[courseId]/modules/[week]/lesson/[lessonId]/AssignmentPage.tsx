@@ -2,13 +2,22 @@
 
 import { useState } from "react";
 
-export default function AssignmentPage({ lessonId, userId }: { lessonId: number; userId: number }) {
+export default function AssignmentPage({
+  lessonId,
+  userId,
+}: {
+  lessonId: number;
+  userId: number;
+}) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState("");
 
   const handleSubmit = async () => {
-    if (!file) return setMessage("Veuillez sélectionner un fichier");
+    if (!file) {
+      setMessage("Veuillez sélectionner un fichier");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("file", file);
@@ -29,7 +38,7 @@ export default function AssignmentPage({ lessonId, userId }: { lessonId: number;
       if (!res.ok) {
         setMessage(data.error || "Erreur serveur");
       } else {
-        setMessage("Fichier soumis avec succès !");
+        setMessage("✅ Fichier soumis avec succès !");
       }
     } catch (err) {
       console.error(err);
@@ -40,19 +49,29 @@ export default function AssignmentPage({ lessonId, userId }: { lessonId: number;
   };
 
   return (
-    <div className="p-4 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Soumettre le devoir</h1>
+    <div className="p-6 max-w-2xl mx-auto bg-yellow-50 rounded shadow">
+      <h1 className="text-2xl font-bold mb-4 text-yellow-900">
+        Soumettre le devoir
+      </h1>
 
-      <input type="file" accept=".pdf,.zip" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+      <input
+        type="file"
+        accept=".pdf,.zip"
+        onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+        className="block mb-4"
+      />
+
       <button
         onClick={handleSubmit}
         disabled={loading || !file}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded disabled:opacity-50"
+        className="px-4 py-2 bg-green-600 text-white rounded disabled:opacity-50"
       >
-        {loading ? "Soumission..." : "Soumettre"}
+        {loading ? "Soumission..." : "Envoyer le devoir"}
       </button>
 
-      {message && <p className="mt-2">{message}</p>}
+      {message && (
+        <p className="mt-4 font-semibold text-green-700">{message}</p>
+      )}
     </div>
   );
 }
