@@ -16,13 +16,13 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image"; // 🔹 On importe Image pour le logo
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [unreadAnnouncements, setUnreadAnnouncements] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
-  // 🔔 Charger le nombre d'annonces non lues
   const loadUnreadAnnouncements = async () => {
     try {
       const res = await fetch("/dashboard/student/api/student/announcements/unread-count");
@@ -33,7 +33,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
     }
   };
 
-  // 🔔 Charger le nombre de notifications non lues
   const loadUnreadNotifications = async () => {
     try {
       const res = await fetch("/dashboard/student/api/student/notifications/list");
@@ -55,17 +54,12 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <SidebarLink href="/dashboard/student" icon={<Home size={16} />}>
         Tableau de bord
       </SidebarLink>
-
       <SidebarLink href="/dashboard/student/courses" icon={<BookOpen size={16} />}>
         Mes cours
       </SidebarLink>
-
       <SidebarLink href="/dashboard/student/grades" icon={<GraduationCap size={16} />}>
         Notes
       </SidebarLink>
-
-      
-      {/* 🔔 Annonces avec badge */}
       <SidebarLink href="/dashboard/student/announcements" icon={<Megaphone size={16} />}>
         <span className="flex items-center gap-2">
           Annonces
@@ -76,8 +70,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           )}
         </span>
       </SidebarLink>
-
-      {/* 🔔 Notifications avec badge */}
       <SidebarLink href="/dashboard/student/notifications" icon={<Bell size={16} />}>
         <span className="flex items-center gap-2">
           Notifications
@@ -88,24 +80,17 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           )}
         </span>
       </SidebarLink>
-
       <SidebarLink href="/dashboard/enrollment" icon={<ClipboardList size={16} />}>
         Inscriptions
       </SidebarLink>
-
       <hr className="my-2 border-blue-900" />
-
       <SidebarLink href="/dashboard/student/students" icon={<Users size={16} />}>
         Étudiants
       </SidebarLink>
-
       <SidebarLink href="/dashboard/student/help" icon={<UserCog size={16} />}>
-     Contactez Nous
+        Contactez Nous
       </SidebarLink>
-
-
       <hr className="my-2 border-blue-900" />
-
       <SidebarLink href="/dashboard/profile" icon={<User size={16} />}>
         Profil
       </SidebarLink>
@@ -117,9 +102,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       <div className="min-h-screen flex bg-gray-100">
         {/* 🟦 SIDEBAR DESKTOP */}
         <aside className="hidden md:flex flex-col bg-[#0a1b2d] text-yellow-200 min-h-screen w-max">
-          <h1 className="text-xl font-bold px-4 py-4 border-b border-blue-900 text-yellow-300">
-            Titien
-          </h1>
+          <div className="flex items-center gap-2 px-4 py-4 border-b border-blue-900">
+            <Image
+              src="/favicon.png" // 🔹 Ton logo dans public/logo.png
+              alt="Coderise-Ecole"
+              width={120}
+              height={40}
+            />
+            <span className="text-xl font-bold text-yellow-300">Coderise-Ecole</span>
+          </div>
           <div className="flex-1 px-2">
             <NavLinks />
           </div>
@@ -127,7 +118,10 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
         {/* 📱 HEADER MOBILE */}
         <header className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0a1b2d] border-b border-blue-900 p-3 flex items-center justify-between">
-          <h1 className="text-lg font-bold text-yellow-300">Titien</h1>
+          <div className="flex items-center gap-2">
+            <Image src="/logo.png" alt="Coderise-Ecole" width={100} height={30} />
+            <span className="text-lg font-bold text-yellow-300">Coderise-Ecole</span>
+          </div>
 
           {open ? (
             <X
@@ -162,7 +156,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   );
 }
 
-/* 🔹 Lien Sidebar */
 function SidebarLink({
   href,
   icon,
