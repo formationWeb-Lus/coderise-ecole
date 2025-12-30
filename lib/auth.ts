@@ -1,58 +1,78 @@
-// lib/auth.ts
 import type { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { prisma } from "./prisma";
-import type { Role } from "@/types/next-auth";
+import { Role } from "@/types/next-auth";
 
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: "Identifiants",
       credentials: {
-        email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        identifier: { label: "Email ou Téléphone", type: "text" },
+        password: { label: "Mot de passe", type: "password" },
       },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
+      async authorize(credentials) {
+        if (!credentials?.identifier || !credentials?.password) return null;
+
+        const user = await prisma.user.findFirst({
+          where: {
+            OR: [
+              { email: credentials.identifier },
+              { phone: credentials.identifier },
+            ],
+          },
         });
-        if (!user) return null;
+
+        if (!user || !user.password) return null;
 
         const isValid = await compare(credentials.password, user.password);
         if (!isValid) return null;
 
+        // ⚠️ TOUT DOIT ÊTRE STABLE (pas de null)
         return {
           id: String(user.id),
           name: user.name,
-          email: user.email,
+          email: user.email ?? "",
+          phone: user.phone ?? "",
           role: user.role as Role,
+          image: user.image ?? null,
         };
       },
     }),
   ],
+
+  session: {
+    strategy: "jwt",
+  },
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
         token.sub = user.id;
+        token.role = user.role;
+        token.phone = user.phone ?? "";
+        token.email = user.email ?? "";
+        token.image = user.image ?? null;
       }
       return token;
     },
+
     async session({ session, token }) {
       if (session.user) {
-        session.user = {
-          ...session.user,
-          id: token.sub,
-          role: token.role as Role,
-        };
+        session.user.id = String(token.sub);
+        session.user.role = token.role as Role;
+        session.user.phone = token.phone ?? "";
+        session.user.image = token.image ?? null;
       }
       return session;
     },
   },
-  session: { strategy: "jwt" },
-  pages: { signIn: "/auth/signin" },
+
+  pages: {
+    signIn: "/auth/signin",
+  },
+
   secret: process.env.NEXTAUTH_SECRET,
 };

@@ -10,6 +10,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<"STUDENT" | "TEACHER" | "ADMIN">("STUDENT");
+  const [phone, setPhone] = useState("");
+  const [image, setImage] = useState(""); // URL ou base64
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,7 +24,7 @@ export default function RegisterPage() {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role }),
+        body: JSON.stringify({ name, email, password, role, phone, image }),
       });
 
       const data = await res.json();
@@ -35,8 +37,9 @@ export default function RegisterPage() {
         setEmail("");
         setPassword("");
         setRole("STUDENT");
+        setPhone("");
+        setImage("");
 
-        // ⏳ Petite pause puis redirection vers l'inscription aux cours
         setTimeout(() => {
           router.push("/dashboard/enrollment");
         }, 1500);
@@ -92,6 +95,22 @@ export default function RegisterPage() {
           onChange={(e) => setPassword(e.target.value)}
           className="w-full p-2 mb-4 border rounded"
           required
+        />
+
+        <input
+          type="text"
+          placeholder="Numéro de téléphone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
+        />
+
+        <input
+          type="text"
+          placeholder="URL photo de profil"
+          value={image}
+          onChange={(e) => setImage(e.target.value)}
+          className="w-full p-2 mb-4 border rounded"
         />
 
         <select

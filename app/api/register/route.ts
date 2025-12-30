@@ -4,16 +4,30 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { name, email, password } = body;
+  const { name, email, password, phone } = body;
 
-  if (!email || !password || !name) {
-    return NextResponse.json({ message: "Tous les champs sont requis" }, { status: 400 });
+  if (!name || !(email || phone) || !password) {
+    return NextResponse.json(
+      { message: "Tous les champs sont requis" },
+      { status: 400 }
+    );
   }
 
-  // Vérifier si l'utilisateur existe déjà
-  const existingUser = await prisma.user.findUnique({ where: { email } });
+  // Vérifier si l'utilisateur existe déjà (email ou phone)
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: email || undefined },
+        { phone: phone || undefined },
+      ],
+    },
+  });
+
   if (existingUser) {
-    return NextResponse.json({ message: "Email déjà utilisé" }, { status: 400 });
+    return NextResponse.json(
+      { message: "Email ou téléphone déjà utilisé" },
+      { status: 400 }
+    );
   }
 
   // Hasher le mot de passe
@@ -23,9 +37,10 @@ export async function POST(req: Request) {
   const user = await prisma.user.create({
     data: {
       name,
-      email,
+      email: email || null,
+      phone: phone || null,
       password: hashedPassword,
-      role: "STUDENT", // Par défaut
+      role: "STUDENT",
     },
   });
 

@@ -1,6 +1,6 @@
 // courses/[courseId]/modules/[moduleId]/lessons/[lessonId]/exercises/page.tsx - Next.js page
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth"; // ✅ Correct
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 

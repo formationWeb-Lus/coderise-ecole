@@ -1,32 +1,30 @@
-import "next-auth";
+// ✅ Exporter le type Role pour pouvoir l'importer
+export type Role = "STUDENT" | "TEACHER" | "ADMIN";
 
-// 🔥 PAS d'import ici !
-// Tu déclares l'enum directement dans le fichier .d.ts
-
-export enum Role {
-  STUDENT = "STUDENT",
-  TEACHER = "TEACHER",
-  ADMIN = "ADMIN",
-}
+import NextAuth, { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
-  interface User {
-    role?: Role;
-  }
-
   interface Session {
     user: {
-      id?: string;
-      name?: string | null;
-      email?: string | null;
+      id: string;
+      role: Role;       // maintenant utilisable partout
+      phone?: string;
       image?: string | null;
-      role?: Role;
-    };
+    } & DefaultSession["user"];
+  }
+
+  interface User {
+    id: string;
+    role: Role;
+    phone?: string;
+    image?: string | null;
   }
 }
 
 declare module "next-auth/jwt" {
   interface JWT {
-    role?: Role;
+    role: Role;
+    phone?: string;
+    image?: string | null;
   }
 }
