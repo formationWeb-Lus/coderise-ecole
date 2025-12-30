@@ -1,14 +1,14 @@
-// app/api/admin/students/route.ts
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-const prisma = new PrismaClient();
-
-export async function GET(req: NextRequest) {
-  // Typage explicite
+export async function GET() {
   const students = await prisma.user.findMany({
-    where: { role: "STUDENT" }, // Prisma enum Role
-    select: { id: true, name: true, email: true },
+    where: { role: "STUDENT" },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+    },
   });
 
   return NextResponse.json(students);
