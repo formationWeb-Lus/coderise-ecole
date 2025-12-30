@@ -9,7 +9,7 @@ export default function HomePage() {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-yellow-300">
       {/* ================= HEADER FIXE ================= */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-[#0a1b2d] border-b border-blue-900">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -28,11 +28,12 @@ export default function HomePage() {
 
           {/* NAV DESKTOP */}
           <nav className="hidden md:flex items-center gap-6">
+            {/* Commencer gratuitement */}
             <Link
               href="/login"
-              className="text-yellow-200 font-medium hover:text-yellow-300 transition"
+              className="bg-white text-black font-semibold px-5 py-2 rounded-md hover:bg-gray-200 transition"
             >
-              Commencer
+              Commencer gratuitement
             </Link>
 
             <Link
@@ -56,12 +57,13 @@ export default function HomePage() {
         {open && (
           <div className="md:hidden bg-[#0a1b2d] border-t border-blue-900">
             <nav className="flex flex-col px-4 py-4 gap-4">
+              {/* Commencer gratuitement */}
               <Link
                 href="/login"
                 onClick={() => setOpen(false)}
-                className="bg-blue-800 text-yellow-200 text-center py-3 rounded-md font-semibold hover:bg-blue-700 transition"
+                className="bg-white text-black text-center py-3 rounded-md font-semibold hover:bg-gray-200 transition"
               >
-                Commencer
+                Commencer gratuitement
               </Link>
 
               <Link
@@ -92,16 +94,17 @@ export default function HomePage() {
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
+              {/* Commencer gratuitement */}
               <Link
                 href="/login"
-                className="bg-yellow-300 text-[#0a1b2d] font-bold px-8 py-3 rounded-md hover:bg-yellow-200 transition"
+                className="bg-white text-black font-bold px-8 py-3 rounded-md hover:bg-gray-200 transition"
               >
                 Commencer gratuitement
               </Link>
 
               <Link
                 href="/auth/signin"
-                className="border border-yellow-300 px-8 py-3 rounded-md hover:bg-yellow-300 hover:text-[#0a1b2d] transition font-semibold"
+                className="border border-white px-8 py-3 rounded-md hover:bg-yellow-300 hover:text-[#0a1b2d] transition font-semibold"
               >
                 Se connecter
               </Link>

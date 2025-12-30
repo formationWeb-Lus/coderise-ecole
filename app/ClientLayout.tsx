@@ -16,35 +16,35 @@ import {
   User,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image"; // 🔹 On importe Image pour le logo
+import Image from "next/image";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const [unreadAnnouncements, setUnreadAnnouncements] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
 
-  const loadUnreadAnnouncements = async () => {
-    try {
-      const res = await fetch("/dashboard/student/api/student/announcements/unread-count");
-      const data = await res.json();
-      setUnreadAnnouncements(data.unreadCount || 0);
-    } catch (error) {
-      console.error("Erreur chargement annonces", error);
-    }
-  };
-
-  const loadUnreadNotifications = async () => {
-    try {
-      const res = await fetch("/dashboard/student/api/student/notifications/list");
-      const data = await res.json();
-      const unreadCount = data.filter((n: any) => !n.isRead).length;
-      setUnreadNotifications(unreadCount);
-    } catch (error) {
-      console.error("Erreur chargement notifications", error);
-    }
-  };
-
   useEffect(() => {
+    const loadUnreadAnnouncements = async () => {
+      try {
+        const res = await fetch("/dashboard/student/api/student/announcements/unread-count");
+        const data = await res.json();
+        setUnreadAnnouncements(data.unreadCount || 0);
+      } catch (error) {
+        console.error("Erreur chargement annonces", error);
+      }
+    };
+
+    const loadUnreadNotifications = async () => {
+      try {
+        const res = await fetch("/dashboard/student/api/student/notifications/list");
+        const data = await res.json();
+        const unreadCount = data.filter((n: any) => !n.isRead).length;
+        setUnreadNotifications(unreadCount);
+      } catch (error) {
+        console.error("Erreur chargement notifications", error);
+      }
+    };
+
     loadUnreadAnnouncements();
     loadUnreadNotifications();
   }, []);
@@ -100,14 +100,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <SessionProvider>
       <div className="min-h-screen flex bg-gray-100">
-        {/* 🟦 SIDEBAR DESKTOP */}
-        <aside className="hidden md:flex flex-col bg-[#0a1b2d] text-yellow-200 min-h-screen w-max">
+        {/* SIDEBAR DESKTOP */}
+        <aside className="hidden md:flex flex-col bg-[#0a1b2d] text-yellow-200 min-h-screen w-64">
           <div className="flex items-center gap-2 px-4 py-4 border-b border-blue-900">
             <Image
-              src="/favicon.png" // 🔹 Ton logo dans public/logo.png
+              src="/favicon.png"
               alt="Coderise-Ecole"
               width={120}
               height={40}
+              priority
             />
             <span className="text-xl font-bold text-yellow-300">Coderise-Ecole</span>
           </div>
@@ -116,10 +117,16 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </div>
         </aside>
 
-        {/* 📱 HEADER MOBILE */}
+        {/* HEADER MOBILE */}
         <header className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0a1b2d] border-b border-blue-900 p-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Image src="/logo.png" alt="Coderise-Ecole" width={100} height={30} />
+            <Image
+              src="/favicon.png"
+              alt="Coderise-Ecole"
+              width={100}
+              height={30}
+              priority
+            />
             <span className="text-lg font-bold text-yellow-300">Coderise-Ecole</span>
           </div>
 
@@ -138,18 +145,27 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           )}
         </header>
 
-        {/* 📱 SIDEBAR MOBILE */}
+        {/* SIDEBAR MOBILE */}
         {open && (
-          <aside className="md:hidden fixed top-14 left-0 h-full bg-[#0a1b2d] text-yellow-200 shadow-lg z-40 w-max">
+          <aside className="md:hidden fixed top-14 left-0 h-full bg-[#0a1b2d] text-yellow-200 shadow-lg z-40 w-64">
             <div className="px-2 py-3">
               <NavLinks />
             </div>
           </aside>
         )}
 
-        {/* 🟩 CONTENU */}
-        <main className="flex-1 p-4 mt-14 md:mt-0">
-          <div className="max-w-6xl mx-auto">{children}</div>
+        {/* CONTENU */}
+        <main className="flex-1 p-4 mt-14 md:mt-0 flex flex-col">
+          <div className="max-w-6xl mx-auto flex-1">
+            {children}
+          </div>
+
+          {/* FOOTER — AJOUT UNIQUEMENT */}
+          <footer className="mt-6 bg-[#0a1b2d] text-yellow-200 text-sm py-3 border-t border-blue-900">
+            <div className="max-w-6xl mx-auto text-center">
+              © {new Date().getFullYear()} Coderise-Ecole. Tous droits réservés.
+            </div>
+          </footer>
         </main>
       </div>
     </SessionProvider>

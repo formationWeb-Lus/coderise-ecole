@@ -26,24 +26,26 @@ export default function Header({ session }: { session: any }) {
   };
 
   return (
-    <header className="flex justify-between items-center bg-white shadow p-4">
-      <h1 className="text-xl font-bold">Tableau de bord</h1>
+    <header className="relative bg-white shadow-md p-4 flex items-center justify-between">
+      {/* Titre ou Logo */}
+      <h1 className="text-xl font-bold shrink-0">Tableau de bord</h1>
 
+      {/* Photo de profil seule en haut à droite */}
       <div className="relative">
         <button
           onClick={() => setShowMenu(!showMenu)}
-          className="flex items-center gap-2"
+          className="focus:outline-none"
         >
           <Image
             src={profileImage}
             alt="Profil"
-            width={40}
-            height={40}
-            className="rounded-full border"
+            width={50}
+            height={50}
+            className="rounded-full border border-gray-300"
           />
-          <span>{session.user.name}</span>
         </button>
 
+        {/* Menu dropdown */}
         {showMenu && (
           <div className="absolute right-0 mt-2 w-56 bg-white border rounded shadow z-50">
             <label className="block p-2 cursor-pointer hover:bg-gray-100">
