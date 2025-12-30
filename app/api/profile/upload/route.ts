@@ -1,33 +1,37 @@
-import { prisma } from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
 import formidable from "formidable";
-import fs from "fs";
+import { NextResponse } from "next/server";
 import path from "path";
+import fs from "fs";
 
-export const config = { api: { bodyParser: false } };
+// Configuration pour la route (Edge/Node)
+export const runtime = "nodejs";       // utiliser Node.js runtime
+export const dynamic = "force-dynamic"; // empêcher le pré-rendu statique
 
-export async function POST(req: NextRequest) {
+// Désactiver le parsing automatique de Next.js
+export const revalidate = 0; // ne jamais réutiliser le cache
+
+export async function POST(req: Request) {
+  // Créer un dossier temporaire pour stocker les fichiers uploadés
+  const uploadDir = path.join(process.cwd(), "/public/uploads");
+  if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
   const form = new formidable.IncomingForm({
-    uploadDir: path.join(process.cwd(), "/public/uploads"),
+    uploadDir,
     keepExtensions: true,
+    multiples: true,
   });
 
-  return new Promise((resolve, reject) => {
-    form.parse(req as any, async (err, fields, files: any) => {
-      if (err) return resolve(NextResponse.json({ error: err.message }, { status: 500 }));
-
-      const file = files.file;
-      if (!file) return resolve(NextResponse.json({ error: "Fichier manquant" }, { status: 400 }));
-
-      const imagePath = `/uploads/${path.basename(file.filepath)}`;
-
-      // Mettre à jour Prisma
-      await prisma.user.update({
-        where: { email: fields.email as string },
-        data: { image: imagePath },
+  try {
+    const data = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>((resolve, reject) => {
+      form.parse(req as any, (err, fields, files) => {
+        if (err) reject(err);
+        else resolve({ fields, files });
       });
-
-      resolve(NextResponse.json({ image: imagePath }));
     });
-  });
+
+    return NextResponse.json({ success: true, data });
+  } catch (error) {
+    console.error("Upload error:", error);
+    return NextResponse.json({ success: false, error: (error as Error).message }, { status: 500 });
+  }
 }
