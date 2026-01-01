@@ -7,144 +7,231 @@ import { useRouter } from "next/navigation";
 export default function AuthPage() {
   const router = useRouter();
 
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState(""); // pour l’inscription
+  // 🔑 Identifiant unique
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [isRegister, setIsRegister] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Gestion de l'inscription
-  const handleRegister = async () => {
-    setLoading(true);
-    setError("");
-
-    try {
-      const res = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, phone, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.message || "Erreur lors de l'inscription");
-        return;
-      }
-
-      // Login automatique après inscription
-      const identifier = email || phone;
-
-      const loginRes = await signIn("credentials", {
-        identifier,
-        password,
-        redirect: false,
-      });
-
-      if (loginRes?.error) setError(loginRes.error);
-      else router.push("/dashboard/student");
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Gestion du login
   const handleLogin = async () => {
+    if (!identifier || !password) {
+      setError("Veuillez remplir tous les champs");
+      return;
+    }
+
     setLoading(true);
     setError("");
 
     try {
       const res = await signIn("credentials", {
-        identifier: phone,
+        identifier,
         password,
         redirect: false,
       });
 
-      if (res?.error) setError(res.error);
-      else router.push("/dashboard/student");
+      if (res?.error) {
+        throw new Error("Identifiants incorrects");
+      }
+
+      router.push("/dashboard/student");
     } catch (err: any) {
-      setError(err.message);
+      setError(err.message || "Erreur de connexion");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto mt-20 p-6 border rounded shadow">
-      <h1 className="text-2xl font-bold mb-4">
-        {isRegister ? "Créer un compte" : "Se connecter"}
-      </h1>
+    <div className="auth-page">
+      <div className="auth-card">
+        {/* HEADER */}
+        <div className="auth-header">
+          <h1>Connexion</h1>
+          <p>Connectez-vous à votre espace personnel</p>
+        </div>
 
-      {isRegister && (
-        <>
-          <input
-            type="text"
-            placeholder="Nom complet"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full mb-3 p-2 border rounded"
-            required
-          />
+        {/* FORM */}
+        <div className="auth-form">
+          <div className="field">
+            <label>Identifiant</label>
+            <input
+              type="text"
+              placeholder="Email, téléphone ou nom d’utilisateur"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+            />
+          </div>
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full mb-3 p-2 border rounded"
-            required
-          />
-        </>
-      )}
+          <div className="field">
+            <label>Mot de passe</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
 
-      <input
-        type="text"
-        placeholder="Numéro de téléphone"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value)}
-        className="w-full mb-3 p-2 border rounded"
-        required
-      />
+          {/* 🔐 Mot de passe oublié */}
+          <div className="forgot">
+            <button onClick={() => router.push("/login/forgot")}>
+              Mot de passe ou nom d’utilisateur oublié ?
+            </button>
+          </div>
 
-      <input
-        type="password"
-        placeholder="Mot de passe"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="w-full mb-3 p-2 border rounded"
-        required
-      />
+          {error && <div className="error">{error}</div>}
 
-      {error && <div className="text-red-600 mb-3">{error}</div>}
+          <button className="submit" onClick={handleLogin} disabled={loading}>
+            {loading ? "Connexion..." : "Se connecter"}
+          </button>
+        </div>
 
-      <button
-        onClick={isRegister ? handleRegister : handleLogin}
-        disabled={loading}
-        className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
-      >
-        {loading
-          ? "Chargement..."
-          : isRegister
-          ? "S'inscrire"
-          : "Se connecter"}
-      </button>
+        {/* FOOTER */}
+        <div className="auth-footer">
+          Pas encore de compte ?{" "}
+          <button onClick={() => router.push("/register")}>
+            Créer un compte
+          </button>
+        </div>
+      </div>
 
-      <p className="mt-3 text-sm text-gray-600">
-        {isRegister ? "Déjà un compte ?" : "Pas encore de compte ?"}{" "}
-        <button
-          className="text-blue-600 underline"
-          onClick={() => {
-            setIsRegister(!isRegister);
-            setError("");
-          }}
-        >
-          {isRegister ? "Se connecter" : "Créer un compte"}
-        </button>
-      </p>
+      {/* 🎨 STYLE PROFESSIONNEL */}
+      <style jsx>{`
+        .auth-page {
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: linear-gradient(135deg, #020617, #0f172a);
+          padding: 20px;
+        }
+
+        .auth-card {
+          background: white;
+          padding: 36px 32px;
+          border-radius: 18px;
+          width: 100%;
+          max-width: 420px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-header {
+          text-align: center;
+          margin-bottom: 24px;
+        }
+
+        .auth-header h1 {
+          font-size: 26px;
+          font-weight: 700;
+          margin-bottom: 6px;
+        }
+
+        .auth-header p {
+          font-size: 14px;
+          color: #6b7280;
+        }
+
+        .auth-form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .field {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .field label {
+          font-size: 13px;
+          font-weight: 600;
+          color: #111827;
+        }
+
+        .field input {
+          padding: 12px 14px;
+          border-radius: 10px;
+          border: 1px solid #d1d5db;
+          font-size: 14px;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field input:focus {
+          outline: none;
+          border-color: #2563eb;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+        }
+
+        .forgot {
+          text-align: right;
+          margin-top: -4px;
+        }
+
+        .forgot button {
+          background: none;
+          border: none;
+          font-size: 13px;
+          color: #2563eb;
+          cursor: pointer;
+          padding: 0;
+        }
+
+        .forgot button:hover {
+          text-decoration: underline;
+        }
+
+        .submit {
+          margin-top: 8px;
+          padding: 14px;
+          border-radius: 12px;
+          border: none;
+          background: #2563eb;
+          color: white;
+          font-weight: 600;
+          font-size: 15px;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+
+        .submit:hover {
+          background: #1d4ed8;
+        }
+
+        .submit:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .error {
+          background: #fee2e2;
+          color: #b91c1c;
+          padding: 10px;
+          border-radius: 8px;
+          font-size: 13px;
+          text-align: center;
+        }
+
+        .auth-footer {
+          margin-top: 22px;
+          text-align: center;
+          font-size: 14px;
+          color: #374151;
+        }
+
+        .auth-footer button {
+          border: none;
+          background: none;
+          color: #2563eb;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .auth-footer button:hover {
+          text-decoration: underline;
+        }
+      `}</style>
     </div>
   );
 }
