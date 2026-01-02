@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
 
-import Header from "@/components/HeaderClient"; // Client component
+import Header from "@/components/HeaderClient";
 import SessionTimer from "@/components/SessionTimer";
 import { SessionDurations } from "@/utils/sessionExpiration";
 
@@ -28,15 +28,17 @@ export default async function StudentDashboardPage() {
       {/* Timer côté client pour expiration après fermeture d'onglet */}
       <SessionTimer duration={SessionDurations.LONG} />
 
-      {/* Header client-side */}
+      {/* Header client-side (fixé) */}
       <Header session={session} />
 
-      <main className="p-6">
+      {/* ⬇️ OFFSET RESPONSIVE POUR ÉVITER LE HEADER */}
+      <main className="pt-24 sm:pt-28 md:pt-32 px-6 pb-6">
         {!studentCourses.length ? (
           <div className="text-center mt-10">
             <h1 className="text-2xl font-bold text-yellow-800">
               Bienvenue sur votre Dashboard
             </h1>
+
             <p className="text-gray-500 mt-4 mb-6">
               Vous n’êtes inscrit à aucun cours pour le moment.
             </p>

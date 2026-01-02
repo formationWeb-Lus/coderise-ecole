@@ -89,7 +89,14 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         {/* SIDEBAR DESKTOP */}
         <aside className="hidden md:flex flex-col bg-[#0a1b2d] text-yellow-200 min-h-screen w-64">
           <div className="flex items-center gap-2 px-4 py-4 border-b border-blue-900">
-            <Image src="/favicon.png" alt="Coderise-Ecole" width={120} height={40} priority />
+            <Image
+              src="/favicon.png"
+              alt="Coderise-Ecole"
+              width={120}
+              height={40}
+              className="object-contain"
+              priority
+            />
             <span className="text-xl font-bold text-yellow-300">Coderise-Ecole</span>
           </div>
           <div className="flex-1 px-2">
@@ -97,23 +104,42 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           </div>
         </aside>
 
-        {/* HEADER MOBILE COMPACT */}
-        <header className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0a1b2d] border-b border-blue-900 px-2 py-1 flex items-center justify-between">
-          <div className="flex items-center gap-1">
-            <Image src="/favicon.png" alt="Coderise-Ecole" width={80} height={28} priority />
-            <span className="text-sm font-bold text-yellow-300 truncate">Coderise-Ecole</span>
+        {/* HEADER MOBILE */}
+        <header className="md:hidden fixed top-0 left-0 right-0 z-40 h-14 bg-[#0a1b2d] border-b border-blue-900 flex items-center justify-between px-3">
+          {/* Logo et titre */}
+          <div className="flex items-center gap-2 h-full">
+            <Image
+              src="/favicon.png"
+              alt="Coderise-Ecole"
+              width={60}
+              height={40}
+              className="object-contain h-10" // logo contenu
+              priority
+            />
+            <span className="text-sm font-semibold text-yellow-300 leading-none truncate">
+              Coderise-Ecole
+            </span>
           </div>
 
+          {/* Menu toggle */}
           {open ? (
-            <X size={20} onClick={() => setOpen(false)} className="cursor-pointer text-yellow-200" />
+            <X
+              size={20}
+              onClick={() => setOpen(false)}
+              className="cursor-pointer text-yellow-200"
+            />
           ) : (
-            <Menu size={20} onClick={() => setOpen(true)} className="cursor-pointer text-yellow-200" />
+            <Menu
+              size={20}
+              onClick={() => setOpen(true)}
+              className="cursor-pointer text-yellow-200"
+            />
           )}
         </header>
 
         {/* SIDEBAR MOBILE */}
         {open && (
-          <aside className="md:hidden fixed top-10 left-0 h-full bg-[#0a1b2d] text-yellow-200 shadow-lg z-40 w-64">
+          <aside className="md:hidden fixed top-14 left-0 h-[calc(100vh-56px)] bg-[#0a1b2d] text-yellow-200 shadow-lg z-40 w-64">
             <div className="px-2 py-3">
               <NavLinks />
             </div>
@@ -121,11 +147,13 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
         )}
 
         {/* CONTENU PRINCIPAL */}
-        <main className="flex-1 p-4 mt-10 md:mt-0 flex flex-col">
-          <div className="max-w-6xl mx-auto flex-1">{children}</div>
+        <main className="flex-1 flex flex-col pt-14 md:pt-0">
+          <div className="flex-1 p-4 max-w-6xl mx-auto">
+            {children}
+          </div>
 
           {/* FOOTER */}
-          <footer className="mt-6 bg-[#0a1b2d] text-yellow-200 text-sm py-3 border-t border-blue-900">
+          <footer className="bg-[#0a1b2d] text-yellow-200 text-sm py-3 border-t border-blue-900">
             <div className="max-w-6xl mx-auto text-center">
               © {new Date().getFullYear()} Coderise-Ecole. Tous droits réservés.
             </div>
@@ -136,7 +164,15 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   );
 }
 
-function SidebarLink({ href, icon, children }: { href: string; icon: React.ReactNode; children: React.ReactNode }) {
+function SidebarLink({
+  href,
+  icon,
+  children,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
     <Link
       href={href}
