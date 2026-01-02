@@ -9,7 +9,6 @@ export default function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"STUDENT" | "TEACHER" | "ADMIN">("STUDENT");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,7 +22,13 @@ export default function RegisterPage() {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password, role, phone }),
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+          phone,
+          role: "STUDENT", // rôle fixe
+        }),
       });
 
       const data = await res.json();
@@ -35,7 +40,6 @@ export default function RegisterPage() {
         setName("");
         setEmail("");
         setPassword("");
-        setRole("STUDENT");
         setPhone("");
 
         setTimeout(() => {
@@ -102,18 +106,6 @@ export default function RegisterPage() {
           onChange={(e) => setPhone(e.target.value)}
           className="w-full p-2 mb-4 border rounded"
         />
-
-        <select
-          value={role}
-          onChange={(e) =>
-            setRole(e.target.value as "STUDENT" | "TEACHER" | "ADMIN")
-          }
-          className="w-full p-2 mb-4 border rounded"
-        >
-          <option value="STUDENT">Étudiant</option>
-          <option value="TEACHER">Teacher</option>
-          <option value="ADMIN">Admin</option>
-        </select>
 
         <button
           type="submit"
