@@ -57,7 +57,7 @@ export default function AuthPage() {
             <label>Identifiant</label>
             <input
               type="text"
-              placeholder="Email, téléphone ou nom d’utilisateur"
+              placeholder=" téléphone "
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
             />
