@@ -10,6 +10,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [role, setRole] = useState<"STUDENT" | "ADMIN">("STUDENT");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,7 +28,7 @@ export default function RegisterPage() {
           email,
           password,
           phone,
-          role: "STUDENT", // rôle fixe
+          role, // rôle dynamique
         }),
       });
 
@@ -36,11 +37,11 @@ export default function RegisterPage() {
       if (res.ok) {
         setMessage("Compte créé avec succès ! Redirection en cours...");
 
-        // Nettoyage du formulaire
         setName("");
         setEmail("");
         setPassword("");
         setPhone("");
+        setRole("STUDENT");
 
         setTimeout(() => {
           router.push("/dashboard/enrollment");
@@ -107,13 +108,24 @@ export default function RegisterPage() {
           className="w-full p-2 mb-4 border rounded"
         />
 
+        {/* Sélection du rôle */}
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value as "STUDENT" | "ADMIN")}
+          className="w-full p-2 mb-6 border rounded bg-white"
+          required
+        >
+          <option value="STUDENT">Étudiant</option>
+          <option value="ADMIN">Administrateur</option>
+        </select>
+
         <button
           type="submit"
           disabled={loading}
           className="w-full bg-blue-500 text-white p-2 rounded
                      hover:bg-blue-600 transition disabled:opacity-50"
         >
-          {loading ? "Création en cours..." : "S’inscrire"}
+          {loading ? "Création en cours..." : "Créer le compte"}
         </button>
       </form>
     </div>
