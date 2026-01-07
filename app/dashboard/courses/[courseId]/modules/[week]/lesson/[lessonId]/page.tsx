@@ -12,13 +12,11 @@ interface LessonPageProps {
   }>;
 }
 
-// Composant réutilisable pour afficher la vidéo
+// 🎥 Composant vidéo
 function LessonVideo({ videoUrl }: { videoUrl: string }) {
-  // Détection YouTube
   const isYouTube = videoUrl.includes("youtu");
 
   if (isYouTube) {
-    // Récupère l'ID vidéo (youtu.be ou youtube.com)
     let videoId = "";
     if (videoUrl.includes("youtu.be/")) {
       videoId = videoUrl.split("youtu.be/")[1];
@@ -40,7 +38,6 @@ function LessonVideo({ videoUrl }: { videoUrl: string }) {
     );
   }
 
-  // Si ce n'est pas YouTube, on suppose un fichier vidéo direct (MP4, WebM, etc.)
   return (
     <video controls className="w-full rounded mb-6">
       <source src={videoUrl} type="video/mp4" />
@@ -66,11 +63,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
     return <div className="p-4 text-red-600">Leçon non trouvée</div>;
   }
 
-  // Toutes les leçons du module (navigation)
+  // 🔁 Leçons du module (navigation)
   const lessons = await prisma.lesson.findMany({
     where: { moduleId: lesson.moduleId },
     orderBy: { order: "asc" },
-    select: { id: true, title: true, order: true },
+    select: { id: true, order: true },
   });
 
   const index = lessons.findIndex((l) => l.id === lesson.id);
@@ -81,9 +78,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   return (
     <div className="p-4 max-w-3xl mx-auto">
-      {/* 🔝 TITRE + BOUTON DEVOIR (SEULEMENT LEÇON 5) */}
+      {/* 🔝 TITRE + DEVOIR */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-yellow-900">{lesson.title}</h1>
+        <h1 className="text-3xl font-bold text-yellow-900">
+          {lesson.title}
+        </h1>
 
         {lesson.order === 5 && (
           <a
@@ -95,16 +94,18 @@ export default async function LessonPage({ params }: LessonPageProps) {
         )}
       </div>
 
-      {/* 📝 CONTENU MARKDOWN */}
+      {/* 📝 CONTENU */}
       <div className="prose max-w-none mb-6 text-lg">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>
           {lesson.content || "Pas de contenu pour cette leçon."}
         </ReactMarkdown>
       </div>
 
-      {/* 📝 DESCRIPTION DE LA VIDÉO */}
+      {/* 📝 DESCRIPTION VIDÉO */}
       {lesson.videoDescription && (
-        <div className="mb-3 text-gray-700 text-lg">{lesson.videoDescription}</div>
+        <div className="mb-3 text-gray-700 text-lg">
+          {lesson.videoDescription}
+        </div>
       )}
 
       {/* 🎥 VIDÉO */}
@@ -113,7 +114,9 @@ export default async function LessonPage({ params }: LessonPageProps) {
       {/* 📄 PDF */}
       {lesson.pdfUrl && (
         <div className="mb-6">
-          <h2 className="font-semibold mb-2 text-yellow-900 text-xl">Ressources PDF</h2>
+          <h2 className="font-semibold mb-2 text-yellow-900 text-xl">
+            Ressources PDF
+          </h2>
           <a
             href={lesson.pdfUrl}
             target="_blank"
@@ -137,27 +140,26 @@ export default async function LessonPage({ params }: LessonPageProps) {
         </div>
       )}
 
-      {/* ✅ BAS DE PAGE : TERMINÉ + NAVIGATION */}
+      {/* ✅ FIN : TERMINÉ + NAVIGATION */}
       <div className="flex justify-between items-center mt-10 border-t pt-6">
-        {/* TOUJOURS VISIBLE */}
         <MarkLessonDone lessonId={lesson.id} courseId={Number(courseId)} />
 
         <div className="flex gap-4">
           {prevLesson && (
             <a
               href={`/dashboard/courses/${courseId}/modules/${week}/lesson/${prevLesson.id}`}
-              className="text-green-700 font-semibold underline"
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
             >
-              ← {prevLesson.title}
+              Retour
             </a>
           )}
 
           {nextLesson && (
             <a
               href={`/dashboard/courses/${courseId}/modules/${week}/lesson/${nextLesson.id}`}
-              className="text-green-700 font-semibold underline"
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
-              {nextLesson.title} →
+              Suivant
             </a>
           )}
         </div>
