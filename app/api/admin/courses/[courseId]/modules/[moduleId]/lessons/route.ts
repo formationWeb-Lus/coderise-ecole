@@ -1,56 +1,53 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+// 🔹 GET → Récupérer toutes les leçons d'un module
 export async function GET(
   req: Request,
-  context: {
-    params: Promise<{ courseId: string; moduleId: string }>;
-  }
+  context: { params: Promise<{ courseId: string; moduleId: string }> }
 ) {
   try {
-    // 🔑 Next 15+ → params = Promise
+    // Unwrap params car c'est une Promise
     const { moduleId } = await context.params;
 
     const lessons = await prisma.lesson.findMany({
-      where: {
-        moduleId: Number(moduleId),
-      },
-      orderBy: {
-        order: "asc",
+      where: { moduleId: Number(moduleId) },
+      orderBy: { order: "asc" },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        videoUrl: true,
+        pdfUrl: true,
+        order: true,
       },
     });
 
-    return NextResponse.json(lessons);
+    return NextResponse.json(lessons, { status: 200 });
   } catch (error) {
     console.error("GET LESSONS ERROR:", error);
     return NextResponse.json(
-      { error: "Erreur récupération lessons" },
+      { error: "Erreur récupération des lessons" },
       { status: 500 }
     );
   }
 }
 
+// 🔹 POST → Créer une nouvelle leçon
 export async function POST(
   req: Request,
-  context: {
-    params: Promise<{ courseId: string; moduleId: string }>;
-  }
+  context: { params: Promise<{ courseId: string; moduleId: string }> }
 ) {
   try {
-    const { courseId, moduleId } = await context.params;
+    const { moduleId } = await context.params;
+    const body = await req.json();
 
-    const {
-      title,
-      content,
-      description,
-      videoUrl,
-      pdfUrl,
-      order,
-    } = await req.json();
+    const { title, content, description, videoUrl, pdfUrl, order } = body;
 
+    // Validation minimale
     if (!title || !content) {
       return NextResponse.json(
-        { error: "title et content requis" },
+        { error: "title et content sont requis" },
         { status: 400 }
       );
     }
@@ -62,7 +59,7 @@ export async function POST(
         description: description ?? null,
         videoUrl: videoUrl ?? null,
         pdfUrl: pdfUrl ?? null,
-        order: order ?? 1,
+        order: typeof order === "number" ? order : 1,
         moduleId: Number(moduleId),
       },
     });
@@ -71,7 +68,7 @@ export async function POST(
   } catch (error) {
     console.error("CREATE LESSON ERROR:", error);
     return NextResponse.json(
-      { error: "Erreur création lesson" },
+      { error: "Erreur création de la lesson" },
       { status: 500 }
     );
   }

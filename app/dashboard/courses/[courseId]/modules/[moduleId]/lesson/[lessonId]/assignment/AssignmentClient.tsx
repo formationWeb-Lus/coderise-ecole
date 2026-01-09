@@ -4,23 +4,30 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Upload, FileText } from "lucide-react";
 
-export default function AssignmentClient({ userId }: { userId: number }) {
-  // 1️⃣ Récupérer lessonId depuis l'URL et le typer
-  const params = useParams() as { lessonId?: string };
-  const lessonId = Number(params.lessonId);
+interface Props {
+  userId: number;
+}
 
-  if (isNaN(lessonId)) {
-    return <div className="p-4 text-red-600">Leçon invalide</div>;
+export default function AssignmentClient({ userId }: Props) {
+  const params = useParams();
+
+  const lessonIdParam = params?.lessonId;
+  const lessonId = lessonIdParam ? Number(lessonIdParam) : NaN;
+
+  if (!lessonId || isNaN(lessonId)) {
+    return (
+      <div className="p-6 text-center text-red-600 font-semibold">
+        Leçon invalide ou introuvable
+      </div>
+    );
   }
 
-  // 2️⃣ États pour formulaire
   const [file, setFile] = useState<File | null>(null);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
 
-  // 3️⃣ Gestion de la soumission
   const handleSubmit = async () => {
     if (!file) {
       setMessage("Veuillez sélectionner un fichier.");
@@ -28,16 +35,14 @@ export default function AssignmentClient({ userId }: { userId: number }) {
       return;
     }
 
-    // Vérification type MIME
     if (!["application/pdf", "application/zip"].includes(file.type)) {
       setMessage("Seuls les fichiers PDF ou ZIP sont autorisés.");
       setError(true);
       return;
     }
 
-    // Vérification taille max (10 Mo)
     if (file.size > 10 * 1024 * 1024) {
-      setMessage("Le fichier est trop volumineux (max 10 Mo).");
+      setMessage("Le fichier dépasse 10 Mo.");
       setError(true);
       return;
     }
@@ -45,7 +50,6 @@ export default function AssignmentClient({ userId }: { userId: number }) {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("lessonId", lessonId.toString());
-    formData.append("userId", userId.toString());
     formData.append("comment", comment);
 
     setLoading(true);
@@ -76,7 +80,6 @@ export default function AssignmentClient({ userId }: { userId: number }) {
     }
   };
 
-  // 4️⃣ Interface utilisateur
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4">
       <div className="w-full max-w-xl bg-yellow-50 border border-yellow-200 rounded-xl shadow-lg p-8">
@@ -88,12 +91,9 @@ export default function AssignmentClient({ userId }: { userId: number }) {
           Téléversez votre travail final et ajoutez un commentaire si nécessaire.
         </p>
 
-        {/* Upload */}
         <label className="flex items-center justify-center gap-3 p-5 border-2 border-dashed border-yellow-400 rounded-lg cursor-pointer bg-yellow-100 hover:bg-yellow-200 transition">
           <Upload className="w-6 h-6" />
-          <span className="font-semibold">
-            Cliquez ici pour importer votre fichier
-          </span>
+          <span className="font-semibold">Importer un fichier</span>
           <input
             type="file"
             accept=".pdf,.zip"
@@ -108,24 +108,21 @@ export default function AssignmentClient({ userId }: { userId: number }) {
           </p>
         )}
 
-        {/* Commentaire */}
         <textarea
-          className="w-full min-h-30 mt-4 p-3 rounded border border-yellow-300 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+       className="w-full min-h-30 mt-4 p-3 rounded border border-yellow-300 focus:ring-2 focus:ring-yellow-400"
           placeholder="Commentaire pour le formateur (optionnel)"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
         />
 
-        {/* Bouton */}
         <button
           onClick={handleSubmit}
           disabled={loading || !file}
-          className="mt-4 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50 transition"
+          className="mt-4 w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg disabled:opacity-50"
         >
           {loading ? "Soumission..." : "Envoyer le devoir"}
         </button>
 
-        {/* Message */}
         {message && (
           <div
             className={`mt-4 p-3 rounded text-center ${

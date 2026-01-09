@@ -1,6 +1,6 @@
-// courses/[courseId]/modules/[moduleId]/lessons/[lessonId]/exercises/page.tsx - Next.js page
+// courses/[courseId]/modules/[moduleId]/lessons/[lessonId]/quizzes/page.tsx
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth"; // ✅ Correct
+import { authOptions } from "@/lib/auth";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 
@@ -12,7 +12,7 @@ interface PageProps {
   };
 }
 
-export default async function ExercisesPage({ params }: PageProps) {
+export default async function QuizzesPage({ params }: PageProps) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) {
@@ -28,7 +28,7 @@ export default async function ExercisesPage({ params }: PageProps) {
   const lessonId = Number(params.lessonId);
   const userId = Number(session.user.id);
 
-  // Vérifier inscription
+  // Vérifier inscription de l'étudiant au cours
   const studentCourse = await prisma.studentCourse.findFirst({
     where: { userId, courseId },
     include: {
@@ -40,7 +40,7 @@ export default async function ExercisesPage({ params }: PageProps) {
               lessons: {
                 where: { id: lessonId },
                 include: {
-                  exercises: true, // tes exercises ici
+                  quizzes: true, // 🔹 récupérer les quizzes
                 },
               },
             },
@@ -60,40 +60,42 @@ export default async function ExercisesPage({ params }: PageProps) {
   const lesson = module.lessons[0];
   if (!lesson) notFound();
 
-  // ✅ Récupérer les submissions correctement
-  const submissions = await prisma.exerciseSubmission.findMany({
+  // 🔹 Récupérer les soumissions pour les quizzes
+  const submissions = await prisma.quizSubmission.findMany({
     where: {
       userId,
-      exerciseId: { in: lesson.exercises.map((e) => e.id) }, // corrige l'erreur
+      quizId: { in: lesson.quizzes.map((q) => q.id) },
     },
   });
 
-  const submittedExerciseIds = new Set(submissions.map((s) => s.exerciseId));
+  const submittedQuizIds = new Set(submissions.map((s) => s.quizId));
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Exercices : {`Leçon ${lesson.id}`}</h1>
+      <h1 className="text-2xl font-bold">
+        Quizzes : {`Leçon ${lesson.id}`}
+      </h1>
 
-      {lesson.exercises.length === 0 ? (
-        <p className="text-gray-500">Aucun exercice pour cette leçon.</p>
+      {lesson.quizzes.length === 0 ? (
+        <p className="text-gray-500">Aucun quiz pour cette leçon.</p>
       ) : (
         <ul className="space-y-3">
-          {lesson.exercises
-            .sort((a, b) => a.order - b.order) // trier par ordre
-            .map((exercise) => {
-              const isSubmitted = submittedExerciseIds.has(exercise.id);
+          {lesson.quizzes
+            .sort((a, b) => a.order - b.order)
+            .map((quiz) => {
+              const isSubmitted = submittedQuizIds.has(quiz.id);
 
               return (
                 <li
-                  key={exercise.id}
+                  key={quiz.id}
                   className="flex items-center justify-between border rounded-lg p-4"
                 >
-                  <span>{exercise.question}</span>
+                  <span>{quiz.title}</span>
                   {isSubmitted ? (
                     <span className="text-green-600 text-sm">✔ Soumis</span>
                   ) : (
                     <a
-                      href={`/dashboard/student/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/exercises/${exercise.id}`}
+                      href={`/dashboard/student/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quizzes/${quiz.id}`}
                       className="text-blue-600 hover:underline text-sm"
                     >
                       Commencer

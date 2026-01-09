@@ -13,8 +13,7 @@ export async function POST(
 ) {
   try {
     const { lessonId } = await context.params;
-
-    const { question, answer, type, points, deadline } = await req.json();
+    const { question, answer, type, points, deadline, quizId, choices } = await req.json();
 
     if (!question || !type) {
       return NextResponse.json(
@@ -31,6 +30,8 @@ export async function POST(
         type, // TEXT | QCM | BOOLEAN
         points: points ?? 10,
         deadline: deadline ? new Date(deadline) : new Date(),
+        quizId: quizId ? Number(quizId) : null, // 🔹 ici on associe à un quiz si sélectionné
+        choices: choices || null,               // 🔹 pour les QCM
       },
     });
 

@@ -56,7 +56,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
   const lesson = await prisma.lesson.findUnique({
     where: { id: numericId },
-    include: { exercises: true },
+    include: { exercises: true, quizzes: true },
   });
 
   if (!lesson) {
@@ -80,13 +80,11 @@ export default async function LessonPage({ params }: LessonPageProps) {
     <div className="p-4 max-w-3xl mx-auto">
       {/* 🔝 TITRE + DEVOIR */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-yellow-900">
-          {lesson.title}
-        </h1>
+        <h1 className="text-3xl font-bold text-yellow-900">{lesson.title}</h1>
 
         {lesson.order === 5 && (
           <a
-            href={`/dashboard/courses/${courseId}/modules/${week}/lesson/${lesson.id}/assignment`}
+            href={`/dashboard/courses/${courseId}/modules/${lesson.moduleId}/lesson/${lesson.id}/assignment`}
             className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
           >
             Soumettre le devoir
@@ -103,9 +101,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
       {/* 📝 DESCRIPTION VIDÉO */}
       {lesson.videoDescription && (
-        <div className="mb-3 text-gray-700 text-lg">
-          {lesson.videoDescription}
-        </div>
+        <div className="mb-3 text-gray-700 text-lg">{lesson.videoDescription}</div>
       )}
 
       {/* 🎥 VIDÉO */}
@@ -114,9 +110,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
       {/* 📄 PDF */}
       {lesson.pdfUrl && (
         <div className="mb-6">
-          <h2 className="font-semibold mb-2 text-yellow-900 text-xl">
-            Ressources PDF
-          </h2>
+          <h2 className="font-semibold mb-2 text-yellow-900 text-xl">Ressources PDF</h2>
           <a
             href={lesson.pdfUrl}
             target="_blank"
@@ -129,14 +123,20 @@ export default async function LessonPage({ params }: LessonPageProps) {
       )}
 
       {/* 🧠 QUIZ */}
-      {firstExercise && (
+      {lesson.quizzes && lesson.quizzes.length > 0 ? (
         <div className="mt-6">
           <a
-            href={`/dashboard/courses/${courseId}/modules/${week}/lesson/${lesson.id}/exercise/${firstExercise.id}`}
+            href={`/dashboard/courses/${courseId}/modules/${lesson.moduleId}/lesson/${lesson.id}/quizzes/${lesson.quizzes[0].id}`}
             className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           >
             Commencer le quiz
           </a>
+        </div>
+      ) : (
+        <div className="mt-6">
+          <span className="inline-block bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed">
+            Pas de quiz disponible
+          </span>
         </div>
       )}
 
@@ -147,7 +147,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
         <div className="flex gap-4">
           {prevLesson && (
             <a
-              href={`/dashboard/courses/${courseId}/modules/${week}/lesson/${prevLesson.id}`}
+              href={`/dashboard/courses/${courseId}/modules/${lesson.moduleId}/lesson/${prevLesson.id}`}
               className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
             >
               Retour
@@ -156,7 +156,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
           {nextLesson && (
             <a
-              href={`/dashboard/courses/${courseId}/modules/${week}/lesson/${nextLesson.id}`}
+              href={`/dashboard/courses/${courseId}/modules/${lesson.moduleId}/lesson/${nextLesson.id}`}
               className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
             >
               Suivant

@@ -54,20 +54,20 @@ export default function AdminDashboardPage() {
           Créer un exercice
         </Link>
 
-        <Link href="/dashboard/admin/courses/2/modules/17/lessons/35/exercises" className="bg-indigo-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-indigo-700">
-          Gestion des exercices
+        <Link href="/dashboard/admin/courses/2/modules/17/lessons/35/quizzes" className="bg-indigo-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-indigo-700">
+          Creer les quizzes
         </Link>
 
-        <Link href="/dashboard/admin/courses/2/modules/17/lessons/35/assignment" className="bg-pink-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-pink-700">
+        <Link href="/dashboard/admin/submissions" className="bg-pink-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-pink-700">
           Gestion des assignments
         </Link>
 
-        <Link href="/dashboard/courses/1/modules" className="bg-teal-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-teal-700">
-          Voir un module (étudiant)
+        <Link href="/dashboard/admin/students" className="bg-teal-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-teal-700">
+          Voir les étudiants
         </Link>
 
-        <Link href="/dashboard/courses/1" className="bg-orange-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-orange-700">
-          Voir une leçon (étudiant)
+        <Link href="/enrollment" className="bg-orange-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-orange-700">
+          voir les cours d'inscriptions
         </Link>
 
         <Link href="/dashboard/courses/2/grade" className="bg-gray-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-gray-700">

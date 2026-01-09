@@ -12,6 +12,7 @@ export default async function GradesPage() {
 
   const userId = Number(session.user.id);
 
+  // 🔹 Récupérer les cours de l'étudiant avec exercises, assignments et quizzes
   const studentCourses = await prisma.studentCourse.findMany({
     where: { userId },
     include: {
@@ -22,14 +23,11 @@ export default async function GradesPage() {
               lessons: {
                 include: {
                   exercises: {
-                    include: {
-                      submissions: {
-                        where: { userId },
-                      },
-                    },
+                    include: { submissions: { where: { userId } } },
                   },
-                  assignmentSubmissions: {
-                    where: { userId },
+                  assignmentSubmissions: { where: { userId } },
+                  quizzes: {
+                    include: { submissions: { where: { userId } }, questions: true },
                   },
                 },
               },
@@ -44,13 +42,12 @@ export default async function GradesPage() {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-2xl font-bold">Mes résultats</h1>
-        <p className="mt-4 text-gray-600">
-          Vous n’êtes inscrit à aucun cours.
-        </p>
+        <p className="mt-4 text-gray-600">Vous n’êtes inscrit à aucun cours.</p>
       </div>
     );
   }
 
+  // 🔹 Calculer les scores par leçon
   const lessonGrades = studentCourses
     .flatMap((sc) => sc.course.modules)
     .flatMap((m) => m.lessons)
@@ -58,6 +55,7 @@ export default async function GradesPage() {
       let obtained = 0;
       let max = 0;
 
+      // 🔹 Exercises
       lesson.exercises.forEach((ex) => {
         max += ex.points;
         const sub = ex.submissions[0];
@@ -66,9 +64,19 @@ export default async function GradesPage() {
         }
       });
 
+      // 🔹 Assignment submissions
       lesson.assignmentSubmissions.forEach((a) => {
         max += 100;
         obtained += a.score ?? 0;
+      });
+
+      // 🔹 Quizzes
+      lesson.quizzes.forEach((q) => {
+        const totalQuizPoints = q.questions.reduce((sum, q) => sum + q.points, 0);
+        max += totalQuizPoints;
+
+        const sub = q.submissions[0];
+        if (sub?.score != null) obtained += sub.score;
       });
 
       if (max === 0) return null;
@@ -76,7 +84,7 @@ export default async function GradesPage() {
       return {
         lessonId: lesson.id,
         title: lesson.title,
-        order: lesson.order, // 👈 IMPORTANT pour le style
+        order: lesson.order,
         obtained,
         max,
         percent: Math.round((obtained / max) * 100),
@@ -93,23 +101,16 @@ export default async function GradesPage() {
 
   const totalObtained = lessonGrades.reduce((a, l) => a + l.obtained, 0);
   const totalMax = lessonGrades.reduce((a, l) => a + l.max, 0);
-  const globalPercent =
-    totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 0;
+  const globalPercent = totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 0;
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-yellow-900">
-        Mes résultats
-      </h1>
+      <h1 className="text-3xl font-bold text-yellow-900">Mes résultats</h1>
 
       {/* Score global */}
       <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-xl text-center shadow">
-        <p className="text-xl font-semibold text-gray-700">
-          Performance globale
-        </p>
-        <p className="text-4xl font-bold text-green-700">
-          {globalPercent}%
-        </p>
+        <p className="text-xl font-semibold text-gray-700">Performance globale</p>
+        <p className="text-4xl font-bold text-green-700">{globalPercent}%</p>
         <p className="text-gray-600">
           {totalObtained} / {totalMax} points
         </p>
@@ -117,9 +118,7 @@ export default async function GradesPage() {
 
       {/* Résultats par leçon */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold text-yellow-900">
-          Résultats par leçon
-        </h2>
+        <h2 className="text-2xl font-semibold text-yellow-900">Résultats par leçon</h2>
 
         {lessonGrades.map((l) => {
           const isGreenLesson = l.order === 1 || l.order === 5;
@@ -157,11 +156,7 @@ export default async function GradesPage() {
 
                 <p
                   className={`text-2xl font-bold
-                    ${
-                      isGreenLesson
-                        ? "text-green-700"
-                        : "text-yellow-800"
-                    }
+                    ${isGreenLesson ? "text-green-700" : "text-yellow-800"}
                   `}
                 >
                   {l.percent}%
