@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 // 🔐 Supabase client backend (Service Role Key)
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY! // Service Role
+  process.env.SUPABASE_SERVICE_ROLE_KEY! // backend uniquement
 );
 
 // 🔹 Fonction pour sécuriser le nom de fichier
@@ -62,8 +62,8 @@ export async function POST(req: Request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const safeFileName = sanitizeFileName(file.name);
 
-    // <-- Chemin du fichier correct pour policy Service Role
-    const filePath = `assignments/${user.id}/${lessonId}/${Date.now()}_${safeFileName}`;
+    // <-- CHEMIN CORRIGÉ pour bucket "assignment" et policy
+    const filePath = `${user.id}/${lessonId}/${Date.now()}_${safeFileName}`;
 
     // Upload avec Service Role Key (ignore RLS)
     const { error: uploadError } = await supabase.storage
