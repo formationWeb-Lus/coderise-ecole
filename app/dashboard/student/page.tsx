@@ -8,41 +8,39 @@ import Image from "next/image";
 import Header from "@/components/HeaderClient";
 import SessionTimer from "@/components/SessionTimer";
 import { SessionDurations } from "@/utils/sessionExpiration";
-
 export default async function StudentDashboardPage() {
   const session = await getServerSession(authOptions);
 
-  // 🔒 Protection côté serveur
   if (!session?.user?.id) redirect("/auth/signin");
   if (session.user.role !== "STUDENT") redirect("/dashboard");
 
-  const userId = Number(session.user.id);
-
-  const studentCourses = await prisma.studentCourse.findMany({
-    where: { userId },
-    include: { course: true },
+  // 🔹 Trouver le Student correspondant à l'utilisateur connecté
+  const student = await prisma.student.findFirst({
+    where: { email: session.user.email ?? undefined },
   });
+
+  // 🔹 Récupérer les cours via studentId
+  const studentCourses = student
+    ? await prisma.studentCourse.findMany({
+        where: { studentId: student.id },
+        include: { course: true },
+      })
+    : [];
 
   return (
     <div className="min-h-screen bg-gray-100">
-      {/* Timer côté client pour expiration après fermeture d'onglet */}
       <SessionTimer duration={SessionDurations.LONG} />
-
-      {/* Header client-side (fixé) */}
       <Header session={session} />
 
-      {/* ⬇️ OFFSET RESPONSIVE POUR ÉVITER LE HEADER */}
       <main className="pt-24 sm:pt-28 md:pt-32 px-6 pb-6">
         {!studentCourses.length ? (
           <div className="text-center mt-10">
             <h1 className="text-2xl font-bold text-yellow-800">
               Bienvenue sur votre Dashboard
             </h1>
-
             <p className="text-gray-500 mt-4 mb-6">
               Vous n’êtes inscrit à aucun cours pour le moment.
             </p>
-
             <Link href="/dashboard/enrollment">
               <button className="bg-red-600 text-white font-bold text-lg py-2 px-6 hover:bg-red-700 transition">
                 Voir tous les cours disponibles et vous inscrire
@@ -98,4 +96,3 @@ export default async function StudentDashboardPage() {
     </div>
   );
 }
-

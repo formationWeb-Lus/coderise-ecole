@@ -1,9 +1,14 @@
+// ─────────────────────────────
+// Upload Assignment – route.ts
+// ─────────────────────────────
+
+// ⚡ Forcer Node.js runtime (Vercel Edge ne supporte pas Buffer)
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from "@/lib/auth"; // wrapper stable pour getServerSession
 import { prisma } from "@/lib/prisma";
 
 // 🔹 Fonction pour sécuriser le nom de fichier
@@ -15,16 +20,17 @@ function sanitizeFileName(name: string) {
 }
 
 export async function POST(req: Request) {
+  // 🔹 Initialiser Supabase avec Service Role (backend only)
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY! // backend uniquement
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
   try {
     // ==========================
-    // 1️⃣ Authentification
+    // 1️⃣ Authentification stable
     // ==========================
-    const session = await getServerSession(authOptions);
+    const session = await auth(); // NextAuth JWT
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
@@ -93,7 +99,7 @@ export async function POST(req: Request) {
     }
 
     // ==========================
-    // 5️⃣ URL signée
+    // 5️⃣ Générer URL signée
     // ==========================
     const { data, error: urlError } = await supabase.storage
       .from("assignment")
@@ -107,7 +113,7 @@ export async function POST(req: Request) {
     }
 
     // ==========================
-    // 6️⃣ DB
+    // 6️⃣ Enregistrer dans la DB
     // ==========================
     const submission = await prisma.assignmentSubmission.create({
       data: {
@@ -118,6 +124,9 @@ export async function POST(req: Request) {
       },
     });
 
+    // ==========================
+    // 7️⃣ Retour JSON clair
+    // ==========================
     return NextResponse.json({ success: true, submission });
   } catch (err: any) {
     console.error("Erreur soumission :", err);
