@@ -70,8 +70,8 @@ export default function AdminDashboardPage() {
           voir les cours d'inscriptions
         </Link>
 
-        <Link href="/dashboard/courses/2/grade" className="bg-gray-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-gray-700">
-          Voir les grades (étudiant)
+        <Link href="/dashboard/admin/enroll" className="bg-gray-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-gray-700">
+          Enroller etudiants au cours
         </Link>
 
         <Link href="/dashboard/courses/1/modules/week/lesson/12/assignment" className="bg-red-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-red-700">
