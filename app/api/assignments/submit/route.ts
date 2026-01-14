@@ -8,7 +8,8 @@ export const dynamic = "force-dynamic";
 
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
-import { auth } from "@/lib/auth"; // wrapper stable pour getServerSession
+import { getServerSession } from "next-auth"; // ✅ stable
+import { authOptions } from "@/lib/auth";        // ✅ remplace auth
 import { prisma } from "@/lib/prisma";
 
 // 🔹 Fonction pour sécuriser le nom de fichier
@@ -30,7 +31,7 @@ export async function POST(req: Request) {
     // ==========================
     // 1️⃣ Authentification stable
     // ==========================
-    const session = await auth(); // NextAuth JWT
+    const session = await getServerSession(authOptions); // ✅
     if (!session?.user?.email) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
     // 3️⃣ Validation fichier
     // ==========================
     const allowedTypes = ["application/pdf", "application/zip"];
-    const MAX_SIZE = 10 * 1024 * 1024;
+    const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo
 
     if (!allowedTypes.includes(file.type))
       return NextResponse.json(
@@ -103,7 +104,7 @@ export async function POST(req: Request) {
     // ==========================
     const { data, error: urlError } = await supabase.storage
       .from("assignment")
-      .createSignedUrl(filePath, 60 * 60);
+      .createSignedUrl(filePath, 60 * 60); // 1h
 
     if (urlError || !data?.signedUrl) {
       return NextResponse.json(
