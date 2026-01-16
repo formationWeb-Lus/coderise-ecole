@@ -115,7 +115,7 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
     }
 
     try {
-      const res = await fetch(`/api/admin/lessons/${selectedLesson}/quizzes`, {
+      const res = await fetch(`/api/admin/courses/${selectedCourse}/modules/${selectedModule}/lessons/${selectedLesson}/quizzes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, questions }),
