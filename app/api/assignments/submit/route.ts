@@ -5,13 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SubmissionStatus } from "@prisma/client";
-import { createClient } from "@supabase/supabase-js";
-
-// 🔹 Pour utiliser Supabase Storage
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { supabaseServer } from "@/lib/supabaseServer"; // 🔹 client serveur sécurisé
 
 // 🔹 Sécuriser le nom du fichier
 function sanitizeFileName(name: string) {
@@ -40,7 +34,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2️⃣ Lire JSON (fileBase64, lessonId, comment)
+    // 2️⃣ Lire JSON envoyé depuis le frontend
     const body = await req.json();
     const fileBase64 = body.fileBase64 as string;
     const fileName = body.fileName as string;
@@ -56,10 +50,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "lessonId invalide" }, { status: 400 });
     }
 
-    // 3️⃣ Validation fichier
+    // 3️⃣ Validation du fichier
     const allowedTypes = ["application/pdf", "application/zip"];
     const MAX_SIZE = 10 * 1024 * 1024; // 10 Mo
-
     const buffer = Buffer.from(fileBase64, "base64");
 
     if (!allowedTypes.includes(fileType)) {
@@ -76,11 +69,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4️⃣ Upload Supabase
+    // 4️⃣ Upload sur Supabase
     const safeFileName = sanitizeFileName(fileName);
     const filePath = `${user.id}/${lessonId}/${Date.now()}_${safeFileName}`;
 
-    const { error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabaseServer.storage
       .from("assignment")
       .upload(filePath, buffer, { contentType: fileType, upsert: true });
 
@@ -89,7 +82,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: uploadError.message }, { status: 500 });
     }
 
-    const { data, error: urlError } = await supabase.storage
+    const { data, error: urlError } = await supabaseServer.storage
       .from("assignment")
       .createSignedUrl(filePath, 60 * 60); // URL valable 1h
 

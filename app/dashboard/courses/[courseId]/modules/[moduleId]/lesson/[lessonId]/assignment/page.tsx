@@ -18,3 +18,4 @@ export default function Page() {
 
   return <AssignmentPage lessonId={lessonId} userId={userId} />;
 }
+
