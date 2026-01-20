@@ -12,10 +12,24 @@ export default function AssignmentPage({
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
 
   const handleSubmit = async () => {
     if (!file) {
       setMessage("Veuillez sélectionner un fichier");
+      setError(true);
+      return;
+    }
+
+    // Validation type et taille
+    if (!["application/pdf", "application/zip"].includes(file.type)) {
+      setMessage("Seuls PDF ou ZIP sont autorisés");
+      setError(true);
+      return;
+    }
+    if (file.size > 10 * 1024 * 1024) {
+      setMessage("Fichier trop volumineux (max 10 Mo)");
+      setError(true);
       return;
     }
 
@@ -26,6 +40,7 @@ export default function AssignmentPage({
 
     setLoading(true);
     setMessage("");
+    setError(false);
 
     try {
       const res = await fetch("/api/assignments/submit", {
@@ -37,12 +52,16 @@ export default function AssignmentPage({
 
       if (!res.ok) {
         setMessage(data.error || "Erreur serveur");
+        setError(true);
       } else {
         setMessage("✅ Fichier soumis avec succès !");
+        setError(false);
+        setFile(null); // reset
       }
     } catch (err) {
       console.error(err);
-      setMessage("Erreur lors de la soumission");
+      setMessage("Erreur réseau");
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -58,8 +77,9 @@ export default function AssignmentPage({
         type="file"
         accept=".pdf,.zip"
         onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-        className="block mb-4"
+        className="block mb-2"
       />
+      {file && <p className="mb-2 font-medium text-green-700">{file.name}</p>}
 
       <button
         onClick={handleSubmit}
@@ -70,7 +90,13 @@ export default function AssignmentPage({
       </button>
 
       {message && (
-        <p className="mt-4 font-semibold text-green-700">{message}</p>
+        <p
+          className={`mt-4 font-semibold ${
+            error ? "text-red-700" : "text-green-700"
+          }`}
+        >
+          {message}
+        </p>
       )}
     </div>
   );

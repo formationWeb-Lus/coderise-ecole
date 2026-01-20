@@ -234,6 +234,7 @@ enum Role {
   ADMIN
 }
 
+
 enum ExerciseType {
   TEXT
   QCM
@@ -242,6 +243,7 @@ enum ExerciseType {
 
 enum SubmissionStatus {
   PENDING
+  SUBMITTED  // ✅ ajouter ici
   GRADED
   LATE
 }

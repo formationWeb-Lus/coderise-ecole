@@ -4,15 +4,16 @@ import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Upload, FileText } from "lucide-react";
 
+
 interface Props {
   userId: number;
+  lessonId: number;
 }
+
 
 export default function AssignmentClient({ userId }: Props) {
   const params = useParams();
-
-  const lessonIdParam = params?.lessonId;
-  const lessonId = lessonIdParam ? Number(lessonIdParam) : NaN;
+  const lessonId = Number(params?.lessonId);
 
   if (!lessonId || isNaN(lessonId)) {
     return (
@@ -47,35 +48,54 @@ export default function AssignmentClient({ userId }: Props) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("lessonId", lessonId.toString());
-    formData.append("comment", comment);
-
     setLoading(true);
     setMessage("");
     setError(false);
 
     try {
-      const res = await fetch("/api/assignments/submit", {
-        method: "POST",
-        body: formData,
-      });
+      // 🔹 Convertir le fichier en Base64
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
 
-      const data = await res.json();
+      reader.onload = async () => {
+        const base64Data = (reader.result as string).split(",")[1];
 
-      if (!res.ok) {
-        setMessage(data.error || "Erreur lors de la soumission.");
+        // 🔹 Envoyer au backend en JSON
+        const saveRes = await fetch("/api/assignments/submit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lessonId,
+            comment,
+            fileBase64: base64Data,
+            fileName: file.name,
+            fileType: file.type,
+          }),
+        });
+
+        const data = await saveRes.json();
+
+        if (!saveRes.ok) {
+          setMessage(data.error || "Erreur lors de la soumission.");
+          setError(true);
+        } else {
+          setMessage("✅ Devoir soumis avec succès !");
+          setFile(null);
+          setComment("");
+        }
+
+        setLoading(false);
+      };
+
+      reader.onerror = () => {
+        setMessage("Erreur lors de la lecture du fichier.");
         setError(true);
-      } else {
-        setMessage("✅ Devoir soumis avec succès !");
-        setFile(null);
-        setComment("");
-      }
-    } catch {
+        setLoading(false);
+      };
+    } catch (err) {
+      console.error(err);
       setMessage("Erreur réseau.");
       setError(true);
-    } finally {
       setLoading(false);
     }
   };
@@ -109,7 +129,7 @@ export default function AssignmentClient({ userId }: Props) {
         )}
 
         <textarea
-       className="w-full min-h-30 mt-4 p-3 rounded border border-yellow-300 focus:ring-2 focus:ring-yellow-400"
+          className="w-full min-h-30 mt-4 p-3 rounded border border-yellow-300 focus:ring-2 focus:ring-yellow-400"
           placeholder="Commentaire pour le formateur (optionnel)"
           value={comment}
           onChange={(e) => setComment(e.target.value)}
@@ -136,4 +156,3 @@ export default function AssignmentClient({ userId }: Props) {
     </div>
   );
 }
-
