@@ -1,13 +1,23 @@
-export const runtime = "nodejs";
+"use server"; // 🔹 Ce fichier est strictement server-only
 
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SubmissionStatus } from "@prisma/client";
-import { supabaseServer } from "@/lib/supabaseServer"; // 🔹 client serveur sécurisé
+import type { SupabaseClient } from "@supabase/supabase-js";
 
-// 🔹 Sécuriser le nom du fichier
+// 🔹 Client Supabase server-only (dynamic import pour éviter Turbopack crash)
+let supabaseServer: SupabaseClient<any, "public", "public"> | null = null;
+async function getSupabaseServer() {
+  if (!supabaseServer) {
+    const mod = await import("@/lib/supabaseServer");
+    supabaseServer = mod.supabaseServer;
+  }
+  return supabaseServer!;
+}
+
+// 🔹 Fonction pour sécuriser le nom du fichier
 function sanitizeFileName(name: string) {
   return name
     .normalize("NFD")
@@ -15,6 +25,7 @@ function sanitizeFileName(name: string) {
     .replace(/[^a-zA-Z0-9-_.]/g, "_");
 }
 
+// 🔹 Export obligatoire POST asynchrone
 export async function POST(req: Request) {
   try {
     // 1️⃣ Authentification
@@ -42,7 +53,7 @@ export async function POST(req: Request) {
     const lessonId = Number(body.lessonId);
     const studentComment = body.comment?.toString() || "";
 
-    if (!fileBase64 || !fileName) {
+    if (!fileBase64 || !fileName || !fileType) {
       return NextResponse.json({ error: "Fichier manquant" }, { status: 400 });
     }
 
@@ -73,7 +84,9 @@ export async function POST(req: Request) {
     const safeFileName = sanitizeFileName(fileName);
     const filePath = `${user.id}/${lessonId}/${Date.now()}_${safeFileName}`;
 
-    const { error: uploadError } = await supabaseServer.storage
+    const supabase = await getSupabaseServer();
+
+    const { error: uploadError } = await supabase.storage
       .from("assignment")
       .upload(filePath, buffer, { contentType: fileType, upsert: true });
 
@@ -82,7 +95,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: uploadError.message }, { status: 500 });
     }
 
-    const { data, error: urlError } = await supabaseServer.storage
+    const { data, error: urlError } = await supabase.storage
       .from("assignment")
       .createSignedUrl(filePath, 60 * 60); // URL valable 1h
 
@@ -97,7 +110,6 @@ export async function POST(req: Request) {
         fileUrl: data.signedUrl,
         studentComment,
         status: SubmissionStatus.SUBMITTED,
-        
       },
       create: {
         userId: user.id,
