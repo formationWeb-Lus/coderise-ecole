@@ -174,17 +174,22 @@ model AssignmentSubmission {
   id             Int              @id @default(autoincrement())
   userId         Int
   lessonId       Int
-  fileUrl        String
+
+  filePath       String?          // ⬅️ TEMPORAIRE
+  fileUrl        String?          // ⬅️ TEMPORAIRE
+
   status         SubmissionStatus @default(PENDING)
   createdAt      DateTime         @default(now())
   feedback       String?
   score          Int?
   studentComment String?
+
   lesson         Lesson           @relation(fields: [lessonId], references: [id])
   user           User             @relation(fields: [userId], references: [id])
 
   @@unique([userId, lessonId])
 }
+
 
 model Announcement {
   id        Int                @id @default(autoincrement())
