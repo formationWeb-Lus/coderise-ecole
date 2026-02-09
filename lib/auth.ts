@@ -25,12 +25,12 @@ export const authOptions: AuthOptions = {
           },
         });
 
-        if (!user || !user.password) return null;
+        if (!user || !user.password /* || user.isActive === false */)
+          return null;
 
         const isValid = await compare(credentials.password, user.password);
         if (!isValid) return null;
 
-        // ⚠️ TOUT DOIT ÊTRE STABLE (pas de null)
         return {
           id: String(user.id),
           name: user.name,
@@ -45,6 +45,12 @@ export const authOptions: AuthOptions = {
 
   session: {
     strategy: "jwt",
+    maxAge: 60 * 4,     // ⏱️ 4 minutes
+    updateAge: 60,
+  },
+
+  jwt: {
+    maxAge: 60 * 4,
   },
 
   callbacks: {
