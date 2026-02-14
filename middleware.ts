@@ -16,14 +16,17 @@ const roleAccessMap: Record<string, string[]> = {
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // ✅ routes publiques
-  const publicPaths = [
-    "/auth/signin",
-    "/auth/unauthorized",
-    "/api/auth",
-    "/login",
-    "/register",
-  ];
+ const publicPaths = [
+  "/auth/signin",
+  "/auth/unauthorized",
+  "/api/auth",
+  "/login",
+  "/register",
+
+  // ✅ AJOUT IMPORTANT
+  "/api/register",
+  "/api/login",
+];
 
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return NextResponse.next();
