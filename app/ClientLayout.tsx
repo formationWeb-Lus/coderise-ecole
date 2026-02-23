@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { SessionProvider } from "next-auth/react";
+import Script from "next/script";
 import {
   Menu,
   X,
@@ -27,6 +28,15 @@ export default function ClientLayout({
   const [open, setOpen] = useState(false);
   const [unreadAnnouncements, setUnreadAnnouncements] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+   // 🎯 Tracking marketing
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window as any).fbq) {
+      (window as any).fbq("track", "ViewContent", {
+        content_name: "Student Dashboard",
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const loadUnreadAnnouncements = async () => {
@@ -139,6 +149,28 @@ export default function ClientLayout({
   return (
     <SessionProvider>
       {/* 🔒 PROTECTION GLOBALE : auto logout + fermeture onglet */}
+      <Script
+  id="meta-pixel"
+  strategy="afterInteractive"
+  dangerouslySetInnerHTML={{
+    __html: `
+      !function(f,b,e,v,n,t,s)
+      {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+      n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+      if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+      n.queue=[];
+      t=b.createElement(e);t.async=!0;
+      t.src=v;
+      s=b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t,s)
+      }(window, document,'script',
+      'https://connect.facebook.net/en_US/fbevents.js');
+
+      fbq('init', '4331977260409210');
+      fbq('track', 'PageView');
+    `,
+  }}
+/>
       <ActivityWatcher />
 
       <div className="min-h-screen flex bg-gray-100">
