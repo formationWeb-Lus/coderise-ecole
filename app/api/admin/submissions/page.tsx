@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { prisma } from "@/lib/prisma";
 import GradeAssignment from "@/components/GradeAssignment";
 
@@ -23,27 +25,32 @@ export default async function AdminSubmissionsPage() {
             <p>
               <strong>Étudiant :</strong> {s.user.name}
             </p>
+
             <p>
               <strong>Leçon :</strong> {s.lesson.title}
             </p>
+
             <p>
-              <strong>Date :</strong>{" "}
-              {s.createdAt.toLocaleString()}
+              <strong>Date :</strong> {s.createdAt.toLocaleString()}
             </p>
+
             <p>
               <strong>Statut :</strong> {s.status}
             </p>
 
-            <a
-              href={s.fileUrl}
-              target="_blank"
-              className="text-blue-600 underline block mt-2"
-            >
-              📄 Voir le fichier
-            </a>
+            {/* Lien affiché seulement si fichier présent */}
+            {s.fileUrl && (
+              <a
+                href={s.fileUrl}
+                target="_blank"
+                className="text-blue-600 underline block mt-2"
+              >
+                📄 Voir le fichier
+              </a>
+            )}
           </div>
 
-          {/* 🔔 FORMULAIRE DE NOTATION + NOTIFICATION */}
+          {/* Formulaire de notation */}
           <GradeAssignment
             submissionId={s.id}
             studentName={s.user.name ?? "Étudiant"}
