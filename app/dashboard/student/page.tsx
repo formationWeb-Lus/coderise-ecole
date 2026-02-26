@@ -8,18 +8,17 @@ import Image from "next/image";
 import Header from "@/components/HeaderClient";
 import SessionTimer from "@/components/SessionTimer";
 import { SessionDurations } from "@/utils/sessionExpiration";
+
 export default async function StudentDashboardPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) redirect("/auth/signin");
   if (session.user.role !== "STUDENT") redirect("/dashboard");
 
-  // 🔹 Trouver le Student correspondant à l'utilisateur connecté
   const student = await prisma.student.findFirst({
     where: { email: session.user.email ?? undefined },
   });
 
-  // 🔹 Récupérer les cours via studentId
   const studentCourses = student
     ? await prisma.studentCourse.findMany({
         where: { studentId: student.id },
@@ -32,21 +31,54 @@ export default async function StudentDashboardPage() {
       <SessionTimer duration={SessionDurations.LONG} />
       <Header session={session} />
 
-      <main className="pt-24 sm:pt-28 md:pt-32 px-6 pb-6">
+      <main className="pt-24 sm:pt-28 md:pt-32 px-6 pb-12">
+
         {!studentCourses.length ? (
-          <div className="text-center mt-10">
-            <h1 className="text-2xl font-bold text-yellow-800">
-              Bienvenue sur votre Dashboard
+          <div className="max-w-4xl mx-auto text-center">
+
+            <h1 className="text-3xl font-bold text-yellow-700 mb-4">
+              Bienvenue sur votre espace étudiant
             </h1>
-            <p className="text-gray-500 mt-4 mb-6">
-              Vous n’êtes inscrit à aucun cours pour le moment.
+
+            <p className="text-gray-600 mb-8">
+              Découvrez comment fonctionne la plateforme et explorez les formations disponibles.
             </p>
-            <Link href="/dashboard/enrollment">
-              <button className="bg-red-600 text-white font-bold text-lg py-2 px-6 hover:bg-red-700 transition">
-                Voir tous les cours disponibles et vous inscrire
-              </button>
+
+            {/* 🎬 VIDEO */}
+            <div className="w-full aspect-video rounded-xl overflow-hidden shadow-xl mb-8">
+              <iframe
+                src="https://www.youtube.com/embed/6t_VRGyKME0"
+                title="Présentation de la plateforme"
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
+
+            {/* 🔥 BOUTON PREMIUM */}
+            <Link href="/dashboard/enrollment" className="inline-block">
+              <div className="
+                px-10 py-4 
+                text-lg font-bold text-white 
+                rounded-xl
+                bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500
+                shadow-lg
+                hover:shadow-2xl
+                hover:scale-105
+                transition-all duration-300
+                animate-pulse
+              ">
+                🎓 Voir tous les cours disponibles pour vous inscrire
+              </div>
             </Link>
+
+            {/* Texte marketing */}
+            <p className="text-gray-500 mt-6">
+              Cliquez ici pour découvrir toutes les formations et commencer votre apprentissage dès aujourd’hui.
+            </p>
+
           </div>
+
         ) : (
           <>
             <h1 className="text-3xl font-bold mb-6 text-yellow-700">
@@ -92,6 +124,7 @@ export default async function StudentDashboardPage() {
             </div>
           </>
         )}
+
       </main>
     </div>
   );
