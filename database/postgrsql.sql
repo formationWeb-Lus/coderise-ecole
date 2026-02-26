@@ -1,19 +1,14 @@
 INSERT INTO "User" (name, email, password, id, phone, image, role) VALUES
+('Mordred yav', 'mordredyav0@gmail.com', '$2b$10$JFZXgWv73zZPyaQ/oRD27.k7GaItgJ1rc3oz3RbiksAnfpj7A530W', 4, '+243998012295', NULL, 'STUDENT'),
+('Ibrahim WENIBWE', 'wenibwemusaibrahim@gmail.com', '$2b$10$8Lh1NzdRjzgmRmdsI4JWtum/Jkokv4DidW.Is2CvgoljOBaBP3bhW', 5, '+243974197394', NULL, 'STUDENT'),
 ('Alexandre lusa', 'jiresselusa127@gmail.com', '$2b$10$JNwvHEGmqSLNXTqL2hGfneNEuprZ2Si29V8mJTEZtS0US3Mx.jR26', 7, '0995271831', NULL, 'STUDENT'),
-
 ('Raph', 'faraelsam06@gmail.com', '$2b$10$y/7BQ0aoSetmpiGV4sqp0uaSYJqCPufF3JwuzssjcPGS3qNhsmKtS', 8, '0896706412', NULL, 'STUDENT'),
-
 ('mufuankolo', 'mufuankolojames@gmail.com', '$2b$10$YTiB8NqiS1czBzd91VrprOqzkUPhkh1YVF2VX78e59ecEQQBbjsce', 9, '0820803136', NULL, 'STUDENT'),
-
 ('Nounou', 'nounou.luabeya@gmail.com', '$2b$10$NPAl3Mh7M8Xfufh4oeFBQuxV3bwFJReCignNvjWMMpBrjUxFCVYNG', 10, '0821628768', NULL, 'STUDENT'),
-
 ('alexandre', 'jiresselusa17@gmail.com', '$2b$10$FmTE4e8NIrWZwaY/tU0y0uXlpkKmtOkYrtETJKp/8P0.d4lNcDQpq', 11, '0899864831', NULL, 'ADMIN'),
-
 ('Jerome Mata', 'Jeromekeys7@gmail.com', '$2b$10$5jz/fPzmiRCHAxK58hXf2uBH9H4zGNPgLBVfAQMjtPPvDUXjVtpNm', 12, '0825067031', NULL, 'STUDENT'),
-
-('Mukendi', 'augusmukendi@gmail.com', '$2b$10$ktTn.cCW5dNtPvO5Ibm4P.Ey2t0Z.rG6wO71RoYaVfWplfnm0lp66', 13, '0992588151', NULL, 'STUDENT');
-
-
+('Mukendi', 'augusmukendi@gmail.com', '$2b$10$ktTn.cCW5dNtPvO5Ibm4P.Ey2t0Z.rG6wO71RoYaVfWplfnm0lp66', 13, '0992588151', NULL, 'STUDENT')
+ON CONFLICT (id) DO NOTHING;
 
 
 INSERT INTO "StudentCourse" (id, "userId", "courseId", "studentId") VALUES
@@ -305,7 +300,7 @@ VALUES
  'Que les données sont exactes et fiables', 10);
 
 
-INSERT INTO QuizSubmission (id, quizId, userId, score, submittedAt, createdAt, updatedAt)
+INSERT INTO "QuizSubmission" (id, "quizId", "userId", score, "submittedAt", "createdAt", "updatedAt")
 VALUES
 (2, 1, 7, 100, '2026-01-09 08:02:07.739', '2026-01-09 04:22:41.13', '2026-01-09 08:02:07.741'),
 (7, 1, 9, 70, '2026-01-10 16:13:46.546', '2026-01-09 17:20:14.542', '2026-01-10 16:13:46.696');
