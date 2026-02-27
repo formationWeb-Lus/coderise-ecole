@@ -4,19 +4,15 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    // 📥 Récupérer les données envoyées
-    const body = await req.json();
-    const { name, email, password, phone, role } = body;
+    const { name, email, password, phone, role } = await req.json();
 
-    // 🛑 Vérification des champs obligatoires
     if (!name || !password || (!email && !phone)) {
       return NextResponse.json(
-        { error: "Nom, mot de passe et (email ou téléphone) sont requis." },
+        { error: "Nom, mot de passe et (email ou téléphone) requis." },
         { status: 400 }
       );
     }
 
-    // 🔍 Vérifier si l'utilisateur existe déjà
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -33,11 +29,9 @@ export async function POST(req: Request) {
       );
     }
 
-    // 🔐 Hasher le mot de passe
     const hashedPassword = await hash(password, 10);
 
-    // 👤 Créer l'utilisateur
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         name,
         email: email || null,
@@ -47,16 +41,20 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(
-      { message: "Compte créé avec succès." },
-      { status: 201 }
-    );
+    return NextResponse.json(user, { status: 201 });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error("REGISTER ERROR:", error);
 
+    if (error.code === "P2002") {
+      return NextResponse.json(
+        { error: "Email ou téléphone déjà utilisé." },
+        { status: 400 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Erreur serveur. Veuillez réessayer." },
+      { error: "Erreur serveur." },
       { status: 500 }
     );
   }

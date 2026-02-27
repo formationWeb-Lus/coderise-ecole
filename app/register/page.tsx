@@ -2,39 +2,39 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function RegisterPage() {
   const router = useRouter();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
   const [role, setRole] = useState<"STUDENT" | "ADMIN">("STUDENT");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleRegister = async () => {
-    if (!name || !email || !password) {
+    if (!name || !password || (!email && !phone)) {
       setError("Veuillez remplir les champs obligatoires");
       return;
     }
 
     setLoading(true);
     setError("");
-    setSuccess("");
 
     try {
+      // 1️⃣ Créer le compte
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
           email,
-          password,
           phone,
+          password,
           role,
         }),
       });
@@ -45,8 +45,24 @@ export default function RegisterPage() {
         throw new Error(data.error || "Erreur lors de l'inscription");
       }
 
-      setSuccess("Compte créé avec succès ! Redirection...");
-      setTimeout(() => router.push("/auth/signin"), 1500);
+      // 2️⃣ Connexion automatique
+      const login = await signIn("credentials", {
+        identifier: email || phone,
+        password,
+        redirect: false,
+      });
+
+      if (login?.error) {
+        throw new Error("Connexion automatique échouée");
+      }
+
+      // 3️⃣ Redirection directe dashboard
+      if (role === "ADMIN") {
+        router.push("/dashboard/admin");
+      } else {
+        router.push("/dashboard/student");
+      }
+
     } catch (err: any) {
       setError(err.message || "Erreur serveur");
     } finally {
@@ -107,7 +123,6 @@ export default function RegisterPage() {
             />
           </div>
           {error && <div className="error">{error}</div>}
-          {success && <div className="success">{success}</div>}
 
           <button className="submit" onClick={handleRegister} disabled={loading}>
             {loading ? "Création..." : "Créer le compte"}
@@ -123,7 +138,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* 🎨 STYLE IDENTIQUE A LA PAGE LOGIN */}
+      {/* STYLE IDENTIQUE LOGIN */}
       <style jsx>{`
         .auth-page {
           min-height: 100vh;
@@ -183,14 +198,6 @@ export default function RegisterPage() {
           border-radius: 10px;
           border: 1px solid #d1d5db;
           font-size: 14px;
-          transition: border-color 0.2s, box-shadow 0.2s;
-        }
-
-        .field input:focus,
-        .field select:focus {
-          outline: none;
-          border-color: #2563eb;
-          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
         }
 
         .submit {
@@ -203,16 +210,10 @@ export default function RegisterPage() {
           font-weight: 600;
           font-size: 15px;
           cursor: pointer;
-          transition: background 0.2s;
         }
 
         .submit:hover {
           background: #1d4ed8;
-        }
-
-        .submit:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
         }
 
         .error {
@@ -224,20 +225,10 @@ export default function RegisterPage() {
           text-align: center;
         }
 
-        .success {
-          background: #dcfce7;
-          color: #166534;
-          padding: 10px;
-          border-radius: 8px;
-          font-size: 13px;
-          text-align: center;
-        }
-
         .auth-footer {
           margin-top: 22px;
           text-align: center;
           font-size: 14px;
-          color: #374151;
         }
 
         .auth-footer button {
@@ -246,10 +237,6 @@ export default function RegisterPage() {
           color: #2563eb;
           font-weight: 600;
           cursor: pointer;
-        }
-
-        .auth-footer button:hover {
-          text-decoration: underline;
         }
       `}</style>
     </div>
