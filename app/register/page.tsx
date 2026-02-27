@@ -11,13 +11,20 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<"STUDENT" | "ADMIN">("STUDENT");
-  const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMessage("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
+  const handleRegister = async () => {
+    if (!name || !email || !password) {
+      setError("Veuillez remplir les champs obligatoires");
+      return;
+    }
+
     setLoading(true);
+    setError("");
+    setSuccess("");
 
     try {
       const res = await fetch("/api/register", {
@@ -28,106 +35,223 @@ export default function RegisterPage() {
           email,
           password,
           phone,
-          role, // rôle dynamique
+          role,
         }),
       });
 
       const data = await res.json();
 
-      if (res.ok) {
-        setMessage("Compte créé avec succès ! Redirection en cours...");
-
-        setName("");
-        setEmail("");
-        setPassword("");
-        setPhone("");
-        setRole("STUDENT");
-
-        setTimeout(() => {
-          router.push("/dashboard/enrollment");
-        }, 1500);
-      } else {
-        setMessage(data.error || "Erreur lors de la création du compte");
+      if (!res.ok) {
+        throw new Error(data.error || "Erreur lors de l'inscription");
       }
-    } catch (error) {
-      setMessage("Erreur serveur");
-      console.error(error);
+
+      setSuccess("Compte créé avec succès ! Redirection...");
+      setTimeout(() => router.push("/auth/signin"), 1500);
+    } catch (err: any) {
+      setError(err.message || "Erreur serveur");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded shadow-md w-full max-w-md"
-      >
-        <h2 className="text-2xl font-bold mb-6 text-center">
-          Créer un compte
-        </h2>
+    <div className="auth-page">
+      <div className="auth-card">
 
-        {message && (
-          <div className="mb-4 text-center text-blue-600 font-semibold">
-            {message}
+        {/* HEADER */}
+        <div className="auth-header">
+          <h1>Créer un compte</h1>
+          <p>Inscrivez-vous pour accéder à la plateforme</p>
+        </div>
+
+        {/* FORM */}
+        <div className="auth-form">
+
+          <div className="field">
+            <label>Nom</label>
+            <input
+              type="text"
+              placeholder="Votre nom"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
           </div>
-        )}
 
-        <input
-          type="text"
-          placeholder="Nom"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full p-2 mb-4 border rounded"
-          required
-        />
+          <div className="field">
+            <label>Email</label>
+            <input
+              type="email"
+              placeholder="exemple@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 mb-4 border rounded"
-          required
-        />
+          <div className="field">
+            <label>Téléphone</label>
+            <input
+              type="text"
+              placeholder="+243..."
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </div>
 
-        <input
-          type="password"
-          placeholder="Mot de passe"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 mb-4 border rounded"
-          required
-        />
+          <div className="field">
+            <label>Mot de passe</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          {error && <div className="error">{error}</div>}
+          {success && <div className="success">{success}</div>}
 
-        <input
-          type="text"
-          placeholder="Numéro de téléphone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          className="w-full p-2 mb-4 border rounded"
-        />
+          <button className="submit" onClick={handleRegister} disabled={loading}>
+            {loading ? "Création..." : "Créer le compte"}
+          </button>
+        </div>
 
-        {/* Sélection du rôle */}
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value as "STUDENT" | "ADMIN")}
-          className="w-full p-2 mb-6 border rounded bg-white"
-          required
-        >
-          <option value="STUDENT">Étudiant</option>
-          <option value="ADMIN">Administrateur</option>
-        </select>
+        {/* FOOTER */}
+        <div className="auth-footer">
+          Déjà un compte ?{" "}
+          <button onClick={() => router.push("/auth/signin")}>
+            Se connecter
+          </button>
+        </div>
+      </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-blue-500 text-white p-2 rounded
-                     hover:bg-blue-600 transition disabled:opacity-50"
-        >
-          {loading ? "Création en cours..." : "Créer le compte"}
-        </button>
-      </form>
+      {/* 🎨 STYLE IDENTIQUE A LA PAGE LOGIN */}
+      <style jsx>{`
+        .auth-page {
+          min-height: 100vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          background: linear-gradient(135deg, #020617, #0f172a);
+          padding: 20px;
+        }
+
+        .auth-card {
+          background: white;
+          padding: 36px 32px;
+          border-radius: 18px;
+          width: 100%;
+          max-width: 420px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .auth-header {
+          text-align: center;
+          margin-bottom: 24px;
+        }
+
+        .auth-header h1 {
+          font-size: 26px;
+          font-weight: 700;
+          margin-bottom: 6px;
+        }
+
+        .auth-header p {
+          font-size: 14px;
+          color: #6b7280;
+        }
+
+        .auth-form {
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .field {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .field label {
+          font-size: 13px;
+          font-weight: 600;
+          color: #111827;
+        }
+
+        .field input,
+        .field select {
+          padding: 12px 14px;
+          border-radius: 10px;
+          border: 1px solid #d1d5db;
+          font-size: 14px;
+          transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field input:focus,
+        .field select:focus {
+          outline: none;
+          border-color: #2563eb;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+        }
+
+        .submit {
+          margin-top: 8px;
+          padding: 14px;
+          border-radius: 12px;
+          border: none;
+          background: #2563eb;
+          color: white;
+          font-weight: 600;
+          font-size: 15px;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+
+        .submit:hover {
+          background: #1d4ed8;
+        }
+
+        .submit:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+
+        .error {
+          background: #fee2e2;
+          color: #b91c1c;
+          padding: 10px;
+          border-radius: 8px;
+          font-size: 13px;
+          text-align: center;
+        }
+
+        .success {
+          background: #dcfce7;
+          color: #166534;
+          padding: 10px;
+          border-radius: 8px;
+          font-size: 13px;
+          text-align: center;
+        }
+
+        .auth-footer {
+          margin-top: 22px;
+          text-align: center;
+          font-size: 14px;
+          color: #374151;
+        }
+
+        .auth-footer button {
+          border: none;
+          background: none;
+          color: #2563eb;
+          font-weight: 600;
+          cursor: pointer;
+        }
+
+        .auth-footer button:hover {
+          text-decoration: underline;
+        }
+      `}</style>
     </div>
   );
 }

@@ -30,7 +30,7 @@ export default function HomePage() {
           <nav className="hidden md:flex items-center gap-6">
             {/* Commencer gratuitement */}
             <Link
-              href="/login"
+              href="/register"
               className="bg-white text-black font-semibold px-5 py-2 rounded-md hover:bg-gray-200 transition"
             >
               Commencer gratuitement
@@ -59,7 +59,7 @@ export default function HomePage() {
             <nav className="flex flex-col px-4 py-4 gap-4">
               {/* Commencer gratuitement */}
               <Link
-                href="/login"
+                href="/register"
                 onClick={() => setOpen(false)}
                 className="bg-white text-black text-center py-3 rounded-md font-semibold hover:bg-gray-200 transition"
               >
@@ -96,7 +96,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               {/* Commencer gratuitement */}
               <Link
-                href="/login"
+                href="/register"
                 className="bg-white text-black font-bold px-8 py-3 rounded-md hover:bg-gray-200 transition"
               >
                 Commencer gratuitement
