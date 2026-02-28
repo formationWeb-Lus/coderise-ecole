@@ -7,18 +7,34 @@ import { signIn } from "next-auth/react";
 export default function RegisterPage() {
   const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState<"STUDENT" | "ADMIN">("STUDENT");
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+    role: "STUDENT",
+  });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const update = (key: string, value: string) => {
+    setForm({ ...form, [key]: value });
+  };
+
+  const validate = () => {
+    if (form.name.trim().length < 4) return "Nom trop court";
+    if (form.password.length < 6) return "Mot de passe minimum 6 caractères";
+    if (!form.email && !form.phone) return "Email ou téléphone requis";
+    if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) return "Email invalide";
+    if (form.phone && form.phone.length < 10) return "Téléphone invalide";
+    return null;
+  };
+
   const handleRegister = async () => {
-    if (!name || !password || (!email && !phone)) {
-      setError("Veuillez remplir les champs obligatoires");
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -26,45 +42,30 @@ export default function RegisterPage() {
     setError("");
 
     try {
-      // 1️⃣ Créer le compte
+      // 1️⃣ création compte
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          phone,
-          password,
-          role,
-        }),
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
 
-      if (!res.ok) {
-        throw new Error(data.error || "Erreur lors de l'inscription");
-      }
-
-      // 2️⃣ Connexion automatique
+      // 2️⃣ auto login
       const login = await signIn("credentials", {
-        identifier: email || phone,
-        password,
+        identifier: form.email || form.phone,
+        password: form.password,
         redirect: false,
       });
 
-      if (login?.error) {
-        throw new Error("Connexion automatique échouée");
-      }
+      if (login?.error) throw new Error("Connexion automatique échouée");
 
-      // 3️⃣ Redirection directe dashboard
-      if (role === "ADMIN") {
-        router.push("/dashboard/admin");
-      } else {
-        router.push("/dashboard/student");
-      }
+      // 3️⃣ redirection dashboard
+      router.push("/dashboard");
 
-    } catch (err: any) {
-      setError(err.message || "Erreur serveur");
+    } catch (e: any) {
+      setError(e.message || "Erreur serveur");
     } finally {
       setLoading(false);
     }
@@ -74,13 +75,11 @@ export default function RegisterPage() {
     <div className="auth-page">
       <div className="auth-card">
 
-        {/* HEADER */}
         <div className="auth-header">
           <h1>Créer un compte</h1>
           <p>Inscrivez-vous pour accéder à la plateforme</p>
         </div>
 
-        {/* FORM */}
         <div className="auth-form">
 
           <div className="field">
@@ -88,8 +87,8 @@ export default function RegisterPage() {
             <input
               type="text"
               placeholder="Votre nom"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={form.name}
+              onChange={(e) => update("name", e.target.value)}
             />
           </div>
 
@@ -98,8 +97,8 @@ export default function RegisterPage() {
             <input
               type="email"
               placeholder="exemple@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={form.email}
+              onChange={(e) => update("email", e.target.value)}
             />
           </div>
 
@@ -108,8 +107,8 @@ export default function RegisterPage() {
             <input
               type="text"
               placeholder="+243..."
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              value={form.phone}
+              onChange={(e) => update("phone", e.target.value)}
             />
           </div>
 
@@ -118,10 +117,11 @@ export default function RegisterPage() {
             <input
               type="password"
               placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={form.password}
+              onChange={(e) => update("password", e.target.value)}
             />
           </div>
+
           {error && <div className="error">{error}</div>}
 
           <button className="submit" onClick={handleRegister} disabled={loading}>
@@ -129,7 +129,6 @@ export default function RegisterPage() {
           </button>
         </div>
 
-        {/* FOOTER */}
         <div className="auth-footer">
           Déjà un compte ?{" "}
           <button onClick={() => router.push("/auth/signin")}>
@@ -138,7 +137,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* STYLE IDENTIQUE LOGIN */}
       <style jsx>{`
         .auth-page {
           min-height: 100vh;
@@ -192,8 +190,7 @@ export default function RegisterPage() {
           color: #111827;
         }
 
-        .field input,
-        .field select {
+        .field input {
           padding: 12px 14px;
           border-radius: 10px;
           border: 1px solid #d1d5db;

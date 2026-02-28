@@ -1,3 +1,4 @@
+// lib/auth.ts
 import type { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
@@ -12,7 +13,6 @@ export const authOptions: AuthOptions = {
         identifier: { label: "Email ou Téléphone", type: "text" },
         password: { label: "Mot de passe", type: "password" },
       },
-
       async authorize(credentials) {
         if (!credentials?.identifier || !credentials?.password) return null;
 
@@ -25,8 +25,7 @@ export const authOptions: AuthOptions = {
           },
         });
 
-        if (!user || !user.password /* || user.isActive === false */)
-          return null;
+        if (!user || !user.password) return null;
 
         const isValid = await compare(credentials.password, user.password);
         if (!isValid) return null;
@@ -45,12 +44,12 @@ export const authOptions: AuthOptions = {
 
   session: {
     strategy: "jwt",
-    maxAge: 60 * 4,     // ⏱️ 4 minutes
-    updateAge: 60,
+    maxAge: 60 * 60, // 1 heure
+    updateAge: 60,   // Rafraîchit le token toutes les 60 secondes si activité
   },
 
   jwt: {
-    maxAge: 60 * 4,
+    maxAge: 60 * 60, // 1 heure
   },
 
   callbacks: {

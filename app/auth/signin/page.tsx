@@ -7,16 +7,22 @@ import { useRouter } from "next/navigation";
 export default function AuthPage() {
   const router = useRouter();
 
-  // 🔑 Identifiant unique
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const validate = () => {
+    if (!identifier.trim()) return "Entrez email ou téléphone";
+    if (password.length < 4) return "Mot de passe invalide";
+    return null;
+  };
+
   const handleLogin = async () => {
-    if (!identifier || !password) {
-      setError("Veuillez remplir tous les champs");
+    const validationError = validate();
+    if (validationError) {
+      setError(validationError);
       return;
     }
 
@@ -31,12 +37,14 @@ export default function AuthPage() {
       });
 
       if (res?.error) {
-        throw new Error("Identifiants incorrects");
+        throw new Error("Numéro ou mot de passe incorrect. Veuillez réessayer.");
       }
 
+      // 👉 redirection dashboard
       router.push("/dashboard/student");
+
     } catch (err: any) {
-      setError(err.message || "Erreur de connexion");
+      setError(err.message || "Une erreur est survenue. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }
@@ -45,6 +53,7 @@ export default function AuthPage() {
   return (
     <div className="auth-page">
       <div className="auth-card">
+
         {/* HEADER */}
         <div className="auth-header">
           <h1>Connexion</h1>
@@ -53,11 +62,12 @@ export default function AuthPage() {
 
         {/* FORM */}
         <div className="auth-form">
+
           <div className="field">
             <label>Identifiant</label>
             <input
               type="text"
-              placeholder=" téléphone "
+              placeholder="Email ou téléphone"
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
             />
@@ -73,10 +83,9 @@ export default function AuthPage() {
             />
           </div>
 
-          {/* 🔐 Mot de passe oublié */}
           <div className="forgot">
             <button onClick={() => router.push("/login/forgot")}>
-              Mot de passe ou nom d’utilisateur oublié ?
+              Mot de passe oublié ?
             </button>
           </div>
 
@@ -94,9 +103,9 @@ export default function AuthPage() {
             Créer un compte
           </button>
         </div>
+
       </div>
 
-      {/* 🎨 STYLE PROFESSIONNEL */}
       <style jsx>{`
         .auth-page {
           min-height: 100vh;

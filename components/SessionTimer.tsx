@@ -1,41 +1,41 @@
+// components/SessionTimer.tsx
 "use client";
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import {
-  setSessionTimer,
-  checkSessionExpired,
-  SessionDurations,
-} from "@/utils/sessionExpiration";
 
-interface SessionTimerProps {
-  duration?: number; // Durée en secondes, par défaut 2 minutes
-}
+const INACTIVITY_LIMIT = 60 * 60; // 1 heure en secondes
 
-export default function SessionTimer({ duration = SessionDurations.LONG }: SessionTimerProps) {
+export default function SessionTimer() {
   const router = useRouter();
 
   useEffect(() => {
-    // Définir le timer
-    setSessionTimer(duration);
-
-    // Vérifier expiration au chargement
-    if (checkSessionExpired()) {
+    let timer = setTimeout(() => {
       router.push("/auth/signin");
-    }
+    }, INACTIVITY_LIMIT * 1000);
 
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        setSessionTimer(duration);
-      }
+    const resetTimer = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        router.push("/auth/signin");
+      }, INACTIVITY_LIMIT * 1000);
     };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("mousemove", resetTimer);
+    window.addEventListener("mousedown", resetTimer);
+    window.addEventListener("keypress", resetTimer);
+    window.addEventListener("scroll", resetTimer);
+    window.addEventListener("touchstart", resetTimer);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      clearTimeout(timer);
+      window.removeEventListener("mousemove", resetTimer);
+      window.removeEventListener("mousedown", resetTimer);
+      window.removeEventListener("keypress", resetTimer);
+      window.removeEventListener("scroll", resetTimer);
+      window.removeEventListener("touchstart", resetTimer);
     };
-  }, [router, duration]);
+  }, [router]);
 
-  return null; // composant invisible
+  return null;
 }
