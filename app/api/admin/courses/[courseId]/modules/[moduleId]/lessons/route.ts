@@ -1,71 +1,51 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// GET lessons by module
+type Params = {
+  moduleId: string;
+};
+
 export async function GET(
   req: Request,
-  { params }: { params: { moduleId: string } }
+  { params }: { params: Params }
 ) {
-  try {
-    const moduleId = Number(params.moduleId);
+  const moduleId = Number(params.moduleId);
 
-    if (isNaN(moduleId)) {
-      return NextResponse.json(
-        { error: "moduleId invalide" },
-        { status: 400 }
-      );
-    }
-
-    const lessons = await prisma.lesson.findMany({
-      where: { moduleId },
-      orderBy: { order: "asc" },
-    });
-
-    return NextResponse.json(lessons);
-  } catch (error) {
-    console.error("GET LESSONS ERROR:", error);
+  if (isNaN(moduleId)) {
     return NextResponse.json(
-      { error: "Erreur récupération lessons" },
-      { status: 500 }
+      { error: "moduleId invalide" },
+      { status: 400 }
     );
   }
+
+  const lessons = await prisma.lesson.findMany({
+    where: { moduleId },
+    orderBy: { order: "asc" },
+  });
+
+  return NextResponse.json(lessons);
 }
 
-// POST lesson
 export async function POST(
   req: Request,
-  { params }: { params: { moduleId: string } }
+  { params }: { params: Params }
 ) {
-  try {
-    const moduleId = Number(params.moduleId);
-    const body = await req.json();
+  const moduleId = Number(params.moduleId);
+  const body = await req.json();
 
-    const { title, content, order } = body;
+  const { title, content, order } = body;
 
-    if (!title || !content) {
-      return NextResponse.json(
-        { error: "title et content requis" },
-        { status: 400 }
-      );
-    }
+  const lesson = await prisma.lesson.create({
+    data: {
+      title,
+      content,
+      moduleId,
+      order: order ?? 1,
+    },
+  });
 
-    const lesson = await prisma.lesson.create({
-      data: {
-        title,
-        content,
-        moduleId,
-        order: order ?? 1,
-      },
-    });
-
-    return NextResponse.json(lesson, { status: 201 });
-  } catch (error) {
-    console.error("CREATE LESSON ERROR:", error);
-    return NextResponse.json(
-      { error: "Erreur création lesson" },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(lesson, { status: 201 });
 }
