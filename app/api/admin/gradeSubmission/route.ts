@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
@@ -12,40 +13,42 @@ export async function POST(req: Request) {
       );
     }
 
-    // ✅ TRANSACTION = GARANTIE
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
 
-      // 1️⃣ Update submission
-      const submission = await tx.assignmentSubmission.update({
-        where: { id: submissionId },
-        data: {
-          score,
-          feedback,
-          status: "GRADED",
-        },
-        include: {
-          lesson: true,
-        },
-      });
+        const submission = await tx.assignmentSubmission.update({
+          where: { id: submissionId },
+          data: {
+            score,
+            feedback,
+            status: "GRADED",
+          },
+          include: {
+            lesson: true,
+          },
+        });
 
-      // 2️⃣ Create notification
-      await tx.notification.create({
-        data: {
-          userId: submission.userId,
-          title: "📘 Devoir noté",
-          message: `Votre devoir "${submission.lesson.title}" a été corrigé.
+        await tx.notification.create({
+          data: {
+            userId: submission.userId,
+            title: "📘 Devoir noté",
+            message: `Votre devoir "${submission.lesson.title}" a été corrigé.
 Score : ${score}/100.
 Vous pouvez consulter vos notes dans votre portail.`,
-        },
-      });
+          },
+        });
 
-      return submission;
-    });
+        return submission;
+      }
+    );
 
     return NextResponse.json({ success: true, submission: result });
 
   } catch (error) {
     console.error("GRADE ERROR:", error);
-    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Erreur serveur" },
+      { status: 500 }
+    );
   }
 }
