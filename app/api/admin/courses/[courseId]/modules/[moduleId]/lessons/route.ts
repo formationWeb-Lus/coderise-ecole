@@ -3,51 +3,50 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// 🔹 GET → Récupérer toutes les leçons d'un module
+// GET lessons by module
 export async function GET(
   req: Request,
-  { params }: { params: { courseId: string; moduleId: string } }
+  { params }: { params: { moduleId: string } }
 ) {
   try {
-    const { moduleId } = params;
+    const moduleId = Number(params.moduleId);
+
+    if (isNaN(moduleId)) {
+      return NextResponse.json(
+        { error: "moduleId invalide" },
+        { status: 400 }
+      );
+    }
 
     const lessons = await prisma.lesson.findMany({
-      where: { moduleId: Number(moduleId) },
+      where: { moduleId },
       orderBy: { order: "asc" },
-      select: {
-        id: true,
-        title: true,
-        description: true,
-        videoUrl: true,
-        pdfUrl: true,
-        order: true,
-      },
     });
 
-    return NextResponse.json(lessons, { status: 200 });
+    return NextResponse.json(lessons);
   } catch (error) {
     console.error("GET LESSONS ERROR:", error);
     return NextResponse.json(
-      { error: "Erreur récupération des lessons" },
+      { error: "Erreur récupération lessons" },
       { status: 500 }
     );
   }
 }
 
-// 🔹 POST → Créer une nouvelle leçon
+// POST lesson
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string; moduleId: string } }
+  { params }: { params: { moduleId: string } }
 ) {
   try {
-    const { moduleId } = params;
+    const moduleId = Number(params.moduleId);
     const body = await req.json();
 
-    const { title, content, description, videoUrl, pdfUrl, order } = body;
+    const { title, content, order } = body;
 
     if (!title || !content) {
       return NextResponse.json(
-        { error: "title et content sont requis" },
+        { error: "title et content requis" },
         { status: 400 }
       );
     }
@@ -56,11 +55,8 @@ export async function POST(
       data: {
         title,
         content,
-        description: description ?? null,
-        videoUrl: videoUrl ?? null,
-        pdfUrl: pdfUrl ?? null,
-        order: typeof order === "number" ? order : 1,
-        moduleId: Number(moduleId),
+        moduleId,
+        order: order ?? 1,
       },
     });
 
@@ -68,7 +64,7 @@ export async function POST(
   } catch (error) {
     console.error("CREATE LESSON ERROR:", error);
     return NextResponse.json(
-      { error: "Erreur création de la lesson" },
+      { error: "Erreur création lesson" },
       { status: 500 }
     );
   }
