@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 // 🔹 GET → Récupérer toutes les leçons d'un module
 export async function GET(
   req: Request,
-  context: { params: Promise<{ courseId: string; moduleId: string }> }
+  { params }: { params: { courseId: string; moduleId: string } }
 ) {
   try {
-    // Unwrap params car c'est une Promise
-    const { moduleId } = await context.params;
+    const { moduleId } = params;
 
     const lessons = await prisma.lesson.findMany({
       where: { moduleId: Number(moduleId) },
@@ -36,15 +37,14 @@ export async function GET(
 // 🔹 POST → Créer une nouvelle leçon
 export async function POST(
   req: Request,
-  context: { params: Promise<{ courseId: string; moduleId: string }> }
+  { params }: { params: { courseId: string; moduleId: string } }
 ) {
   try {
-    const { moduleId } = await context.params;
+    const { moduleId } = params;
     const body = await req.json();
 
     const { title, content, description, videoUrl, pdfUrl, order } = body;
 
-    // Validation minimale
     if (!title || !content) {
       return NextResponse.json(
         { error: "title et content sont requis" },
@@ -73,4 +73,3 @@ export async function POST(
     );
   }
 }
-

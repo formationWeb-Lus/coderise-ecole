@@ -1,38 +1,81 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-interface Params {
-  courseId: string;
+export const dynamic = "force-dynamic";
+
+// 🔹 GET modules by courseId
+export async function GET(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
+  try {
+    const { courseId } = params;
+
+    if (!courseId) {
+      return NextResponse.json(
+        { error: "courseId manquant" },
+        { status: 400 }
+      );
+    }
+
+    const courseIdNumber = Number(courseId);
+
+    if (isNaN(courseIdNumber)) {
+      return NextResponse.json(
+        { error: "courseId invalide" },
+        { status: 400 }
+      );
+    }
+
+    const modules = await prisma.module.findMany({
+      where: { courseId: courseIdNumber },
+      orderBy: { order: "asc" },
+    });
+
+    return NextResponse.json(modules);
+  } catch (error) {
+    console.error("GET MODULES ERROR:", error);
+    return NextResponse.json(
+      { error: "Erreur récupération modules" },
+      { status: 500 }
+    );
+  }
 }
 
-export async function GET(req: Request, context: { params: Params | Promise<Params> }) {
-  const resolvedParams = await context.params;
-  const { courseId } = resolvedParams;
+// 🔹 CREATE module
+export async function POST(
+  req: Request,
+  { params }: { params: { courseId: string } }
+) {
+  try {
+    const { courseId } = params;
 
-  if (!courseId) return NextResponse.json({ error: "courseId manquant" }, { status: 400 });
+    const courseIdNumber = Number(courseId);
 
-  const courseIdNumber = Number(courseId);
-  if (isNaN(courseIdNumber)) return NextResponse.json({ error: "courseId invalide" }, { status: 400 });
+    if (isNaN(courseIdNumber)) {
+      return NextResponse.json(
+        { error: "courseId invalide" },
+        { status: 400 }
+      );
+    }
 
-  const modules = await prisma.module.findMany({
-    where: { courseId: courseIdNumber },
-    orderBy: { order: "asc" },
-  });
+    const body = await req.json();
+    const { title, order } = body;
 
-  return NextResponse.json(modules);
-}
+    const newModule = await prisma.module.create({
+      data: {
+        courseId: courseIdNumber,
+        title,
+        order,
+      },
+    });
 
-export async function POST(req: Request, context: { params: Params | Promise<Params> }) {
-  const resolvedParams = await context.params;
-  const { courseId } = resolvedParams;
-
-  const courseIdNumber = Number(courseId);
-  const body = await req.json();
-  const { title, order } = body;
-
-  const newModule = await prisma.module.create({
-    data: { courseId: courseIdNumber, title, order },
-  });
-
-  return NextResponse.json(newModule, { status: 201 });
+    return NextResponse.json(newModule, { status: 201 });
+  } catch (error) {
+    console.error("CREATE MODULE ERROR:", error);
+    return NextResponse.json(
+      { error: "Erreur création module" },
+      { status: 500 }
+    );
+  }
 }

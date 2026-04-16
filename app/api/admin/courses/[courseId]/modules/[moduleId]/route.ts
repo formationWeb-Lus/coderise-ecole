@@ -1,37 +1,75 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(req: Request, { params }: any) {
-  const { moduleId } = params;
+export const dynamic = "force-dynamic";
 
-  const moduleData = await prisma.module.findUnique({
-    where: { id: Number(moduleId) },
-  });
+// 🔹 GET
+export async function GET(
+  req: Request,
+  { params }: { params: { moduleId: string } }
+) {
+  try {
+    const { moduleId } = params;
 
-  return NextResponse.json(moduleData);
+    const moduleData = await prisma.module.findUnique({
+      where: { id: Number(moduleId) },
+    });
+
+    return NextResponse.json(moduleData);
+  } catch (error) {
+    console.error("GET MODULE ERROR:", error);
+    return NextResponse.json(
+      { error: "Erreur récupération module" },
+      { status: 500 }
+    );
+  }
 }
 
-export async function PUT(req: Request, { params }: any) {
-  const { moduleId } = params;
-  const body = await req.json();
+// 🔹 PUT
+export async function PUT(
+  req: Request,
+  { params }: { params: { moduleId: string } }
+) {
+  try {
+    const { moduleId } = params;
+    const body = await req.json();
 
-  const updated = await prisma.module.update({
-    where: { id: Number(moduleId) },
-    data: {
-      title: body.title,
-      order: body.order,
-    },
-  });
+    const updated = await prisma.module.update({
+      where: { id: Number(moduleId) },
+      data: {
+        title: body.title,
+        order: body.order,
+      },
+    });
 
-  return NextResponse.json(updated);
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("UPDATE MODULE ERROR:", error);
+    return NextResponse.json(
+      { error: "Erreur mise à jour module" },
+      { status: 500 }
+    );
+  }
 }
 
-export async function DELETE(req: Request, { params }: any) {
-  const { moduleId } = params;
+// 🔹 DELETE
+export async function DELETE(
+  req: Request,
+  { params }: { params: { moduleId: string } }
+) {
+  try {
+    const { moduleId } = params;
 
-  await prisma.module.delete({
-    where: { id: Number(moduleId) },
-  });
+    await prisma.module.delete({
+      where: { id: Number(moduleId) },
+    });
 
-  return NextResponse.json({ message: "Module supprimé" });
+    return NextResponse.json({ message: "Module supprimé" });
+  } catch (error) {
+    console.error("DELETE MODULE ERROR:", error);
+    return NextResponse.json(
+      { error: "Erreur suppression module" },
+      { status: 500 }
+    );
+  }
 }
