@@ -1,17 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function EnrollmentPage() {
   const courses = await prisma.course.findMany({
     include: {
-      studentCourses: true, // 👥 pour compter les étudiants
+      studentCourses: true,
     },
     orderBy: { createdAt: "desc" },
   });
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-10">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Enrôlement aux cours</h1>
         <p className="text-gray-600 mt-2">
@@ -19,7 +20,6 @@ export default async function EnrollmentPage() {
         </p>
       </div>
 
-      {/* Cartes */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {courses.map((course) => (
           <Link
@@ -28,7 +28,6 @@ export default async function EnrollmentPage() {
             className="group rounded-xl border bg-white overflow-hidden
                        hover:shadow-lg transition hover:-translate-y-1"
           >
-            {/* Image */}
             {course.imageUrl ? (
               <img
                 src={course.imageUrl}
@@ -41,7 +40,6 @@ export default async function EnrollmentPage() {
               </div>
             )}
 
-            {/* Contenu */}
             <div className="p-5">
               <h2 className="text-xl font-semibold group-hover:text-blue-600">
                 {course.title}
