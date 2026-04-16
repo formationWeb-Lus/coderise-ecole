@@ -1,19 +1,30 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(
   req: Request,
-  context: {
-    params: Promise<{
+  { params }: {
+    params: {
       courseId: string;
       moduleId: string;
       lessonId: string;
-    }>;
+    };
   }
 ) {
   try {
-    const { lessonId } = await context.params;
-    const { question, answer, type, points, deadline, quizId, choices } = await req.json();
+    const { lessonId } = params;
+
+    const {
+      question,
+      answer,
+      type,
+      points,
+      deadline,
+      quizId,
+      choices,
+    } = await req.json();
 
     if (!question || !type) {
       return NextResponse.json(
@@ -27,11 +38,11 @@ export async function POST(
         lessonId: Number(lessonId),
         question,
         answer,
-        type, // TEXT | QCM | BOOLEAN
+        type,
         points: points ?? 10,
         deadline: deadline ? new Date(deadline) : new Date(),
-        quizId: quizId ? Number(quizId) : null, // 🔹 ici on associe à un quiz si sélectionné
-        choices: choices || null,               // 🔹 pour les QCM
+        quizId: quizId ? Number(quizId) : null,
+        choices: choices || null,
       },
     });
 
