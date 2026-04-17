@@ -4,20 +4,19 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 
 interface LessonDetailPageProps {
-  params: Promise<{ lessonId: string }>;
+  params: { lessonId: string };
 }
 
 export default async function LessonDetailPage({
   params,
 }: LessonDetailPageProps) {
-  const { lessonId } = await params;
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) redirect("/auth/signin");
   if (session.user.role !== "STUDENT") redirect("/dashboard");
 
   const userId = Number(session.user.id);
-  const lessonIdNumber = Number(lessonId);
+  const lessonIdNumber = Number(params.lessonId);
 
   const lesson = await prisma.lesson.findUnique({
     where: { id: lessonIdNumber },
@@ -45,7 +44,7 @@ export default async function LessonDetailPage({
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-10">
-      {/* 🧠 En-tête */}
+      {/* HEADER */}
       <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 shadow">
         <h1 className="text-3xl font-bold text-yellow-900">
           {lesson.title}
@@ -58,12 +57,13 @@ export default async function LessonDetailPage({
         )}
       </div>
 
-      {/* 🎥 Vidéo */}
+      {/* VIDEO */}
       {lesson.videoUrl && (
         <div className="bg-white border rounded-xl p-6 shadow">
-          <h2 className="text-xl font-semibold text-gray-800 mb-3">
+          <h2 className="text-xl font-semibold mb-3">
             Vidéo de la leçon
           </h2>
+
           <video
             src={lesson.videoUrl}
             controls
@@ -72,15 +72,17 @@ export default async function LessonDetailPage({
         </div>
       )}
 
-      {/* 📄 PDF */}
+      {/* PDF */}
       {lesson.pdfUrl && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
           <p className="font-semibold text-gray-700">
             Ressource PDF :
           </p>
+
           <a
             href={lesson.pdfUrl}
             target="_blank"
+            rel="noopener noreferrer"
             className="text-green-700 font-semibold underline hover:text-green-900"
           >
             Télécharger le document
@@ -88,7 +90,7 @@ export default async function LessonDetailPage({
         </div>
       )}
 
-      {/* 📝 Exercices */}
+      {/* EXERCICES */}
       <div className="space-y-4">
         <h2 className="text-2xl font-bold text-yellow-900">
           Exercices
@@ -102,14 +104,14 @@ export default async function LessonDetailPage({
 
         {lesson.exercises.map((ex) => {
           const sub = ex.submissions[0];
-          const isCorrect = sub && sub.answer === ex.answer;
+          const isCorrect = sub ? sub.answer === ex.answer : false;
 
           return (
             <div
               key={ex.id}
               className="p-5 rounded-xl border shadow bg-white"
             >
-              <p className="font-semibold text-lg text-gray-800">
+              <p className="font-semibold text-lg">
                 {ex.question}
               </p>
 
@@ -119,19 +121,21 @@ export default async function LessonDetailPage({
 
               <div className="mt-3 space-y-1">
                 <p>
-                  <span className="font-semibold">Votre réponse :</span>{" "}
-                  {sub ? sub.answer : "Non soumis"}
+                  <span className="font-semibold">
+                    Votre réponse :
+                  </span>{" "}
+                  {sub?.answer ?? "Non soumis"}
                 </p>
 
                 {sub && (
                   <p
                     className={`font-semibold ${
-                      isCorrect
-                        ? "text-green-700"
-                        : "text-red-600"
+                      isCorrect ? "text-green-700" : "text-red-600"
                     }`}
                   >
-                    {isCorrect ? "✅ Réponse correcte" : "❌ Réponse incorrecte"}
+                    {isCorrect
+                      ? "✅ Réponse correcte"
+                      : "❌ Réponse incorrecte"}
                   </p>
                 )}
 
@@ -148,7 +152,7 @@ export default async function LessonDetailPage({
                 {sub?.submittedAt && (
                   <p className="text-sm text-gray-500">
                     Soumis le :{" "}
-                    {sub.submittedAt.toLocaleDateString()}
+                    {new Date(sub.submittedAt).toLocaleDateString()}
                   </p>
                 )}
               </div>
@@ -157,7 +161,7 @@ export default async function LessonDetailPage({
         })}
       </div>
 
-      {/* 📦 Devoirs */}
+      {/* DEVOIRS */}
       <div className="space-y-4">
         <h2 className="text-2xl font-bold text-yellow-900">
           Devoirs soumis
@@ -174,16 +178,18 @@ export default async function LessonDetailPage({
             key={a.id}
             className="p-5 rounded-xl border bg-yellow-50 shadow"
           >
-            <p className="font-semibold text-gray-800">
-              Fichier :
-            </p>
-            <a
-              href={a.fileUrl}
-              target="_blank"
-              className="text-green-700 underline font-semibold break-all"
-            >
-              Télécharger le devoir
-            </a>
+            <p className="font-semibold">Fichier :</p>
+
+            {a.filePath && (
+              <a
+                href={a.filePath}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-green-700 underline font-semibold break-all"
+              >
+                Télécharger le devoir
+              </a>
+            )}
 
             <div className="mt-3 space-y-1 text-gray-700">
               <p>
@@ -198,7 +204,9 @@ export default async function LessonDetailPage({
 
               {a.feedback && (
                 <p>
-                  <span className="font-semibold">Feedback :</span>{" "}
+                  <span className="font-semibold">
+                    Feedback :
+                  </span>{" "}
                   {a.feedback}
                 </p>
               )}
@@ -213,7 +221,8 @@ export default async function LessonDetailPage({
               )}
 
               <p className="text-sm text-gray-500">
-                Soumis le : {a.createdAt.toLocaleDateString()}
+                Soumis le :{" "}
+                {new Date(a.createdAt).toLocaleDateString()}
               </p>
             </div>
           </div>
