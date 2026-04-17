@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 // import { getServerSession } from "next-auth"; // si tu utilises next-auth
 
 export async function GET() {
