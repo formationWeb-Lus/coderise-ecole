@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 // GET → récupérer toutes les notifications de l'utilisateur
 export async function GET() {
   const session = await getServerSession(authOptions);

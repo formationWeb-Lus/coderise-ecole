@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const getUserId = () => 1; // remplacer par l'utilisateur connecté
 
 export async function POST(req: NextRequest) {

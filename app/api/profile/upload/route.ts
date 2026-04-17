@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import path from "path";
 import fs from "fs";
 
+
 // Configuration pour la route (Edge/Node)
 export const runtime = "nodejs";       // utiliser Node.js runtime
 export const dynamic = "force-dynamic"; // empêcher le pré-rendu statique
