@@ -7,6 +7,9 @@ import { prisma } from "@/lib/prisma";
 import { SubmissionStatus } from "@prisma/client";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 // 🔹 Supabase server-only (lazy import – safe for Turbopack)
 let supabaseServer: SupabaseClient | null = null;
 async function getSupabaseServer() {
