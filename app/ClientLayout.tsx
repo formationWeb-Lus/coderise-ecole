@@ -81,6 +81,13 @@ export default function ClientLayout({
       </SidebarLink>
 
       <SidebarLink
+        href="/practice"
+        icon={<GraduationCap size={16} />}
+      >
+        pratiques
+      </SidebarLink>
+      
+      <SidebarLink
         href="/dashboard/student/grades"
         icon={<GraduationCap size={16} />}
       >

@@ -210,14 +210,13 @@ NULL),
 'Termes à connaître : téléchargez le PDF et lisez-le attentivement.',
 NULL);
 
-
-INSERT INTO Quiz (id, lessonId, title, "order", createdAt)
+INSERT INTO "Quiz" (id, "lessonId", title, "order", "createdAt")
 VALUES
 (1, 19, 'Les bases du CSS', 0, '2026-01-08 12:51:52.487'),
 (2, 25, 'Comprendre les données', 0, '2026-01-16 16:25:58.113');
 
 
-INSERT INTO Question (id, quizId, question, type, options, answer, points)
+INSERT INTO "Question" (id, "quizId", question, type, options, answer, points)
 VALUES
 (1, 1, 'Quel est le rôle principal du CSS ?', 'QCM',
  '["Ajouter du contenu dynamique","Styliser et mettre en forme les éléments HTML","Créer des bases de données","Envoyer des emails"]',
@@ -305,8 +304,7 @@ VALUES
 (2, 1, 7, 100, '2026-01-09 08:02:07.739', '2026-01-09 04:22:41.13', '2026-01-09 08:02:07.741'),
 (7, 1, 9, 70, '2026-01-10 16:13:46.546', '2026-01-09 17:20:14.542', '2026-01-10 16:13:46.696');
 
-
-INSERT INTO Announcement (id, courseId, title, content, createdAt, videoUrl)
+INSERT INTO "Announcement" (id, "courseId", title, content, "createdAt", "videoUrl")
 VALUES
 (1, 6, 'Comprendre correctement le devoir avant de commencer', 
 'Le CSS Responsive permet à un site web de s’adapter à toutes les tailles d’écran : ordinateurs, tablettes, téléphones.
@@ -322,17 +320,14 @@ Il est parfait pour construire des grilles complexes sans utiliser de frameworks
 'Cette vidéo présente de manière claire et structurée la meilleure façon de naviguer sur l’ensemble de la plateforme de cours.', 
 '2026-01-24 12:40:49.872', 'https://youtu.be/9I58-f4trxs'),
 
-(3, 21, 'utilisation d\'application', 
+(3, 21, 'utilisation d''application', 
 'Cette vidéo présente de manière claire et structurée la meilleure façon de naviguer sur l’ensemble de la plateforme de cours.', 
 '2026-01-24 12:42:25.974', 'https://youtu.be/9I58-f4trxs'),
 
 (4, 6, 'apprendre a soumettre le devoir', 
 'Cette vidéo explique la procédure à suivre pour soumettre le devoir.', 
 '2026-01-24 12:45:12.948', 'https://youtu.be/YOEKNL-26FM');
-
-
-
-INSERT INTO AnnouncementRead (id, userId, announcementId, readAt)
+INSERT INTO "AnnouncementRead" (id, "userId", "announcementId", "readAt")
 VALUES
 (1, 7, 1, '2026-01-08 06:43:59.751'),
 (2, 9, 1, '2026-01-10 16:15:46.265');
