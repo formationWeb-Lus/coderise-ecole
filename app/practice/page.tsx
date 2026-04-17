@@ -10,6 +10,7 @@ const Editor = dynamic(() => import("@monaco-editor/react"), {
 
 export default function PracticePage() {
   const [tab, setTab] = useState("html");
+  const [mode, setMode] = useState<"editor" | "preview">("editor");
 
   const [html, setHtml] = useState("<h1>Bonjour CodeRise</h1>");
   const [css, setCss] = useState("h1 { color: red; }");
@@ -28,30 +29,44 @@ export default function PracticePage() {
       </html>
     `;
     setOutput(src);
+
+    // 🔥 MOBILE EXPERIENCE
+    setMode("preview");
+  };
+
+  const goBack = () => {
+    setMode("editor");
   };
 
   return (
     <div className="h-screen flex flex-col bg-[#0a1b2d] text-white">
 
-      {/* HEADER */}
+      {/* ================= HEADER ================= */}
       <div className="p-3 border-b border-gray-700 flex justify-between items-center">
         <h1 className="font-bold text-sm md:text-lg">
           💻 CodeRise Practice
         </h1>
 
-        <button
-          onClick={runCode}
-          className="bg-green-500 px-3 py-1 md:px-4 md:py-2 rounded text-sm md:text-base"
-        >
-          ▶ Run
-        </button>
+        {mode === "editor" ? (
+          <button
+            onClick={runCode}
+            className="bg-green-500 px-3 py-1 md:px-4 md:py-2 rounded"
+          >
+            ▶ Run
+          </button>
+        ) : (
+          <button
+            onClick={goBack}
+            className="bg-yellow-500 px-3 py-1 md:px-4 md:py-2 rounded"
+          >
+            ⬅ Back
+          </button>
+        )}
       </div>
 
-      {/* MAIN CONTAINER (FIX SCROLL AND FLEX BUG) */}
-      <div className="flex flex-col flex-1 min-h-0">
-
-        {/* ===================== CODE SECTION ===================== */}
-        <div className="w-full flex flex-col border-b border-gray-700 min-h-0">
+      {/* ================= MOBILE MODE ================= */}
+      {mode === "editor" && (
+        <div className="flex flex-col flex-1 min-h-0">
 
           {/* TABS */}
           <div className="flex border-b border-gray-700 text-sm">
@@ -68,8 +83,8 @@ export default function PracticePage() {
             ))}
           </div>
 
-          {/* EDITOR (SCROLL FIX) */}
-          <div className="h-[45vh] overflow-auto">
+          {/* EDITOR FULL SCREEN */}
+          <div className="flex-1 overflow-hidden">
             {tab === "html" && (
               <Editor
                 height="100%"
@@ -96,31 +111,19 @@ export default function PracticePage() {
             )}
           </div>
         </div>
+      )}
 
-        {/* ===================== PREVIEW SECTION ===================== */}
-        <div className="flex flex-col flex-1 min-h-0">
-
-          {/* EXERCISE */}
-          <div className="p-3 border-b border-gray-700 text-sm">
-            <h2 className="font-semibold mb-1">🧪 Exercice</h2>
-            <p>
-              Crée un bouton rouge qui affiche "Bonjour RDC" quand on clique dessus.
-            </p>
-          </div>
-
-          {/* PREVIEW (SCROLL FIX IMPORTANT) */}
-          <div className="flex-1 min-h-0 overflow-auto bg-white">
-            <iframe
-              srcDoc={output}
-              title="preview"
-              sandbox="allow-scripts"
-              className="w-full h-full"
-            />
-          </div>
-
+      {/* ================= PREVIEW FULL SCREEN ================= */}
+      {mode === "preview" && (
+        <div className="flex-1 bg-white">
+          <iframe
+            srcDoc={output}
+            title="preview"
+            sandbox="allow-scripts"
+            className="w-full h-full"
+          />
         </div>
-
-      </div>
+      )}
     </div>
   );
 }
