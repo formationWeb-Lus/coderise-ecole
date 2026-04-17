@@ -1,23 +1,21 @@
-"use server"; // server-only
-
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { SubmissionStatus } from "@prisma/client";
-import type { SupabaseClient } from "@supabase/supabase-js";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// 🔹 Supabase server-only (lazy import – safe for Turbopack)
-let supabaseServer: SupabaseClient | null = null;
+// 🔹 Supabase lazy load
+let supabaseServer: any = null;
+
 async function getSupabaseServer() {
   if (!supabaseServer) {
     const mod = await import("@/lib/supabaseServer");
     supabaseServer = mod.supabaseServer;
   }
-  return supabaseServer!;
+  return supabaseServer;
 }
 
 // 🔹 Secure filename
