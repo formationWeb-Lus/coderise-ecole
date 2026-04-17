@@ -1,20 +1,24 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(
   req: Request,
-  { params }: {
-    params: {
-      courseId: string;
-      moduleId: string;
-      lessonId: string;
-    };
-  }
+  context: { params: { courseId: string; moduleId: string; lessonId: string } }
 ) {
   try {
-    const { lessonId } = params;
+    const lessonId = Number(context.params.lessonId);
+
+    if (isNaN(lessonId)) {
+      return NextResponse.json(
+        { error: "lessonId invalide" },
+        { status: 400 }
+      );
+    }
+
+    const body = await req.json();
 
     const {
       question,
@@ -24,7 +28,7 @@ export async function POST(
       deadline,
       quizId,
       choices,
-    } = await req.json();
+    } = body;
 
     if (!question || !type) {
       return NextResponse.json(
@@ -35,7 +39,7 @@ export async function POST(
 
     const exercise = await prisma.exercise.create({
       data: {
-        lessonId: Number(lessonId),
+        lessonId,
         question,
         answer,
         type,
@@ -49,6 +53,7 @@ export async function POST(
     return NextResponse.json(exercise, { status: 201 });
   } catch (error) {
     console.error("CREATE EXERCISE ERROR:", error);
+
     return NextResponse.json(
       { error: "Erreur création exercice" },
       { status: 500 }
