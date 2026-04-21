@@ -6,10 +6,10 @@ export const dynamic = "force-dynamic";
 // 🔹 GET modules by courseId
 export async function GET(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const { courseId } = params;
+    const { courseId } = await params; // ✅ IMPORTANT
 
     if (!courseId) {
       return NextResponse.json(
@@ -45,10 +45,10 @@ export async function GET(
 // 🔹 CREATE module
 export async function POST(
   req: Request,
-  { params }: { params: { courseId: string } }
+  { params }: { params: Promise<{ courseId: string }> }
 ) {
   try {
-    const { courseId } = params;
+    const { courseId } = await params; // ✅ IMPORTANT
 
     const courseIdNumber = Number(courseId);
 

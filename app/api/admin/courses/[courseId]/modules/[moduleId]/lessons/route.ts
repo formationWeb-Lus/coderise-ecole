@@ -10,12 +10,14 @@ type Params = {
 
 export async function GET(
   req: Request,
-  { params }: { params: Params }
+  { params }: { params: Promise<Params> }
 ) {
   try {
-    const moduleId = parseInt(params.moduleId, 10);
+    const { moduleId } = await params; // ✅ FIX IMPORTANT
 
-    if (isNaN(moduleId)) {
+    const moduleIdNumber = parseInt(moduleId, 10);
+
+    if (isNaN(moduleIdNumber)) {
       return NextResponse.json(
         { error: "moduleId invalide" },
         { status: 400 }
@@ -23,7 +25,7 @@ export async function GET(
     }
 
     const lessons = await prisma.lesson.findMany({
-      where: { moduleId },
+      where: { moduleId: moduleIdNumber },
       orderBy: { order: "asc" },
     });
 
@@ -39,19 +41,28 @@ export async function GET(
 
 export async function POST(
   req: Request,
-  { params }: { params: Params }
+  { params }: { params: Promise<Params> }
 ) {
   try {
-    const moduleId = parseInt(params.moduleId, 10);
-    const body = await req.json();
+    const { moduleId } = await params; // ✅ FIX IMPORTANT
 
+    const moduleIdNumber = parseInt(moduleId, 10);
+
+    if (isNaN(moduleIdNumber)) {
+      return NextResponse.json(
+        { error: "moduleId invalide" },
+        { status: 400 }
+      );
+    }
+
+    const body = await req.json();
     const { title, content, order } = body;
 
     const lesson = await prisma.lesson.create({
       data: {
         title,
         content,
-        moduleId,
+        moduleId: moduleIdNumber,
         order: order ?? 1,
       },
     });

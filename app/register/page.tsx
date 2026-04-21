@@ -15,34 +15,70 @@ export default function RegisterPage() {
     role: "STUDENT",
   });
 
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    password: "",
+  });
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const update = (key: string, value: string) => {
     setForm({ ...form, [key]: value });
+    validateField(key, value);
   };
 
+  // 🔥 FIELD VALIDATION
+  const validateField = (key: string, value: string) => {
+    let message = "";
+
+    if (key === "name") {
+      if (!value.trim()) message = "Nom requis";
+      else if (value.trim().length < 4) message = "Nom trop court";
+    }
+
+    if (key === "email") {
+      if (value && !/^\S+@\S+\.\S+$/.test(value)) message = "Email invalide";
+    }
+
+    if (key === "phone") {
+      if (value && value.length < 10) message = "Téléphone invalide";
+    }
+
+    if (key === "password") {
+      if (!value.trim()) message = "Mot de passe requis";
+      else if (value.length < 6) message = "Minimum 6 caractères";
+    }
+
+    setErrors((prev) => ({ ...prev, [key]: message }));
+    return message === "";
+  };
+
+  // 🔥 FORM VALIDATION
   const validate = () => {
-    if (form.name.trim().length < 4) return "Nom trop court";
-    if (form.password.length < 6) return "Mot de passe minimum 6 caractères";
-    if (!form.email && !form.phone) return "Email ou téléphone requis";
-    if (form.email && !/^\S+@\S+\.\S+$/.test(form.email)) return "Email invalide";
-    if (form.phone && form.phone.length < 10) return "Téléphone invalide";
-    return null;
+    const a = validateField("name", form.name);
+    const b = validateField("email", form.email);
+    const c = validateField("phone", form.phone);
+    const d = validateField("password", form.password);
+
+    if (!form.email && !form.phone) {
+      setError("Email ou téléphone requis");
+      return false;
+    }
+
+    return a && b && c && d;
   };
 
   const handleRegister = async () => {
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-
-    setLoading(true);
     setError("");
 
+    if (!validate()) return;
+
+    setLoading(true);
+
     try {
-      // 1️⃣ création compte
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -52,7 +88,6 @@ export default function RegisterPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
 
-      // 2️⃣ auto login
       const login = await signIn("credentials", {
         identifier: form.email || form.phone,
         password: form.password,
@@ -61,9 +96,7 @@ export default function RegisterPage() {
 
       if (login?.error) throw new Error("Connexion automatique échouée");
 
-      // 3️⃣ redirection dashboard
       router.push("/dashboard");
-
     } catch (e: any) {
       setError(e.message || "Erreur serveur");
     } finally {
@@ -82,49 +115,68 @@ export default function RegisterPage() {
 
         <div className="auth-form">
 
+          {/* NAME */}
           <div className="field">
             <label>Nom</label>
             <input
-              type="text"
-              placeholder="Votre nom"
               value={form.name}
               onChange={(e) => update("name", e.target.value)}
+              onBlur={(e) => validateField("name", e.target.value)}
+              className={errors.name ? "input-error" : ""}
+              placeholder="Votre nom"
             />
+            {errors.name && <span className="error-text">{errors.name}</span>}
           </div>
 
+          {/* EMAIL */}
           <div className="field">
             <label>Email</label>
             <input
-              type="email"
-              placeholder="exemple@email.com"
               value={form.email}
               onChange={(e) => update("email", e.target.value)}
+              onBlur={(e) => validateField("email", e.target.value)}
+              className={errors.email ? "input-error" : ""}
+              placeholder="exemple@email.com"
             />
+            {errors.email && <span className="error-text">{errors.email}</span>}
           </div>
 
+          {/* PHONE */}
           <div className="field">
             <label>Téléphone</label>
             <input
-              type="text"
-              placeholder="+243..."
               value={form.phone}
               onChange={(e) => update("phone", e.target.value)}
+              onBlur={(e) => validateField("phone", e.target.value)}
+              className={errors.phone ? "input-error" : ""}
+              placeholder="+243..."
             />
+            {errors.phone && <span className="error-text">{errors.phone}</span>}
           </div>
 
+          {/* PASSWORD */}
           <div className="field">
             <label>Mot de passe</label>
             <input
               type="password"
-              placeholder="••••••••"
               value={form.password}
               onChange={(e) => update("password", e.target.value)}
+              onBlur={(e) => validateField("password", e.target.value)}
+              className={errors.password ? "input-error" : ""}
+              placeholder="••••••••"
             />
+            {errors.password && (
+              <span className="error-text">{errors.password}</span>
+            )}
           </div>
 
           {error && <div className="error">{error}</div>}
 
-          <button className="submit" onClick={handleRegister} disabled={loading}>
+          <button
+            className="submit"
+            onClick={handleRegister}
+            disabled={loading}
+          >
             {loading ? "Création..." : "Créer le compte"}
           </button>
         </div>
@@ -137,6 +189,7 @@ export default function RegisterPage() {
         </div>
       </div>
 
+      {/* ===== STYLE ===== */}
       <style jsx>{`
         .auth-page {
           min-height: 100vh;
@@ -164,7 +217,6 @@ export default function RegisterPage() {
         .auth-header h1 {
           font-size: 26px;
           font-weight: 700;
-          margin-bottom: 6px;
         }
 
         .auth-header p {
@@ -187,7 +239,6 @@ export default function RegisterPage() {
         .field label {
           font-size: 13px;
           font-weight: 600;
-          color: #111827;
         }
 
         .field input {
@@ -195,6 +246,23 @@ export default function RegisterPage() {
           border-radius: 10px;
           border: 1px solid #d1d5db;
           font-size: 14px;
+          transition: 0.2s;
+        }
+
+        .field input:focus {
+          outline: none;
+          border-color: #2563eb;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+        }
+
+        .input-error {
+          border-color: #ef4444 !important;
+          background: #fff5f5;
+        }
+
+        .error-text {
+          font-size: 12px;
+          color: #ef4444;
         }
 
         .submit {

@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-/* ===== Types ===== */
 interface Course {
   id: string;
   title: string;
@@ -27,7 +26,6 @@ interface Quiz {
 export default function CreateExerciseForm() {
   const router = useRouter();
 
-  /* ===== Sélections ===== */
   const [courses, setCourses] = useState<Course[]>([]);
   const [modules, setModules] = useState<Module[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -38,68 +36,58 @@ export default function CreateExerciseForm() {
   const [lessonId, setLessonId] = useState("");
   const [quizId, setQuizId] = useState("");
 
-  /* ===== Exercice ===== */
   const [question, setQuestion] = useState("");
   const [type, setType] = useState<"TEXT" | "QCM" | "BOOLEAN">("TEXT");
   const [answer, setAnswer] = useState("");
-  const [choices, setChoices] = useState<string[]>(["", "", "", ""]); // pour QCM
+  const [choices, setChoices] = useState<string[]>(["", "", "", ""]);
   const [points, setPoints] = useState(10);
   const [deadline, setDeadline] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  /* ===== Charger les cours ===== */
   useEffect(() => {
     fetch("/api/admin/courses")
       .then((res) => res.json())
       .then(setCourses)
-      .catch(() => setError("Erreur chargement des cours"));
+      .catch(() => setError("Erreur chargement cours"));
   }, []);
 
-  /* ===== Charger les modules selon le cours ===== */
   useEffect(() => {
     if (!courseId) return;
 
     fetch(`/api/admin/courses/${courseId}/modules`)
       .then((res) => res.json())
-      .then(setModules)
-      .catch(() => setError("Erreur chargement des modules"));
+      .then(setModules);
 
     setModuleId("");
     setLessonId("");
-    setLessons([]);
-    setQuizzes([]);
     setQuizId("");
   }, [courseId]);
 
-  /* ===== Charger les leçons selon le module ===== */
   useEffect(() => {
-    if (!courseId || !moduleId) return;
+    if (!moduleId) return;
 
     fetch(`/api/admin/courses/${courseId}/modules/${moduleId}/lessons`)
       .then((res) => res.json())
-      .then(setLessons)
-      .catch(() => setError("Erreur chargement des leçons"));
+      .then(setLessons);
 
     setLessonId("");
-    setQuizzes([]);
     setQuizId("");
-  }, [moduleId, courseId]);
+  }, [moduleId]);
 
-  /* ===== Charger les quizzes selon la leçon ===== */
   useEffect(() => {
     if (!lessonId) return;
 
-    fetch(`/api/admin/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quizzes`)
+    fetch(
+      `/api/admin/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/quizzes`
+    )
       .then((res) => res.json())
-      .then(setQuizzes)
-      .catch(() => setError("Erreur chargement des quizzes"));
+      .then(setQuizzes);
 
     setQuizId("");
   }, [lessonId]);
 
-  /* ===== Soumission ===== */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -116,7 +104,7 @@ export default function CreateExerciseForm() {
       };
 
       if (type === "QCM") {
-        payload.choices = choices.filter((c) => c.trim() !== "");
+        payload.choices = choices.filter((c) => c.trim());
       }
 
       const res = await fetch(
@@ -128,8 +116,7 @@ export default function CreateExerciseForm() {
         }
       );
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.error || "Erreur création exercice");
+      if (!res.ok) throw new Error("Erreur création exercice");
 
       router.push(
         `/dashboard/admin/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}`
@@ -142,104 +129,85 @@ export default function CreateExerciseForm() {
     }
   };
 
+  const inputClass =
+    "w-full bg-[#0f2740] border border-gray-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500";
+
   return (
-    <div className="p-6 max-w-xl">
-      <h1 className="text-2xl font-bold mb-6">Créer un exercice</h1>
+    <div className="min-h-screen bg-[#0a1b2d] text-white p-6 flex justify-center">
+      <div className="w-full max-w-2xl">
 
-      {error && <p className="text-red-600 mb-4">{error}</p>}
+        {/* TITLE */}
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          🧠 Créer un exercice
+        </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* ===== Cours ===== */}
-        <div>
-          <label className="block mb-1">Cours *</label>
+        {error && (
+          <div className="bg-red-500/20 text-red-300 p-3 rounded mb-4">
+            {error}
+          </div>
+        )}
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4 bg-[#0f2740] p-6 rounded-xl border border-gray-700"
+        >
+
+          {/* COURSE */}
           <select
-            className="w-full border px-3 py-2 rounded"
+            className={inputClass}
             value={courseId}
             onChange={(e) => setCourseId(e.target.value)}
-            required
           >
-            <option value="">-- Sélectionner un cours --</option>
+            <option value="">📚 Choisir un cours</option>
             {courses.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.title}
               </option>
             ))}
           </select>
-        </div>
 
-        {/* ===== Module ===== */}
-        <div>
-          <label className="block mb-1">Module *</label>
+          {/* MODULE */}
           <select
-            className="w-full border px-3 py-2 rounded"
+            className={inputClass}
             value={moduleId}
             onChange={(e) => setModuleId(e.target.value)}
             disabled={!courseId}
-            required
           >
-            <option value="">-- Sélectionner un module --</option>
+            <option value="">📦 Choisir un module</option>
             {modules.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.title}
               </option>
             ))}
           </select>
-        </div>
 
-        {/* ===== Leçon ===== */}
-        <div>
-          <label className="block mb-1">Leçon *</label>
+          {/* LESSON */}
           <select
-            className="w-full border px-3 py-2 rounded"
+            className={inputClass}
             value={lessonId}
             onChange={(e) => setLessonId(e.target.value)}
             disabled={!moduleId}
-            required
           >
-            <option value="">-- Sélectionner une leçon --</option>
+            <option value="">📘 Choisir une leçon</option>
             {lessons.map((l) => (
               <option key={l.id} value={l.id}>
                 {l.title}
               </option>
             ))}
           </select>
-        </div>
 
-        {/* ===== Quiz ===== */}
-        <div>
-          <label className="block mb-1">Quiz</label>
-          <select
-            className="w-full border px-3 py-2 rounded"
-            value={quizId}
-            onChange={(e) => setQuizId(e.target.value)}
-            disabled={!lessonId}
-          >
-            <option value="">-- Sélectionner un quiz ou laissez vide --</option>
-            {quizzes.map((q) => (
-              <option key={q.id} value={q.id}>
-                {q.title}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* ===== Question ===== */}
-        <div>
-          <label className="block mb-1">Question *</label>
+          {/* QUESTION */}
           <textarea
-            className="w-full border px-3 py-2 rounded"
+            className={inputClass}
             rows={3}
+            placeholder="✍️ Question"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            required
           />
-        </div>
 
-        {/* ===== Type ===== */}
-        <div>
-          <label className="block mb-1">Type</label>
+          {/* TYPE */}
           <select
-            className="w-full border px-3 py-2 rounded"
+            className={inputClass}
             value={type}
             onChange={(e) => setType(e.target.value as any)}
           >
@@ -247,71 +215,62 @@ export default function CreateExerciseForm() {
             <option value="QCM">QCM</option>
             <option value="BOOLEAN">Vrai / Faux</option>
           </select>
-        </div>
 
-        {/* ===== QCM Choices ===== */}
-        {type === "QCM" && (
-          <div>
-            <label className="block mb-1">Choix (QCM)</label>
-            {choices.map((choice, idx) => (
-              <input
-                key={idx}
-                type="text"
-                placeholder={`Option ${idx + 1}`}
-                className="w-full border px-3 py-2 rounded mb-1"
-                value={choice}
-                onChange={(e) =>
-                  setChoices((prev) => {
-                    const copy = [...prev];
-                    copy[idx] = e.target.value;
-                    return copy;
-                  })
-                }
-              />
-            ))}
-          </div>
-        )}
+          {/* QCM */}
+          {type === "QCM" && (
+            <div className="space-y-2">
+              {choices.map((c, i) => (
+                <input
+                  key={i}
+                  className={inputClass}
+                  placeholder={`Option ${i + 1}`}
+                  value={c}
+                  onChange={(e) =>
+                    setChoices((prev) => {
+                      const copy = [...prev];
+                      copy[i] = e.target.value;
+                      return copy;
+                    })
+                  }
+                />
+              ))}
+            </div>
+          )}
 
-        {/* ===== Réponse ===== */}
-        <div>
-          <label className="block mb-1">Réponse</label>
+          {/* ANSWER */}
           <input
-            className="w-full border px-3 py-2 rounded"
+            className={inputClass}
+            placeholder="Réponse"
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
           />
-        </div>
 
-        {/* ===== Points ===== */}
-        <div>
-          <label className="block mb-1">Points</label>
+          {/* POINTS */}
           <input
             type="number"
-            className="w-full border px-3 py-2 rounded"
+            className={inputClass}
             value={points}
             onChange={(e) => setPoints(Number(e.target.value))}
           />
-        </div>
 
-        {/* ===== Deadline ===== */}
-        <div>
-          <label className="block mb-1">Deadline</label>
+          {/* DEADLINE */}
           <input
             type="datetime-local"
-            className="w-full border px-3 py-2 rounded"
+            className={inputClass}
             value={deadline}
             onChange={(e) => setDeadline(e.target.value)}
           />
-        </div>
 
-        <button
-          type="submit"
-          disabled={loading || !lessonId}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          {loading ? "Création..." : "Créer l’exercice"}
-        </button>
-      </form>
+          {/* BUTTON */}
+          <button
+            type="submit"
+            disabled={loading || !lessonId}
+            className="w-full bg-blue-500 hover:bg-blue-600 transition py-3 rounded-lg font-semibold"
+          >
+            {loading ? "Création..." : "Créer l’exercice"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

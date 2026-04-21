@@ -1,126 +1,190 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
+import { useEffect, useState } from "react";
 
-// 🔥 FIX TypeScript (évite l'erreur module introuvable)
-declare global {
-  interface Window {
-    pyodide: any;
-  }
-}
+const Editor = dynamic(() => import("@monaco-editor/react"), {
+  ssr: false,
+  loading: () => <p className="text-white">Chargement...</p>,
+});
 
-export default function PracticePage() {
-  const pyodideRef = useRef<any>(null);
+export default function PracticeAdvancedPage() {
+  const [tab, setTab] = useState<"html" | "css" | "js" | "python">("html");
+  const [mode, setMode] = useState<"editor" | "preview">("editor");
 
-  const [code, setCode] = useState(`
-name = input("Nom ? ")
-age = input("Age ? ")
-print("Bonjour", name, age)
-`);
+  const [html, setHtml] = useState("<h1>Bonjour CodeRise</h1>");
+  const [css, setCss] = useState("h1 { color: red; }");
+  const [js, setJs] = useState("console.log('Hello');");
+  const [python, setPython] = useState("print('Hello Python')");
 
   const [output, setOutput] = useState("");
-  const [inputValue, setInputValue] = useState("");
-  const [waiting, setWaiting] = useState(false);
+  const [pyodide, setPyodide] = useState<any>(null);
+  const [pyOutput, setPyOutput] = useState("");
 
-  const inputResolveRef = useRef<any>(null);
-
-  // =========================
-  // 🚀 LOAD PYODIDE (SAFE NEXT.JS)
-  // =========================
+  // 🔥 Charger Pyodide côté client uniquement
   useEffect(() => {
-    const loadPyodide = async () => {
-      const pyodideModule = await import("@pyodide/pyodide");
+    const loadPyodideScript = async () => {
+      if ((window as any).loadPyodide) {
+        const py = await (window as any).loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/",
+        });
+        setPyodide(py);
+        return;
+      }
 
-      const pyodide = await pyodideModule.loadPyodide({
-        indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/",
-      });
+      const script = document.createElement("script");
+      script.src =
+        "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js";
+      script.onload = async () => {
+        const py = await (window as any).loadPyodide({
+          indexURL: "https://cdn.jsdelivr.net/pyodide/v0.25.0/full/",
+        });
+        setPyodide(py);
+      };
 
-      pyodideRef.current = pyodide;
+      document.body.appendChild(script);
     };
 
-    loadPyodide();
+    loadPyodideScript();
   }, []);
 
-  // =========================
-  // ▶ RUN PYTHON CODE
-  // =========================
+  // ▶ RUN CODE
   const runCode = async () => {
-    if (!pyodideRef.current) {
-      setOutput("⏳ Pyodide pas encore chargé...");
+    if (tab === "python") {
+      if (!pyodide) {
+        setPyOutput("Chargement de Python...");
+        return;
+      }
+
+      try {
+        const result = await pyodide.runPythonAsync(python);
+        setPyOutput(String(result));
+      } catch (err: any) {
+        setPyOutput(err.toString());
+      }
+
+      setMode("preview");
       return;
     }
 
-    setOutput("");
-    setWaiting(false);
+    const src = `
+      <html>
+        <style>${css}</style>
+        <body>
+          ${html}
+          <script>${js}<\/script>
+        </body>
+      </html>
+    `;
 
-    // 🔥 override input()
-    pyodideRef.current.globals.set("input", (prompt: string) => {
-      setWaiting(true);
-
-      return new Promise((resolve) => {
-        inputResolveRef.current = resolve;
-      });
-    });
-
-    try {
-      await pyodideRef.current.runPythonAsync(code);
-    } catch (err: any) {
-      setOutput(err.message);
-    }
+    setOutput(src);
+    setMode("preview");
   };
 
-  // =========================
-  // 📥 SEND INPUT
-  // =========================
-  const sendInput = () => {
-    if (inputResolveRef.current) {
-      inputResolveRef.current(inputValue);
-      inputResolveRef.current = null;
-    }
-
-    setInputValue("");
-    setWaiting(false);
-  };
+  const goBack = () => setMode("editor");
 
   return (
-    <div className="h-screen bg-black text-green-400 p-4">
+    <div className="h-screen flex flex-col bg-[#0a1b2d] text-white">
+
+      {/* HEADER */}
+      <div className="p-3 border-b border-gray-700 flex justify-between items-center">
+        <h1 className="font-bold text-sm md:text-lg">
+          💻 CodeRise Practice Advanced
+        </h1>
+
+        {mode === "editor" ? (
+          <button
+            onClick={runCode}
+            className="bg-green-500 px-3 py-1 md:px-4 md:py-2 rounded"
+          >
+            ▶ Run
+          </button>
+        ) : (
+          <button
+            onClick={goBack}
+            className="bg-yellow-500 px-3 py-1 md:px-4 md:py-2 rounded"
+          >
+            ⬅ Back
+          </button>
+        )}
+      </div>
 
       {/* EDITOR */}
-      <textarea
-        className="w-full h-60 bg-gray-900 text-white p-2"
-        value={code}
-        onChange={(e) => setCode(e.target.value)}
-      />
+      {mode === "editor" && (
+        <div className="flex flex-col flex-1 min-h-0">
 
-      {/* RUN BUTTON */}
-      <button
-        onClick={runCode}
-        className="bg-green-600 px-4 py-2 mt-2"
-      >
-        ▶ Run Python
-      </button>
+          {/* TABS */}
+          <div className="flex border-b border-gray-700 text-sm">
+            {["html", "css", "js", "python"].map((t) => (
+              <button
+                key={t}
+                onClick={() => setTab(t as any)}
+                className={`flex-1 px-3 py-2 ${
+                  tab === t ? "bg-[#1e3a8a]" : ""
+                }`}
+              >
+                {t.toUpperCase()}
+              </button>
+            ))}
+          </div>
 
-      {/* OUTPUT */}
-      <pre className="mt-4 whitespace-pre-wrap text-yellow-300">
-        {output}
-      </pre>
+          {/* EDITOR */}
+          <div className="flex-1 overflow-hidden">
+            {tab === "html" && (
+              <Editor
+                height="100%"
+                language="html"
+                value={html}
+                onChange={(v) => setHtml(v || "")}
+              />
+            )}
 
-      {/* INPUT BOX */}
-      {waiting && (
-        <div className="mt-4">
-          <input
-            className="text-black p-2"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Tape ta réponse..."
-          />
+            {tab === "css" && (
+              <Editor
+                height="100%"
+                language="css"
+                value={css}
+                onChange={(v) => setCss(v || "")}
+              />
+            )}
 
-          <button
-            onClick={sendInput}
-            className="ml-2 bg-blue-500 px-3 py-2"
-          >
-            Enter
-          </button>
+            {tab === "js" && (
+              <Editor
+                height="100%"
+                language="javascript"
+                value={js}
+                onChange={(v) => setJs(v || "")}
+              />
+            )}
+
+            {tab === "python" && (
+              <Editor
+                height="100%"
+                language="python"
+                value={python}
+                onChange={(v) => setPython(v || "")}
+              />
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* PREVIEW */}
+      {mode === "preview" && (
+        <div className="flex-1 bg-white text-black">
+
+          {tab === "python" ? (
+            <div className="p-4 whitespace-pre-wrap">
+              {pyOutput || "Aucun résultat"}
+            </div>
+          ) : (
+            <iframe
+              srcDoc={output}
+              title="preview"
+              sandbox="allow-scripts"
+              className="w-full h-full"
+            />
+          )}
         </div>
       )}
     </div>

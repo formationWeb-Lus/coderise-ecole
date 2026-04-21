@@ -7,44 +7,68 @@ import { useRouter } from "next/navigation";
 export default function AuthPage() {
   const router = useRouter();
 
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
+  const [form, setForm] = useState({
+    identifier: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState({
+    identifier: "",
+    password: "",
+  });
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const update = (key: string, value: string) => {
+    setForm({ ...form, [key]: value });
+    validateField(key, value);
+  };
+
+  // 🔥 VALIDATION FIELD BY FIELD
+  const validateField = (key: string, value: string) => {
+    let message = "";
+
+    if (key === "identifier") {
+      if (!value.trim()) message = "Email ou téléphone requis";
+    }
+
+    if (key === "password") {
+      if (!value.trim()) message = "Mot de passe requis";
+      else if (value.length < 4) message = "Minimum 4 caractères";
+    }
+
+    setErrors((prev) => ({ ...prev, [key]: message }));
+    return message === "";
+  };
+
   const validate = () => {
-    if (!identifier.trim()) return "Entrez email ou téléphone";
-    if (password.length < 4) return "Mot de passe invalide";
-    return null;
+    const a = validateField("identifier", form.identifier);
+    const b = validateField("password", form.password);
+    return a && b;
   };
 
   const handleLogin = async () => {
-    const validationError = validate();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
+    setError("");
+
+    if (!validate()) return;
 
     setLoading(true);
-    setError("");
 
     try {
       const res = await signIn("credentials", {
-        identifier,
-        password,
+        identifier: form.identifier,
+        password: form.password,
         redirect: false,
       });
 
       if (res?.error) {
-        throw new Error("Numéro ou mot de passe incorrect. Veuillez réessayer.");
+        throw new Error("Identifiants incorrects");
       }
 
-      // 👉 redirection dashboard
       router.push("/dashboard/student");
-
-    } catch (err: any) {
-      setError(err.message || "Une erreur est survenue. Veuillez réessayer.");
+    } catch (e: any) {
+      setError(e.message || "Erreur serveur");
     } finally {
       setLoading(false);
     }
@@ -57,30 +81,40 @@ export default function AuthPage() {
         {/* HEADER */}
         <div className="auth-header">
           <h1>Connexion</h1>
-          <p>Connectez-vous à votre espace personnel</p>
+          <p>Accédez à votre espace étudiant</p>
         </div>
 
         {/* FORM */}
         <div className="auth-form">
 
+          {/* IDENTIFIANT */}
           <div className="field">
             <label>Identifiant</label>
             <input
               type="text"
               placeholder="Email ou téléphone"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              value={form.identifier}
+              onChange={(e) => update("identifier", e.target.value)}
+              className={errors.identifier ? "input-error" : ""}
             />
+            {errors.identifier && (
+              <span className="error-text">{errors.identifier}</span>
+            )}
           </div>
 
+          {/* PASSWORD */}
           <div className="field">
             <label>Mot de passe</label>
             <input
               type="password"
               placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={form.password}
+              onChange={(e) => update("password", e.target.value)}
+              className={errors.password ? "input-error" : ""}
             />
+            {errors.password && (
+              <span className="error-text">{errors.password}</span>
+            )}
           </div>
 
           <div className="forgot">
@@ -91,7 +125,11 @@ export default function AuthPage() {
 
           {error && <div className="error">{error}</div>}
 
-          <button className="submit" onClick={handleLogin} disabled={loading}>
+          <button
+            className="submit"
+            onClick={handleLogin}
+            disabled={loading}
+          >
             {loading ? "Connexion..." : "Se connecter"}
           </button>
         </div>
@@ -103,9 +141,9 @@ export default function AuthPage() {
             Créer un compte
           </button>
         </div>
-
       </div>
 
+      {/* ===== STYLE IDENTIQUE REGISTER ===== */}
       <style jsx>{`
         .auth-page {
           min-height: 100vh;
@@ -164,7 +202,7 @@ export default function AuthPage() {
           border-radius: 10px;
           border: 1px solid #d1d5db;
           font-size: 14px;
-          transition: border-color 0.2s, box-shadow 0.2s;
+          transition: 0.2s;
         }
 
         .field input:focus {
@@ -173,9 +211,18 @@ export default function AuthPage() {
           box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
         }
 
+        .input-error {
+          border-color: #ef4444 !important;
+          background: #fff5f5;
+        }
+
+        .error-text {
+          font-size: 12px;
+          color: #ef4444;
+        }
+
         .forgot {
           text-align: right;
-          margin-top: -4px;
         }
 
         .forgot button {
@@ -184,7 +231,6 @@ export default function AuthPage() {
           font-size: 13px;
           color: #2563eb;
           cursor: pointer;
-          padding: 0;
         }
 
         .forgot button:hover {
@@ -201,7 +247,6 @@ export default function AuthPage() {
           font-weight: 600;
           font-size: 15px;
           cursor: pointer;
-          transition: background 0.2s;
         }
 
         .submit:hover {
