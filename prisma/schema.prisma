@@ -22,7 +22,42 @@ model User {
   notifications         Notification[]
   studentCourses        StudentCourse[]
    quizSubmissions       QuizSubmission[]  // <-- relation inverse
+   codeFiles CodeFile[]
+  folders   CodeFolder[]
 }
+
+model CodeFolder {
+  id        Int        @id @default(autoincrement())
+  name      String
+
+  userId    Int
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  files     CodeFile[]
+}
+
+model CodeFile {
+  id        Int      @id @default(autoincrement())
+  name      String
+
+  html      String   @default("")
+  css       String   @default("")
+  js        String   @default("")
+
+  userId    Int
+  folderId  Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  folder    CodeFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+}
+
 
 model StudentCourse {
   id               Int               @id @default(autoincrement())
