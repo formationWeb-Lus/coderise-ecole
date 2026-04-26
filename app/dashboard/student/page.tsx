@@ -46,14 +46,14 @@ export default async function StudentDashboardPage() {
 
             {/* 🎬 VIDEO */}
             <div className="w-full aspect-video rounded-xl overflow-hidden shadow-xl mb-8">
-              <iframe
-                src="https://www.youtube.com/embed/6t_VRGyKME0"
-                title="Présentation de la plateforme"
-                className="w-full h-full"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
+  <iframe
+    src="https://www.youtube.com/embed/WB7elJawPl4"
+    title="Présentation de la plateforme"
+    className="w-full h-full"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowFullScreen
+  />
+</div>
 
             {/* 🔥 BOUTON PREMIUM */}
             <Link href="/dashboard/enrollment" className="inline-block">
