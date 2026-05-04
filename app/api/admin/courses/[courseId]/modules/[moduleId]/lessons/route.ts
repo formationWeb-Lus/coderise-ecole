@@ -13,7 +13,7 @@ export async function GET(
   { params }: { params: Promise<Params> }
 ) {
   try {
-    const { moduleId } = await params; // ✅ FIX IMPORTANT
+    const { moduleId } = await params;
 
     const moduleIdNumber = parseInt(moduleId, 10);
 
@@ -44,7 +44,7 @@ export async function POST(
   { params }: { params: Promise<Params> }
 ) {
   try {
-    const { moduleId } = await params; // ✅ FIX IMPORTANT
+    const { moduleId } = await params;
 
     const moduleIdNumber = parseInt(moduleId, 10);
 
@@ -56,7 +56,9 @@ export async function POST(
     }
 
     const body = await req.json();
-    const { title, content, order } = body;
+
+    // ✅ AJOUT DES CHAMPS MANQUANTS
+    const { title, content, order, videoUrl, pdfUrl } = body;
 
     const lesson = await prisma.lesson.create({
       data: {
@@ -64,6 +66,8 @@ export async function POST(
         content,
         moduleId: moduleIdNumber,
         order: order ?? 1,
+        videoUrl: videoUrl || null,
+        pdfUrl: pdfUrl || null,
       },
     });
 
