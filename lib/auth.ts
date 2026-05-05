@@ -8,16 +8,22 @@ export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Identifiants",
+
       credentials: {
         identifier: { label: "Email ou Téléphone", type: "text" },
         password: { label: "Mot de passe", type: "password" },
       },
 
       async authorize(credentials) {
+        // 🔴 Vérification des champs
         if (!credentials?.identifier || !credentials?.password) {
+          console.log("❌ Champs manquants");
           return null;
         }
 
+        console.log("🟡 IDENTIFIER:", credentials.identifier);
+
+        // 🔍 Recherche utilisateur (email OU téléphone)
         const user = await prisma.user.findFirst({
           where: {
             OR: [
@@ -27,12 +33,28 @@ export const authOptions: AuthOptions = {
           },
         });
 
-        if (!user || !user.password) return null;
+        console.log("🟢 USER TROUVÉ:", user);
 
-        const isValid = await compare(credentials.password, user.password);
+        // ❌ utilisateur introuvable
+        if (!user || !user.password) {
+          console.log("❌ Utilisateur non trouvé");
+          return null;
+        }
 
-        if (!isValid) return null;
+        // 🔐 Vérification mot de passe
+        const isValid = await compare(
+          credentials.password,
+          user.password
+        );
 
+        console.log("🔐 PASSWORD MATCH:", isValid);
+
+        if (!isValid) {
+          console.log("❌ Mot de passe incorrect");
+          return null;
+        }
+
+        // ✅ utilisateur valide
         return {
           id: String(user.id),
           name: user.name,
@@ -45,9 +67,10 @@ export const authOptions: AuthOptions = {
     }),
   ],
 
+  // 🔐 SESSION
   session: {
     strategy: "jwt",
-    maxAge: 60 * 60,
+    maxAge: 60 * 60, // 1 heure
     updateAge: 60,
   },
 
@@ -55,6 +78,7 @@ export const authOptions: AuthOptions = {
     maxAge: 60 * 60,
   },
 
+  // 🔁 CALLBACKS
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -83,6 +107,7 @@ export const authOptions: AuthOptions = {
     },
   },
 
+  // 📄 PAGES
   pages: {
     signIn: "/auth/signin",
   },
