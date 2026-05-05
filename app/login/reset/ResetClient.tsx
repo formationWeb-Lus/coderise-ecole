@@ -8,16 +8,29 @@ export default function ResetClient() {
   const router = useRouter();
   const token = searchParams.get("token");
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [msg, setMsg] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
+  const [loading, setLoading] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [msg, setMsg] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
+  // 🔄 animation progression comme register/login
   const submit = async () => {
     setLoading(true);
+    setProgress(5);
     setError("");
     setMsg("");
+
+    let interval: ReturnType<typeof setInterval>;
+
+    interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 90) return prev;
+        return prev + Math.random() * 5;
+      });
+    }, 200);
 
     try {
       const res = await fetch("/api/auth/reset", {
@@ -26,175 +39,216 @@ export default function ResetClient() {
         body: JSON.stringify({ token, username, password }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.message || "Erreur lors de la réinitialisation");
-        return;
-      }
+      const data = await res.json();
 
-      setMsg("Nom d’utilisateur et mot de passe mis à jour avec succès !");
-      setTimeout(() => router.push("/login"), 2000);
+      if (!res.ok) throw new Error(data.message || "Erreur");
+
+      setProgress(100);
+      setMsg("Compte mis à jour avec succès !");
+
+      setTimeout(() => {
+        router.push("/login");
+      }, 800);
+
     } catch (err: any) {
       setError(err.message || "Erreur serveur");
-    } finally {
+      setProgress(0);
       setLoading(false);
     }
+
+    return () => clearInterval(interval);
   };
 
   return (
-    <>
-      <div className="page">
-        <div className="card">
+    <div className="auth-page">
+      <div className="auth-card">
+
+        {/* HEADER */}
+        <div className="auth-header">
           <h1>Réinitialiser le compte</h1>
-          <p className="subtitle">
-            Choisissez un nouveau nom d’utilisateur et mot de passe.
-          </p>
+          <p>Choisissez un nouveau nom d’utilisateur et mot de passe</p>
+        </div>
 
-          <input
-            className="input-field"
-            placeholder="Nouveau nom d’utilisateur"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
+        {/* FORM */}
+        <div className="auth-form">
 
-          <input
-            className="input-field"
-            type="password"
-            placeholder="Nouveau mot de passe"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="field">
+            <label>Nom d’utilisateur</label>
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Ex: jean_pierre"
+            />
+          </div>
 
-          <button className="btn" onClick={submit} disabled={loading}>
-            {loading ? "Validation..." : "Réinitialiser"}
+          <div className="field">
+            <label>Nouveau mot de passe</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Ex: Min 6 caractères"
+            />
+          </div>
+
+          {error && <div className="error">{error}</div>}
+          {msg && <div className="success">{msg}</div>}
+
+          <button
+            className="submit"
+            onClick={submit}
+            disabled={loading}
+          >
+            <span className="btn-text">
+              {loading ? "Validation..." : "Réinitialiser"}
+            </span>
+
+            {loading && (
+              <span
+                className="progress-bar"
+                style={{ width: `${progress}%` }}
+              />
+            )}
           </button>
 
-          {msg && <p className="success">{msg}</p>}
-          {error && <p className="error">{error}</p>}
+        </div>
 
-          <a href="/login" className="back">
+        {/* FOOTER */}
+        <div className="auth-footer">
+          <button onClick={() => router.push("/login")}>
             ← Retour à la connexion
-          </a>
+          </button>
         </div>
       </div>
 
+      {/* 🎨 STYLE IDENTIQUE AU SYSTÈME */}
       <style jsx>{`
-        /* PAGE */
-        .page {
+        .auth-page {
           min-height: 100vh;
           display: flex;
           justify-content: center;
           align-items: center;
-          background: linear-gradient(135deg, #1e3a8a, #2563eb);
+          background: linear-gradient(135deg, #020617, #0f172a);
           padding: 20px;
-          font-family: "Inter", sans-serif;
         }
 
-        /* CARD */
-        .card {
-          background: #ffffff;
-          padding: 36px 32px;
+        .auth-card {
+          background: white;
+          padding: 32px;
           border-radius: 16px;
-          max-width: 420px;
           width: 100%;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-          display: flex;
-          flex-direction: column;
-          align-items: center;
+          max-width: 560px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
 
-        h1 {
-          font-size: 1.8rem;
-          font-weight: 700;
-          color: #111827;
-          margin-bottom: 8px;
-          text-align: center;
-        }
-
-        .subtitle {
-          font-size: 0.9rem;
-          color: #6b7280;
+        .auth-header {
           text-align: center;
           margin-bottom: 24px;
         }
 
-        .input-field {
+        .auth-header h1 {
+          font-size: clamp(26px, 4vw, 36px);
+          font-weight: 700;
+        }
+
+        .auth-header p {
+          font-size: clamp(14px, 2vw, 18px);
+          color: #6b7280;
+        }
+
+        .auth-form {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .field {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .field label {
+          font-size: 17px;
+          font-weight: 600;
+        }
+
+        .field input {
           width: 100%;
-          padding: 14px;
-          margin-bottom: 20px;
+          padding: 16px 18px;
+          font-size: 16px;
           border-radius: 12px;
           border: 1px solid #d1d5db;
-          font-size: 0.95rem;
-          transition: all 0.2s ease-in-out;
+          box-sizing: border-box;
         }
 
-        .input-field:focus {
+        .field input:focus {
           outline: none;
           border-color: #2563eb;
-          box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
         }
 
-        .btn {
+        /* BUTTON SYSTEM IDENTIQUE */
+        .submit {
+          position: relative;
+          overflow: hidden;
           width: 100%;
-          padding: 14px;
+          padding: 16px;
           border-radius: 12px;
           border: none;
-          background-color: #2563eb;
+          background: #0f172a;
           color: white;
+          font-size: 17px;
           font-weight: 600;
-          font-size: 1rem;
           cursor: pointer;
-          transition: all 0.2s ease-in-out;
         }
 
-        .btn:hover {
-          background-color: #1d4ed8;
-          transform: translateY(-1px);
+        .btn-text {
+          position: relative;
+          z-index: 2;
+        }
+
+        .progress-bar {
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+          background: linear-gradient(90deg, #ca8a04, #facc15);
+          transition: width 0.2s ease;
+          z-index: 1;
+        }
+
+        /* MESSAGES */
+        .error {
+          background: #fee2e2;
+          color: #b91c1c;
+          padding: 10px;
+          border-radius: 8px;
+          text-align: center;
         }
 
         .success {
-          margin-top: 16px;
+          background: #dcfce7;
           color: #166534;
-          background-color: #dcfce7;
-          padding: 10px 14px;
-          border-radius: 10px;
-          font-size: 0.85rem;
+          padding: 10px;
+          border-radius: 8px;
           text-align: center;
-          width: 100%;
         }
 
-        .error {
-          margin-top: 16px;
-          color: #b91c1c;
-          background-color: #fee2e2;
-          padding: 10px 14px;
-          border-radius: 10px;
-          font-size: 0.85rem;
+        /* FOOTER */
+        .auth-footer {
+          margin-top: 20px;
           text-align: center;
-          width: 100%;
         }
 
-        .back {
-          margin-top: 22px;
-          font-size: 0.85rem;
+        .auth-footer button {
+          border: none;
+          background: none;
           color: #2563eb;
-          text-decoration: none;
-          text-align: center;
-        }
-
-        .back:hover {
-          text-decoration: underline;
-        }
-
-        @media (max-width: 480px) {
-          .card {
-            padding: 28px 20px;
-          }
-          h1 {
-            font-size: 1.5rem;
-          }
+          font-weight: 600;
+          cursor: pointer;
         }
       `}</style>
-    </>
+    </div>
   );
 }

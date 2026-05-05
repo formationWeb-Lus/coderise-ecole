@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function ForgotPage() {
@@ -9,15 +9,35 @@ export default function ForgotPage() {
   const [identifier, setIdentifier] = useState("");
   const [foundUser, setFoundUser] = useState(false);
   const [newPassword, setNewPassword] = useState("");
+
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  // 1️⃣ Vérifier si l'utilisateur existe
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  // 🔄 PROGRESSION STYLE PRO (comme register/login)
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
+
+    if (loading) {
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 4;
+        });
+      }, 180);
+    }
+
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  // 1️⃣ CHECK USER
   const checkIdentifier = async () => {
     setError("");
     setMsg("");
     setLoading(true);
+    setProgress(5);
 
     try {
       const res = await fetch("/api/auth/check-user", {
@@ -28,23 +48,28 @@ export default function ForgotPage() {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || "Utilisateur introuvable");
-      }
+      if (!res.ok) throw new Error(data.message || "Utilisateur introuvable");
 
-      setFoundUser(true);
+      setProgress(100);
+
+      setTimeout(() => {
+        setFoundUser(true);
+        setLoading(false);
+        setProgress(0);
+      }, 400);
     } catch (err: any) {
-      setError(err.message || "Erreur lors de la vérification");
-    } finally {
+      setError(err.message || "Erreur");
       setLoading(false);
+      setProgress(0);
     }
   };
 
-  // 2️⃣ Réinitialiser le mot de passe
+  // 2️⃣ RESET PASSWORD
   const resetPassword = async () => {
     setError("");
     setMsg("");
     setLoading(true);
+    setProgress(5);
 
     try {
       const res = await fetch("/api/auth/reset", {
@@ -58,163 +83,227 @@ export default function ForgotPage() {
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data.message || "Erreur lors de la mise à jour");
-      }
+      if (!res.ok) throw new Error(data.message || "Erreur");
 
-      setMsg("✅ Mot de passe mis à jour avec succès. Redirection...");
-      
-      // 🔁 Redirection automatique vers la connexion
+      setProgress(100);
+
+      setMsg("Mot de passe mis à jour avec succès !");
+
       setTimeout(() => {
         router.push("/login");
       }, 1500);
     } catch (err: any) {
-      setError(err.message || "Erreur lors de la réinitialisation");
-    } finally {
+      setError(err.message || "Erreur serveur");
       setLoading(false);
+      setProgress(0);
     }
   };
 
   return (
-    <div className="page">
-      <div className="card">
-        <h1 className="title">Récupérer le compte</h1>
+    <div className="auth-page">
+      <div className="auth-card">
 
-        {!foundUser ? (
-          <>
-            <p className="subtitle">
-              Entrez votre email, téléphone ou nom d’utilisateur.
-            </p>
+        {/* HEADER */}
+        <div className="auth-header">
+          <h1>Récupération du compte</h1>
+          <p>Retrouvez votre accès en toute sécurité</p>
+        </div>
 
-            <input
-              className="input"
-              placeholder="Email, téléphone ou username"
-              value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
-            />
+        {/* FORM */}
+        <div className="auth-form">
 
-            <button className="btn" onClick={checkIdentifier} disabled={loading}>
-              {loading ? "Vérification..." : "Vérifier"}
-            </button>
-          </>
-        ) : (
-          <>
-            <p className="subtitle">
-              Utilisateur trouvé. Entrez un nouveau mot de passe.
-            </p>
+          {!foundUser ? (
+            <>
+              <div className="field">
+                <label>Email / Téléphone / Username</label>
+                <input
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  placeholder="Ex: jean@gmail.com ou +243810000000"
+                />
+              </div>
 
-            <input
-              type="password"
-              className="input"
-              placeholder="Nouveau mot de passe"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
+              <button
+                className="submit"
+                onClick={checkIdentifier}
+                disabled={loading}
+              >
+                <span className="btn-text">
+                  {loading ? "Vérification..." : "Vérifier le compte"}
+                </span>
 
-            <button className="btn" onClick={resetPassword} disabled={loading}>
-              {loading ? "Mise à jour..." : "Mettre à jour"}
-            </button>
-          </>
-        )}
+                {loading && (
+                  <span
+                    className="progress-bar"
+                    style={{ width: `${progress}%` }}
+                  />
+                )}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="field">
+                <label>Nouveau mot de passe</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Ex: Abc12345"
+                />
+              </div>
 
-        {msg && <p className="success">{msg}</p>}
-        {error && <p className="error">{error}</p>}
+              <button
+                className="submit"
+                onClick={resetPassword}
+                disabled={loading}
+              >
+                <span className="btn-text">
+                  {loading ? "Mise à jour..." : "Réinitialiser"}
+                </span>
 
-        {/* 🔙 Retour connexion */}
-        <div className="back-login">
+                {loading && (
+                  <span
+                    className="progress-bar"
+                    style={{ width: `${progress}%` }}
+                  />
+                )}
+              </button>
+            </>
+          )}
+
+          {msg && <div className="success">{msg}</div>}
+          {error && <div className="error">{error}</div>}
+        </div>
+
+        {/* FOOTER */}
+        <div className="auth-footer">
           <button onClick={() => router.push("/login")}>
             ← Retour à la connexion
           </button>
         </div>
       </div>
 
-      {/* 🎨 STYLE */}
+      {/* ===== STYLE IDENTIQUE REGISTER ===== */}
       <style jsx>{`
-        .page {
+        .auth-page {
           min-height: 100vh;
           display: flex;
-          align-items: center;
           justify-content: center;
-          background: linear-gradient(135deg, #4f46e5, #3b82f6);
+          align-items: center;
+          background: linear-gradient(135deg, #020617, #0f172a);
           padding: 20px;
         }
 
-        .card {
+        .auth-card {
           background: white;
-          padding: 30px 25px;
+          padding: 32px;
           border-radius: 16px;
           width: 100%;
-          max-width: 420px;
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+          max-width: 560px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
 
-        .title {
+        .auth-header {
           text-align: center;
-          font-size: 24px;
+          margin-bottom: 24px;
+        }
+
+        .auth-header h1 {
+          font-size: clamp(26px, 4vw, 36px);
           font-weight: 700;
-          margin-bottom: 15px;
         }
 
-        .subtitle {
-          text-align: center;
-          font-size: 14px;
+        .auth-header p {
+          font-size: clamp(14px, 2vw, 18px);
           color: #6b7280;
-          margin-bottom: 15px;
         }
 
-        .input {
+        .auth-form {
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .field {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .field label {
+          font-size: 17px;
+          font-weight: 600;
+        }
+
+        .field input {
           width: 100%;
-          padding: 12px;
-          border-radius: 10px;
+          padding: 16px 18px;
+          font-size: 16px;
+          border-radius: 12px;
           border: 1px solid #d1d5db;
-          margin-bottom: 15px;
         }
 
-        .btn {
+        .field input:focus {
+          outline: none;
+          border-color: #2563eb;
+          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+        }
+
+        .submit {
+          position: relative;
+          overflow: hidden;
           width: 100%;
-          padding: 12px;
-          border-radius: 10px;
+          padding: 16px;
+          border-radius: 12px;
           border: none;
-          background: #2563eb;
+          background: #0f172a;
           color: white;
+          font-size: 17px;
           font-weight: 600;
           cursor: pointer;
         }
 
-        .btn:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
+        .btn-text {
+          position: relative;
+          z-index: 2;
+        }
+
+        .progress-bar {
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+          background: linear-gradient(90deg, #ca8a04, #facc15);
+          z-index: 1;
         }
 
         .success {
-          margin-top: 15px;
+          background: #dcfce7;
+          color: #166534;
+          padding: 10px;
+          border-radius: 10px;
           text-align: center;
-          color: #16a34a;
-          font-weight: 600;
         }
 
         .error {
-          margin-top: 15px;
+          background: #fee2e2;
+          color: #b91c1c;
+          padding: 10px;
+          border-radius: 10px;
           text-align: center;
-          color: #dc2626;
-          font-weight: 600;
         }
 
-        .back-login {
+        .auth-footer {
           margin-top: 20px;
           text-align: center;
         }
 
-        .back-login button {
-          background: none;
+        .auth-footer button {
           border: none;
+          background: none;
           color: #2563eb;
           font-weight: 600;
           cursor: pointer;
-        }
-
-        .back-login button:hover {
-          text-decoration: underline;
         }
       `}</style>
     </div>

@@ -1,76 +1,65 @@
 "use client";
 
-import { useState } from "react";
-import { signIn } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function AuthPage() {
   const router = useRouter();
 
-  const [form, setForm] = useState({
-    identifier: "",
-    password: "",
-  });
+  const [identifier, setIdentifier] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
-  const [errors, setErrors] = useState({
-    identifier: "",
-    password: "",
-  });
+  const [loading, setLoading] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
+  const [error, setError] = useState<string>("");
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  // 🔄 progression identique au register
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval>;
 
-  const update = (key: string, value: string) => {
-    setForm({ ...form, [key]: value });
-    validateField(key, value);
-  };
-
-  // 🔥 VALIDATION FIELD BY FIELD
-  const validateField = (key: string, value: string) => {
-    let message = "";
-
-    if (key === "identifier") {
-      if (!value.trim()) message = "Email ou téléphone requis";
+    if (loading) {
+      interval = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 4;
+        });
+      }, 200);
     }
 
-    if (key === "password") {
-      if (!value.trim()) message = "Mot de passe requis";
-      else if (value.length < 4) message = "Minimum 4 caractères";
-    }
-
-    setErrors((prev) => ({ ...prev, [key]: message }));
-    return message === "";
-  };
-
-  const validate = () => {
-    const a = validateField("identifier", form.identifier);
-    const b = validateField("password", form.password);
-    return a && b;
-  };
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const handleLogin = async () => {
-    setError("");
-
-    if (!validate()) return;
+    if (!identifier || !password) {
+      setError("Veuillez remplir tous les champs");
+      return;
+    }
 
     setLoading(true);
+    setError("");
+    setProgress(5);
 
     try {
       const res = await signIn("credentials", {
-        identifier: form.identifier,
-        password: form.password,
+        identifier,
+        password,
         redirect: false,
       });
 
-      if (res?.error) {
-        throw new Error("Identifiants incorrects");
-      }
+      if (res?.error) throw new Error("Identifiants incorrects");
 
-      router.push("/dashboard/student");
-    } catch (e: any) {
-      setError(e.message || "Erreur serveur");
-    } finally {
+      // ✅ FIN progression
+      setProgress(100);
+
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 400);
+
+    } catch (err: any) {
+      setError(err.message || "Erreur de connexion");
       setLoading(false);
+      setProgress(0);
     }
   };
 
@@ -81,47 +70,40 @@ export default function AuthPage() {
         {/* HEADER */}
         <div className="auth-header">
           <h1>Connexion</h1>
-          <p>Accédez à votre espace étudiant</p>
+          <p>Accédez à votre espace personnel</p>
         </div>
 
         {/* FORM */}
         <div className="auth-form">
 
-          {/* IDENTIFIANT */}
           <div className="field">
             <label>Identifiant</label>
             <input
               type="text"
-              placeholder="Email ou téléphone"
-              value={form.identifier}
-              onChange={(e) => update("identifier", e.target.value)}
-              className={errors.identifier ? "input-error" : ""}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="Ex:+243810000000"
             />
-            {errors.identifier && (
-              <span className="error-text">{errors.identifier}</span>
-            )}
           </div>
 
-          {/* PASSWORD */}
           <div className="field">
             <label>Mot de passe</label>
             <input
               type="password"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={(e) => update("password", e.target.value)}
-              className={errors.password ? "input-error" : ""}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Ex: Min 6 caractères"
             />
-            {errors.password && (
-              <span className="error-text">{errors.password}</span>
-            )}
           </div>
 
           <div className="forgot">
-            <button onClick={() => router.push("/login/forgot")}>
-              Mot de passe oublié ?
-            </button>
-          </div>
+  <button
+    className="forgot-link"
+    onClick={() => router.push("/login/forgot")}
+  >
+    Mot de passe oublié ? clique ici 
+  </button>
+</div>
 
           {error && <div className="error">{error}</div>}
 
@@ -130,7 +112,16 @@ export default function AuthPage() {
             onClick={handleLogin}
             disabled={loading}
           >
-            {loading ? "Connexion..." : "Se connecter"}
+            <span className="btn-text">
+              {loading ? "Connexion..." : "Se connecter"}
+            </span>
+
+            {loading && (
+              <span
+                className="progress-bar"
+                style={{ width: `${progress}%` }}
+              />
+            )}
           </button>
         </div>
 
@@ -143,8 +134,49 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* ===== STYLE IDENTIQUE REGISTER ===== */}
+      {/* 🎨 STYLE IDENTIQUE AU REGISTER */}
       <style jsx>{`
+
+      .forgot {
+  text-align: right;
+  margin-top: -10px;
+}
+
+/* lien pro cohérent avec ton système */
+.forgot-link {
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: #2563eb;
+  cursor: pointer;
+  font-weight: 500;
+  position: relative;
+  padding: 0;
+  transition: 0.2s;
+}
+
+/* hover propre */
+.forgot-link:hover {
+  color: #1d4ed8;
+}
+
+/* animation underline (cohérent avec UI pro) */
+.forgot-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background: #2563eb;
+  transition: width 0.25s ease;
+}
+
+.forgot-link:hover::after {
+  width: 100%;
+}  
+
+
         .auth-page {
           min-height: 100vh;
           display: flex;
@@ -156,10 +188,10 @@ export default function AuthPage() {
 
         .auth-card {
           background: white;
-          padding: 36px 32px;
-          border-radius: 18px;
+          padding: 32px;
+          border-radius: 16px;
           width: 100%;
-          max-width: 420px;
+          max-width: 560px;
           box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
 
@@ -169,20 +201,19 @@ export default function AuthPage() {
         }
 
         .auth-header h1 {
-          font-size: 26px;
+          font-size: clamp(26px, 4vw, 36px);
           font-weight: 700;
-          margin-bottom: 6px;
         }
 
         .auth-header p {
-          font-size: 14px;
+          font-size: clamp(14px, 2vw, 18px);
           color: #6b7280;
         }
 
         .auth-form {
           display: flex;
           flex-direction: column;
-          gap: 16px;
+          gap: 20px;
         }
 
         .field {
@@ -192,17 +223,17 @@ export default function AuthPage() {
         }
 
         .field label {
-          font-size: 13px;
+          font-size: 17px;
           font-weight: 600;
-          color: #111827;
         }
 
         .field input {
-          padding: 12px 14px;
-          border-radius: 10px;
+          width: 100%;
+          padding: 16px 18px;
+          font-size: 16px;
+          border-radius: 12px;
           border: 1px solid #d1d5db;
-          font-size: 14px;
-          transition: 0.2s;
+          box-sizing: border-box;
         }
 
         .field input:focus {
@@ -211,51 +242,33 @@ export default function AuthPage() {
           box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
         }
 
-        .input-error {
-          border-color: #ef4444 !important;
-          background: #fff5f5;
-        }
-
-        .error-text {
-          font-size: 12px;
-          color: #ef4444;
-        }
-
-        .forgot {
-          text-align: right;
-        }
-
-        .forgot button {
-          background: none;
-          border: none;
-          font-size: 13px;
-          color: #2563eb;
-          cursor: pointer;
-        }
-
-        .forgot button:hover {
-          text-decoration: underline;
-        }
-
         .submit {
-          margin-top: 8px;
-          padding: 14px;
+          position: relative;
+          overflow: hidden;
+          width: 100%;
+          padding: 16px;
           border-radius: 12px;
           border: none;
-          background: #2563eb;
+          background: #0f172a;
           color: white;
+          font-size: 17px;
           font-weight: 600;
-          font-size: 15px;
           cursor: pointer;
         }
 
-        .submit:hover {
-          background: #1d4ed8;
+        .btn-text {
+          position: relative;
+          z-index: 2;
         }
 
-        .submit:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
+        .progress-bar {
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+          background: linear-gradient(90deg, #ca8a04, #facc15);
+          transition: width 0.2s ease;
+          z-index: 1;
         }
 
         .error {
@@ -263,15 +276,13 @@ export default function AuthPage() {
           color: #b91c1c;
           padding: 10px;
           border-radius: 8px;
-          font-size: 13px;
           text-align: center;
         }
 
         .auth-footer {
-          margin-top: 22px;
+          margin-top: 20px;
           text-align: center;
-          font-size: 14px;
-          color: #374151;
+          font-size: 15px;
         }
 
         .auth-footer button {
@@ -280,10 +291,6 @@ export default function AuthPage() {
           color: #2563eb;
           font-weight: 600;
           cursor: pointer;
-        }
-
-        .auth-footer button:hover {
-          text-decoration: underline;
         }
       `}</style>
     </div>
