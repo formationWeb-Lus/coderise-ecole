@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import PaymentButton from "@/components/PaymentButton";
 
 interface PageProps {
   params: Promise<{ courseId: string }>;
@@ -61,14 +62,7 @@ export default async function PricingPage({ params }: PageProps) {
              href={`/dashboard/enrollment/${course.id}/payment`}
             className="block mt-10"
           >
-            <button
-              type="button"
-              className="w-full py-4 rounded-xl
-                         bg-green-600 text-white text-xl font-bold
-                         hover:bg-green-700 transition"
-            >
-              Procéder au paiement
-            </button>
+           <PaymentButton />
           </Link>
 
         </div>
