@@ -77,18 +77,16 @@ export default function CoursePageClient({
                 </span>
               </button>
 
-              {/* LESSONS */}
-              {isOpen && (
-                <ul className="lesson-list">
-                  {module.lessons.slice(0, 5).map((lesson) => {
-                    const isLoading = loadingLessonId === lesson.id;
+             {isOpen && (
+  <ul className="lesson-list">
+    {module.lessons.map((lesson) => {
+      const isLoading = loadingLessonId === lesson.id;
 
-                    return (
-                      <li key={lesson.id}>
-                        <button
-                          onClick={() =>
-                            handleLessonClick(lesson.id, idx + 1)
-                          }
+      return (
+        <li key={lesson.id}>
+          <button
+            onClick={() => handleLessonClick(lesson.id, idx + 1)}
+          
                           className={`lesson-item ${
                             isLoading ? "loading" : ""
                           }`}
