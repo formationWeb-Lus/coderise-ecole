@@ -1,13 +1,23 @@
-INSERT INTO "User" (name, email, password, id, phone, image, role) VALUES
-('Mordred yav', 'mordredyav0@gmail.com', '$2b$10$JFZXgWv73zZPyaQ/oRD27.k7GaItgJ1rc3oz3RbiksAnfpj7A530W', 4, '+243998012295', NULL, 'STUDENT'),
-('Ibrahim WENIBWE', 'wenibwemusaibrahim@gmail.com', '$2b$10$8Lh1NzdRjzgmRmdsI4JWtum/Jkokv4DidW.Is2CvgoljOBaBP3bhW', 5, '+243974197394', NULL, 'STUDENT'),
-('Alexandre lusa', 'jiresselusa127@gmail.com', '$2b$10$JNwvHEGmqSLNXTqL2hGfneNEuprZ2Si29V8mJTEZtS0US3Mx.jR26', 7, '0995271831', NULL, 'STUDENT'),
-('Raph', 'faraelsam06@gmail.com', '$2b$10$y/7BQ0aoSetmpiGV4sqp0uaSYJqCPufF3JwuzssjcPGS3qNhsmKtS', 8, '0896706412', NULL, 'STUDENT'),
-('mufuankolo', 'mufuankolojames@gmail.com', '$2b$10$YTiB8NqiS1czBzd91VrprOqzkUPhkh1YVF2VX78e59ecEQQBbjsce', 9, '0820803136', NULL, 'STUDENT'),
-('Nounou', 'nounou.luabeya@gmail.com', '$2b$10$NPAl3Mh7M8Xfufh4oeFBQuxV3bwFJReCignNvjWMMpBrjUxFCVYNG', 10, '0821628768', NULL, 'STUDENT'),
-('alexandre', 'jiresselusa17@gmail.com', '$2b$10$FmTE4e8NIrWZwaY/tU0y0uXlpkKmtOkYrtETJKp/8P0.d4lNcDQpq', 11, '0899864831', NULL, 'ADMIN'),
-('Jerome Mata', 'Jeromekeys7@gmail.com', '$2b$10$5jz/fPzmiRCHAxK58hXf2uBH9H4zGNPgLBVfAQMjtPPvDUXjVtpNm', 12, '0825067031', NULL, 'STUDENT'),
-('Mukendi', 'augusmukendi@gmail.com', '$2b$10$ktTn.cCW5dNtPvO5Ibm4P.Ey2t0Z.rG6wO71RoYaVfWplfnm0lp66', 13, '0992588151', NULL, 'STUDENT')
+INSERT INTO "User" 
+(name, email, password, id, phone, image, role)
+VALUES
+
+('Alexandre Lusa', 'jiresselusa127@gmail.com', '$2b$10$tg1uiUSIaGjj5ES50hg0JeFtyyZOjH41GnG9piI5cEzeG.lkkgFKC', 2, '0899864081', NULL, 'ADMIN'),
+
+('rodriguez Songoy munsense', 'rodmunsense@gmail.com', '$2b$10$DT2Vz6eSUlpPBxIpYTbqLOfn.Als.i/xqQjaUxnP3R5a/gYODnaVW', 3, '+243995214007', NULL, 'STUDENT'),
+
+('Mufuankolo', 'mufuankolojames@gmail.com', '$2b$10$3QG5MhTbnJd0zgSVq66JKuqNJJBrdk5ugTGCgRfQjKWzZOpso5yJm', 4, '+243820803136', NULL, 'STUDENT'),
+
+('alexandre lusa', 'jiresselus@gmail.com', '$2b$10$ewGiPZQsrwizwNqAjn//G.4vrbKs4y/cZi0PylyD.iVuhsdR5s6De', 14, '08866589562', NULL, 'STUDENT'),
+
+('alexandre lusa', 'jiresselusa@gmail.com', '$2b$10$S71bYl3EO2cmdNruiY.SMOl8XTQJZn5ukc4gkejeAGVjGRRNfzN.m', 15, '0995271831', NULL, 'STUDENT'),
+
+('Prince Bahati', 'pbkanambi@gmail.com', '$2b$10$dfcNkKNmoLvtPSE/fYe8jOK2RfYBmBfOoQzQYOJm8GD0D1s1IG34W', 16, '+243978315631', NULL, 'STUDENT'),
+
+('jimmy baniki mukishi', 'banikimukishijimmy@gmail.com', '$2b$10$JXGvSTqGf3m9y3MacXeu4uFMLUKvHdhINHdnWCNBCOt9ZQaW6v4Wa', 17, '+243978415814', NULL, 'STUDENT'),
+
+('Farael', 'faraelsam06@gmail.com', '$2b$10$HOZx58W6nyHMc1L3Jsx5BeOa.UvZYT9Qd07uST4BPB2A1DimSEfeO', 18, '+243896706412', NULL, 'STUDENT')
+
 ON CONFLICT (id) DO NOTHING;
 
 
@@ -109,9 +119,9 @@ INSERT INTO "Course" (id, title, description, "imageUrl", duration, "createdAt")
 
 INSERT INTO "Module" (id, "courseId", "order", title) VALUES
 (1, 6, 1, 'Introduction au cours'),
-(2, 6, 2, 'Conventions de dénomination'),
+(2, 6, 2, 'Introduction à JavaScript'),
 (3, 6, 3, 'Révision HTML et CSS'),
-(4, 6, 4, 'Introduction à JavaScript'),
+(4, 6, 4, 'Conventions de dénomination'),
 (5, 6, 5, 'Projet final et évaluation'),
 
 (6, 15, 1, 'Introduction au Projet : Page d’Accueil Étudiant'),
@@ -131,17 +141,64 @@ INSERT INTO "Module" (id, "courseId", "order", title) VALUES
 INSERT INTO "Lesson"
 (id, "moduleId", "order", title, content, "videoUrl", "pdfUrl", description, "videoDescription")
 VALUES
+
+(1, 2, 1, 'Introduction de JavaScript',
+'JavaScript est un langage de programmation populaire et largement pris en charge, utilisé pour créer des pages web interactives et dynamiques, des applications mobiles, des applications de bureau, etc. C''est un langage interprété de haut niveau, conçu pour s''exécuter dans les navigateurs web, et il peut également être utilisé côté serveur grâce à des technologies comme Node.js.
+
+Dans ce cours, vous apprendrez à appliquer vos connaissances préalables en programmation au développement web en utilisant JavaScript. Ce langage utilise les mêmes principes et structures de contrôle communes que d''autres langages de programmation tels que Python et C#.',
+'https://youtu.be/7nsg0MFXoho',
+'https://dynamic-files.onrender.com/download/Document%20sans%20titre%20(2).pdf',
+'Découverte des bases de JavaScript et de son utilisation dans le développement web.',
+NULL),
+
+(2, 2, 2, 'Comprendre les variables en JavaScript',
+'Pour vous permettre de mieux comprendre le fonctionnement de JavaScript, ce cours aborde les fonctionnalités et les structures de contrôle fondamentales du langage, notamment les variables. Ces structures et concepts de programmation sont communs à tous les langages. Les cas d''utilisation présentés ici constituent une révision des notions abordées dans les cours préalables.',
+'https://youtu.be/6528zecefnw',
+'https://dynamic-files.onrender.com/download/Document%20sans%20titre%20(2).pdf',
+'Comprendre la déclaration et l’utilisation des variables en JavaScript.',
+NULL),
+
+(3, 2, 3, 'Constructions JavaScript',
+'Les cours de programmation préalables vous ont permis d''acquérir une compréhension fondamentale des structures de programmation courantes, notamment les opérateurs, les expressions, les structures de décision, les boucles et les fonctions. Cette activité porte sur quelques structures de contrôle essentielles.',
+'https://youtu.be/-fwJ-hXRtSw',
+'https://dynamic-files.onrender.com/download/Constructions%20JavaScript.pdf',
+'Apprendre les structures de contrôle fondamentales en JavaScript.',
+NULL),
+
+(4, 2, 3, 'Vidéo pratique pour maîtriser les constructions JavaScript',
+'En programmation, les opérateurs sont des symboles utilisés pour effectuer des opérations sur des opérandes (variables et valeurs) et pour traiter des expressions. De nombreux opérateurs réalisent des opérations mathématiques telles que l''addition, la soustraction, la multiplication et la division. D''autres gèrent l''affectation, la comparaison et les opérations logiques.',
+'https://youtu.be/0LRqsv9CuYw',
+'https://dynamic-files.onrender.com/download/Constructions%20JavaScript.pdf',
+'Maîtriser les opérateurs et expressions JavaScript à travers des exemples pratiques.',
+NULL),
+
+(5, 2, 4, 'Modèle objet de document',
+'Une compétence essentielle pour tout développeur web front-end est la capacité à manipuler le DOM (Document Object Model), un objet JavaScript créé par le navigateur après l''analyse du document HTML.
+
+Manipuler le DOM signifie lire, modifier, mettre à jour ou supprimer dynamiquement des éléments et leurs propriétés CSS. Le DOM est la représentation arborescente de la structure et du contenu de votre page.
+
+L''objectif de cette activité est de présenter le DOM HTML et d''apprendre à manipuler le document à l''aide de JavaScript.',
+'https://youtu.be/wVIjdaoXHvQ',
+'https://dynamic-files.onrender.com/download/DOM%20JavaScript.pdf',
+'Découvrir et manipuler le DOM avec JavaScript.',
+NULL),
+
+(6, 2, 5, 'Maîtriser les méthodes de tableaux JavaScript comme un pro',
+'Prêts à explorer l''univers fascinant des tableaux JavaScript ? Accrochez-vous, car nous allons découvrir quelques-unes des méthodes les plus originales et utiles qu''ils offrent. De l''ajout et la suppression d''éléments au découpage et à la manipulation de tableaux, nous allons tout vous apprendre.',
+'https://youtu.be/9rnBvw0_8Js',
+'https://dynamic-files.onrender.com/download/OBJECT%20JavaScript.pdf',
+'Apprendre les principales méthodes de manipulation des tableaux JavaScript.',
+NULL),
+
 (15, 1, 1, 'Lesson1: instalation Git',
-'Dans ce cours, les étudiants apprendront ce qu’est Git, pourquoi il est indispensable pour le développement logiciel moderne, et comment l’installer correctement sur leur ordinateur (Windows, macOS ou Linux).
-À la fin de cette leçon, ils seront capables de vérifier l’installation de Git et de l’utiliser pour la gestion de versions de leurs projets.',
+'Dans ce cours, les étudiants apprendront ce qu’est Git, pourquoi il est indispensable pour le développement logiciel moderne, et comment l’installer correctement sur leur ordinateur (Windows, macOS ou Linux). À la fin de cette leçon, ils seront capables de vérifier l’installation de Git et de l’utiliser pour la gestion de versions de leurs projets.',
 'https://youtu.be/Wv2O7cBsUto',
 'https://dynamic-files.onrender.com/download/1767678019831-Configuration%20W01.pdf',
 'Installation de Git sur Windows, macOS et Linux, avec vérification du bon fonctionnement de l’outil.',
 NULL),
 
 (16, 6, 1, 'Lesson1: instalation Git',
-'Dans ce cours, les étudiants apprendront ce qu’est Git, pourquoi il est indispensable pour le développement logiciel moderne, et comment l’installer correctement sur leur ordinateur (Windows, macOS ou Linux).
-À la fin de cette leçon, ils seront capables de vérifier l’installation de Git et de l’utiliser pour la gestion de versions de leurs projets.',
+'Dans ce cours, les étudiants apprendront ce qu’est Git, pourquoi il est indispensable pour le développement logiciel moderne, et comment l’installer correctement sur leur ordinateur (Windows, macOS ou Linux). À la fin de cette leçon, ils seront capables de vérifier l’installation de Git et de l’utiliser pour la gestion de versions de leurs projets.',
 'https://youtu.be/Wv2O7cBsUto',
 'https://dynamic-files.onrender.com/download/1767678019831-Configuration%20W01.pdf',
 'Installation de Git sur Windows, macOS et Linux, avec vérification du bon fonctionnement de l’outil.',
@@ -208,7 +265,7 @@ NULL),
 'https://youtu.be/E08bJKZXN3E',
 'https://drive.google.com/file/d/1dTTaJ85u2Dp4OAkJfqqTvzHltZ5T_P_8/view?usp=sharing',
 'Termes à connaître : téléchargez le PDF et lisez-le attentivement.',
-NULL);
+NULL);  
 
 INSERT INTO "Quiz" (id, "lessonId", title, "order", "createdAt")
 VALUES
