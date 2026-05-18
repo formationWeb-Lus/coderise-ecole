@@ -1,100 +1,102 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 
-interface Submission {
-  id: number;
-  type: "assignment" | "quiz";
-  lesson: { title: string };
-  score: number | null;
-  totalPoints?: number; // seulement pour les quizzes
-  status: string;
-  feedback: string | null;
+interface Grade {
+  exerciseId: number;
+  score: number;
+  maxPoints: number;
+  status: "PENDING" | "GRADED" | "LATE";
 }
 
-export default function GradesPage() {
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [comments, setComments] = useState<{ [key: number]: string }>({});
+export default function CourseGradesPage() {
+  const params = useParams();
+  const courseId = params?.courseId as string;
+
+  const { data: session, status } = useSession();
+
+  const [grades, setGrades] = useState<Grade[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [percentage, setPercentage] = useState(0);
 
   useEffect(() => {
-    fetch("/api/student/grades") // API à adapter pour renvoyer assignments + quizzes
-      .then((res) => res.json())
-      .then((data) => setSubmissions(data));
-  }, []);
+    if (!courseId || status !== "authenticated") return;
 
-  const sendComment = async (submissionId: number) => {
-    const comment = comments[submissionId];
-    if (!comment || comment.trim() === "") return alert("Commentaire vide.");
+    const fetchGrades = async () => {
+      setLoading(true);
+      setError(null);
 
-    const res = await fetch("/api/student/grades/comment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ submissionId, comment }),
-    });
+      try {
+        // 1. GET STUDENT
+        const studentRes = await fetch(
+          `/api/student/by-email?email=${session?.user?.email}`
+        );
 
-    if (res.ok) {
-      alert("Commentaire envoyé !");
-      setComments((prev) => ({ ...prev, [submissionId]: "" }));
-    } else {
-      alert("Erreur lors de l’envoi.");
-    }
-  };
+        if (!studentRes.ok) {
+          throw new Error("Student introuvable");
+        }
+
+        const student = await studentRes.json();
+
+        // 2. GET GRADES
+        const res = await fetch(
+          `/api/courses/${courseId}/grades?studentId=${student.id}`
+        );
+
+        if (!res.ok) {
+          throw new Error("Impossible de charger les notes");
+        }
+
+        const data: Grade[] = await res.json();
+        setGrades(data);
+
+        // 3. CALCUL POURCENTAGE
+        const totalEarned = data.reduce((a, g) => a + (g.score || 0), 0);
+        const totalPossible = data.reduce((a, g) => a + (g.maxPoints || 0), 0);
+
+        setPercentage(
+          totalPossible > 0 ? (totalEarned / totalPossible) * 100 : 0
+        );
+      } catch (err: any) {
+        console.error(err);
+        setError(err.message || "Erreur lors du chargement des notes");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGrades();
+  }, [courseId, session, status]);
+
+  if (status === "loading") return <p>Chargement session...</p>;
+  if (!session) return <p>Vous devez être connecté</p>;
+  if (loading) return <p>Chargement des notes...</p>;
+  if (error) return <p className="text-red-600">{error}</p>;
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Mes Notes</h1>
+    <div className="p-6 max-w-3xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Notes du cours</h1>
 
-      <table className="min-w-full border">
-        <thead className="bg-gray-100">
-          <tr>
-            <th className="border px-4 py-2 text-left">Leçon / Quiz</th>
-            <th className="border px-4 py-2 text-left">Score</th>
-            <th className="border px-4 py-2 text-left">Status</th>
-            <th className="border px-4 py-2 text-left">Feedback</th>
-            <th className="border px-4 py-2 text-left">Commenter</th>
-          </tr>
-        </thead>
+      <p className="mb-4 font-semibold">
+        Pourcentage global: {percentage.toFixed(2)}%
+      </p>
 
-        <tbody>
-          {submissions.map((s: Submission) => {
-            const displayScore =
-              s.type === "quiz" && s.totalPoints != null && s.score != null
-                ? `${s.score} / ${s.totalPoints} (${((s.score / s.totalPoints) * 100).toFixed(1)}%)`
-                : s.score != null
-                ? s.score
-                : "—";
-
-            return (
-              <tr key={s.id} className="hover:bg-gray-50">
-                <td className="border px-4 py-2">{s.lesson.title}</td>
-                <td className="border px-4 py-2">{displayScore}</td>
-                <td className="border px-4 py-2">{s.status}</td>
-                <td className="border px-4 py-2">{s.feedback ?? "—"}</td>
-
-                <td className="border px-4 py-2">
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      className="border px-2 py-1 rounded w-full"
-                      placeholder="Votre commentaire..."
-                      value={comments[s.id] || ""}
-                      onChange={(e) =>
-                        setComments((prev) => ({ ...prev, [s.id]: e.target.value }))
-                      }
-                    />
-                    <button
-                      className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700"
-                      onClick={() => sendComment(s.id)}
-                    >
-                      Envoyer
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+      {grades.length === 0 ? (
+        <p>Aucune note disponible.</p>
+      ) : (
+        <div className="space-y-4">
+          {grades.map((g, i) => (
+            <div key={i} className="p-4 border rounded">
+              <p className="font-bold">Exercice {g.exerciseId}</p>
+              <p>Score: {g.score} / {g.maxPoints}</p>
+              <p>Status: {g.status}</p>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

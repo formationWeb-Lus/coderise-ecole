@@ -58,17 +58,18 @@ model CodeFile {
   folder    CodeFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
 }
 
-
 model StudentCourse {
-  id               Int               @id @default(autoincrement())
-  userId           Int
-  courseId         Int
-  studentId        Int?
+  id        Int @id @default(autoincrement())
+
+  studentId Int
+  courseId  Int
+
+  student   Student @relation(fields: [studentId], references: [id])
+  course    Course  @relation(fields: [courseId], references: [id])
+
   completedLessons CompletedLesson[]
-  course           Course            @relation(fields: [courseId], references: [id])
-  student          Student?          @relation(fields: [studentId], references: [id])
-  user             User              @relation(fields: [userId], references: [id])
 }
+
 
 model CompletedLesson {
   id              Int           @id @default(autoincrement())
