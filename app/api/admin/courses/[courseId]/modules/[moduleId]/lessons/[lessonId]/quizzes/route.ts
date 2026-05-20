@@ -6,20 +6,39 @@ export const dynamic = "force-dynamic";
 // 🔹 GET → Récupérer tous les quizzes d'une leçon
 export async function GET(
   req: Request,
-  { params }: {
-    params: {
+  {
+    params,
+  }: {
+    params: Promise<{
       courseId: string;
       moduleId: string;
       lessonId: string;
-    };
+    }>;
   }
 ) {
   try {
-    const { lessonId } = params;
+    // ✅ IMPORTANT : await params
+    const { lessonId } = await params;
+
+    // ✅ Validation
+    const parsedLessonId = parseInt(lessonId);
+
+    if (isNaN(parsedLessonId)) {
+      return NextResponse.json(
+        { error: "lessonId invalide" },
+        { status: 400 }
+      );
+    }
 
     const quizzes = await prisma.quiz.findMany({
-      where: { lessonId: Number(lessonId) },
-      orderBy: { createdAt: "asc" },
+      where: {
+        lessonId: parsedLessonId,
+      },
+
+      orderBy: {
+        createdAt: "asc",
+      },
+
       include: {
         questions: true,
         exercises: true,
@@ -27,8 +46,11 @@ export async function GET(
     });
 
     return NextResponse.json(quizzes, { status: 200 });
+
   } catch (error) {
+
     console.error("GET QUIZZES ERROR:", error);
+
     return NextResponse.json(
       { error: "Erreur récupération des quizzes" },
       { status: 500 }
@@ -39,28 +61,44 @@ export async function GET(
 // 🔹 POST → Créer un nouveau quiz pour une leçon
 export async function POST(
   req: Request,
-  { params }: {
-    params: {
+  {
+    params,
+  }: {
+    params: Promise<{
       courseId: string;
       moduleId: string;
       lessonId: string;
-    };
+    }>;
   }
 ) {
   try {
-    const { lessonId } = params;
+
+    // ✅ IMPORTANT : await params
+    const { lessonId } = await params;
+
+    // ✅ Conversion sécurisée
+    const parsedLessonId = parseInt(lessonId);
+
+    if (isNaN(parsedLessonId)) {
+      return NextResponse.json(
+        { error: "lessonId invalide" },
+        { status: 400 }
+      );
+    }
+
     const body = await req.json();
 
     const { title, questions } = body;
 
-    // Validation
-    if (!title) {
+    // ✅ Validation titre
+    if (!title || title.trim() === "") {
       return NextResponse.json(
         { error: "Le champ title est requis" },
         { status: 400 }
       );
     }
 
+    // ✅ Validation questions
     if (!Array.isArray(questions) || questions.length === 0) {
       return NextResponse.json(
         { error: "Le quiz doit contenir au moins une question" },
@@ -68,31 +106,64 @@ export async function POST(
       );
     }
 
+    // ✅ Vérifier que la leçon existe
+    const lessonExists = await prisma.lesson.findUnique({
+      where: {
+        id: parsedLessonId,
+      },
+    });
+
+    if (!lessonExists) {
+      return NextResponse.json(
+        { error: "Leçon introuvable" },
+        { status: 404 }
+      );
+    }
+
+    // ✅ Création du quiz
     const quiz = await prisma.quiz.create({
       data: {
-        title,
-        lessonId: Number(lessonId),
+        title: title.trim(),
+
+        lessonId: parsedLessonId,
+
         questions: {
           create: questions.map((q: any) => ({
-            question: q.question,
+            question: q.question || "",
+
             type: q.type || "TEXT",
-            options: q.options ? JSON.stringify(q.options) : null,
-            answer: q.answer,
+
+            options: q.options
+              ? JSON.stringify(q.options)
+              : null,
+
+            answer: q.answer || "",
+
             points: q.points ?? 10,
           })),
         },
       },
+
       include: {
         questions: true,
       },
     });
 
-    return NextResponse.json(quiz, { status: 201 });
+    return NextResponse.json(quiz, {
+      status: 201,
+    });
+
   } catch (error) {
+
     console.error("CREATE QUIZ ERROR:", error);
+
     return NextResponse.json(
-      { error: "Erreur création du quiz" },
-      { status: 500 }
+      {
+        error: "Erreur création du quiz",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }
