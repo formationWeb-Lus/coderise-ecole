@@ -21,61 +21,65 @@ model User {
   submissions           ExerciseSubmission[]
   notifications         Notification[]
   studentCourses        StudentCourse[]
-   quizSubmissions       QuizSubmission[]  // <-- relation inverse
-   codeFiles CodeFile[]
-  folders   CodeFolder[]
+  quizSubmissions       QuizSubmission[] // <-- relation inverse
+  codeFiles             CodeFile[]
+  folders               CodeFolder[]
 }
 
 model CodeFolder {
-  id        Int        @id @default(autoincrement())
-  name      String
+  id   Int    @id @default(autoincrement())
+  name String
 
   userId    Int
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  files     CodeFile[]
+  files CodeFile[]
 }
 
 model CodeFile {
-  id        Int      @id @default(autoincrement())
-  name      String
+  id   Int    @id @default(autoincrement())
+  name String
 
-  html      String   @default("")
-  css       String   @default("")
-  js        String   @default("")
+  html String @default("")
+  css  String @default("")
+  js   String @default("")
 
-  userId    Int
-  folderId  Int
+  userId   Int
+  folderId Int
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  folder    CodeFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folder CodeFolder @relation(fields: [folderId], references: [id], onDelete: Cascade)
 }
 
-
 model StudentCourse {
-  id               Int               @id @default(autoincrement())
-  userId           Int
-  courseId         Int
-  studentId        Int?
-  completedLessons CompletedLesson[]
-  course           Course            @relation(fields: [courseId], references: [id])
-  student          Student?          @relation(fields: [studentId], references: [id])
-  user             User              @relation(fields: [userId], references: [id])
+  id Int @id @default(autoincrement())
+
+  userId    Int
+  studentId Int?
+  courseId  Int
+
+  student Student? @relation(fields: [studentId], references: [id])
+  user    User     @relation(fields: [userId], references: [id])
+  course  Course   @relation(fields: [courseId], references: [id])
+
+  completedLessons CompletedLesson[] // 🔥 OBLIGATOIRE
 }
 
 model CompletedLesson {
-  id              Int           @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   studentCourseId Int
   lessonId        Int
-  lesson          Lesson        @relation(fields: [lessonId], references: [id])
-  studentCourse   StudentCourse @relation(fields: [studentCourseId], references: [id])
+
+  lesson        Lesson        @relation(fields: [lessonId], references: [id])
+  studentCourse StudentCourse @relation(fields: [studentCourseId], references: [id])
 }
 
 model Course {
@@ -115,19 +119,19 @@ model Lesson {
   module                Module                 @relation(fields: [moduleId], references: [id])
   quizzes               Quiz[] // 🔹 AJOUTÉ
 }
+
 model Quiz {
-  id        Int        @id @default(autoincrement())
-  lessonId  Int
-  title     String
-  order Int @default(0)
-  createdAt DateTime   @default(now())
-  lesson    Lesson     @relation(fields: [lessonId], references: [id])
-  questions Question[]
-  exercises Exercise[]
-  submissions QuizSubmission[]  // <-- AJOUTE CE CHAMP pour relation inverse
+  id          Int              @id @default(autoincrement())
+  lessonId    Int
+  title       String
+  order       Int              @default(0)
+  createdAt   DateTime         @default(now())
+  lesson      Lesson           @relation(fields: [lessonId], references: [id])
+  questions   Question[]
+  exercises   Exercise[]
+  submissions QuizSubmission[] // <-- AJOUTE CE CHAMP pour relation inverse
   // plus de updatedAt ici
 }
-
 
 model Question {
   id       Int          @id @default(autoincrement())
@@ -141,20 +145,19 @@ model Question {
 }
 
 model QuizSubmission {
-  id        Int      @id @default(autoincrement())
-  quizId    Int
-  userId    Int
-  score     Int?
+  id          Int       @id @default(autoincrement())
+  quizId      Int
+  userId      Int
+  score       Int?
   submittedAt DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
   quiz Quiz @relation(fields: [quizId], references: [id])
   user User @relation(fields: [userId], references: [id])
 
   @@unique([quizId, userId])
 }
-
 
 model Exercise {
   id        Int          @id @default(autoincrement())
@@ -207,12 +210,12 @@ model ExerciseAttempt {
 }
 
 model AssignmentSubmission {
-  id             Int              @id @default(autoincrement())
-  userId         Int
-  lessonId       Int
+  id       Int @id @default(autoincrement())
+  userId   Int
+  lessonId Int
 
-  filePath       String?          // ⬅️ TEMPORAIRE
-  fileUrl        String?          // ⬅️ TEMPORAIRE
+  filePath String? // ⬅️ TEMPORAIRE
+  fileUrl  String? // ⬅️ TEMPORAIRE
 
   status         SubmissionStatus @default(PENDING)
   createdAt      DateTime         @default(now())
@@ -220,12 +223,11 @@ model AssignmentSubmission {
   score          Int?
   studentComment String?
 
-  lesson         Lesson           @relation(fields: [lessonId], references: [id])
-  user           User             @relation(fields: [userId], references: [id])
+  lesson Lesson @relation(fields: [lessonId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 
   @@unique([userId, lessonId])
 }
-
 
 model Announcement {
   id        Int                @id @default(autoincrement())
@@ -275,7 +277,6 @@ enum Role {
   ADMIN
 }
 
-
 enum ExerciseType {
   TEXT
   QCM
@@ -284,7 +285,7 @@ enum ExerciseType {
 
 enum SubmissionStatus {
   PENDING
-  SUBMITTED  // ✅ ajouter ici
+  SUBMITTED // ✅ ajouter ici
   GRADED
   LATE
 }

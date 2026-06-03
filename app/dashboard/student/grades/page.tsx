@@ -12,7 +12,7 @@ export default async function GradesPage() {
 
   const userId = Number(session.user.id);
 
-  // 🔹 Récupérer les cours de l'étudiant avec exercises, assignments et quizzes
+  // ✅ 1. Récupérer les cours de l'utilisateur
   const studentCourses = await prisma.studentCourse.findMany({
     where: { userId },
     include: {
@@ -22,12 +22,28 @@ export default async function GradesPage() {
             include: {
               lessons: {
                 include: {
+                  // EXERCICES
                   exercises: {
-                    include: { submissions: { where: { userId } } },
+                    include: {
+                      submissions: {
+                        where: { userId }, // ✅ FIX
+                      },
+                    },
                   },
-                  assignmentSubmissions: { where: { userId } },
+
+                  // ASSIGNMENTS
+                  assignmentSubmissions: {
+                    where: { userId }, // ✅ FIX
+                  },
+
+                  // QUIZZES
                   quizzes: {
-                    include: { submissions: { where: { userId } }, questions: true },
+                    include: {
+                      questions: true,
+                      submissions: {
+                        where: { userId }, // ✅ FIX
+                      },
+                    },
                   },
                 },
               },
@@ -38,16 +54,19 @@ export default async function GradesPage() {
     },
   });
 
-  if (studentCourses.length === 0) {
+  // ❌ Aucun cours
+  if (!studentCourses || studentCourses.length === 0) {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <h1 className="text-2xl font-bold">Mes résultats</h1>
-        <p className="mt-4 text-gray-600">Vous n’êtes inscrit à aucun cours.</p>
+        <p className="mt-4 text-gray-600">
+          Vous n’êtes inscrit à aucun cours.
+        </p>
       </div>
     );
   }
 
-  // 🔹 Calculer les scores par leçon
+  // ✅ 2. Calcul des notes
   const lessonGrades = studentCourses
     .flatMap((sc) => sc.course.modules)
     .flatMap((m) => m.lessons)
@@ -55,28 +74,35 @@ export default async function GradesPage() {
       let obtained = 0;
       let max = 0;
 
-      // 🔹 Exercises
-      lesson.exercises.forEach((ex) => {
-        max += ex.points;
-        const sub = ex.submissions[0];
+      // 🟢 EXERCICES
+      lesson.exercises.forEach((ex: any) => {
+        max += ex.points || 0;
+
+        const sub = ex.submissions?.[0];
         if (sub && sub.answer === ex.answer) {
-          obtained += ex.points;
+          obtained += ex.points || 0;
         }
       });
 
-      // 🔹 Assignment submissions
-      lesson.assignmentSubmissions.forEach((a) => {
+      // 🟡 ASSIGNMENTS
+      lesson.assignmentSubmissions.forEach((a: any) => {
         max += 100;
-        obtained += a.score ?? 0;
+        obtained += a.score || 0;
       });
 
-      // 🔹 Quizzes
-      lesson.quizzes.forEach((q) => {
-        const totalQuizPoints = q.questions.reduce((sum, q) => sum + q.points, 0);
-        max += totalQuizPoints;
+      // 🔵 QUIZZES
+      lesson.quizzes.forEach((q: any) => {
+        const quizMax = q.questions.reduce(
+          (sum: number, qu: any) => sum + (qu.points || 0),
+          0
+        );
 
-        const sub = q.submissions[0];
-        if (sub?.score != null) obtained += sub.score;
+        max += quizMax;
+
+        const sub = q.submissions?.[0];
+        if (sub?.score != null) {
+          obtained += sub.score;
+        }
       });
 
       if (max === 0) return null;
@@ -91,82 +117,56 @@ export default async function GradesPage() {
       };
     })
     .filter(Boolean) as {
-      lessonId: number;
-      title: string;
-      order: number;
-      obtained: number;
-      max: number;
-      percent: number;
-    }[];
+    lessonId: number;
+    title: string;
+    order: number;
+    obtained: number;
+    max: number;
+    percent: number;
+  }[];
 
+  // ✅ 3. Totaux globaux
   const totalObtained = lessonGrades.reduce((a, l) => a + l.obtained, 0);
   const totalMax = lessonGrades.reduce((a, l) => a + l.max, 0);
-  const globalPercent = totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 0;
+  const globalPercent =
+    totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 0;
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold text-yellow-900">Mes résultats</h1>
+      <h1 className="text-3xl font-bold">Mes résultats</h1>
 
-      {/* Score global */}
-      <div className="bg-yellow-50 border border-yellow-200 p-6 rounded-xl text-center shadow">
-        <p className="text-xl font-semibold text-gray-700">Performance globale</p>
-        <p className="text-4xl font-bold text-green-700">{globalPercent}%</p>
+      {/* GLOBAL SCORE */}
+      <div className="p-6 border rounded-xl bg-gray-50 text-center">
+        <p className="text-lg font-semibold">Performance globale</p>
+        <p className="text-4xl font-bold text-green-600">
+          {globalPercent}%
+        </p>
         <p className="text-gray-600">
           {totalObtained} / {totalMax} points
         </p>
       </div>
 
-      {/* Résultats par leçon */}
+      {/* LESSONS */}
       <div className="space-y-4">
-        <h2 className="text-2xl font-semibold text-yellow-900">Résultats par leçon</h2>
-
-        {lessonGrades.map((l) => {
-          const isGreenLesson = l.order === 1 || l.order === 5;
-
-          return (
-            <Link
-              key={l.lessonId}
-              href={`/dashboard/student/grades/${l.lessonId}`}
-              className={`block p-5 rounded-xl border shadow-sm transition
-                ${
-                  isGreenLesson
-                    ? "bg-green-50 border-green-300 hover:bg-green-100"
-                    : "bg-yellow-50 border-yellow-300 hover:bg-yellow-100"
-                }
-              `}
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <p
-                    className={`text-lg font-bold underline
-                      ${
-                        isGreenLesson
-                          ? "text-green-700 hover:text-green-900"
-                          : "text-yellow-800 hover:text-yellow-900"
-                      }
-                    `}
-                  >
-                    {l.title}
-                  </p>
-
-                  <p className="text-sm text-gray-600">
-                    {l.obtained} / {l.max} points
-                  </p>
-                </div>
-
-                <p
-                  className={`text-2xl font-bold
-                    ${isGreenLesson ? "text-green-700" : "text-yellow-800"}
-                  `}
-                >
-                  {l.percent}%
+        {lessonGrades.map((l) => (
+          <Link
+            key={l.lessonId}
+            href={`/dashboard/student/grades/${l.lessonId}`}
+            className="block p-4 border rounded hover:bg-gray-50"
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="font-bold">{l.title}</p>
+                <p className="text-sm text-gray-500">
+                  {l.obtained} / {l.max} points
                 </p>
               </div>
-            </Link>
-          );
-        })}
+
+              <p className="text-xl font-bold">{l.percent}%</p>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );
 }
-

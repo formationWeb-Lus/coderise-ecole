@@ -1,102 +1,172 @@
-"use client";
+import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import Link from "next/link";
 
-import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+export default async function GradesPage() {
+  const session = await getServerSession(authOptions);
 
-interface Grade {
-  exerciseId: number;
-  score: number;
-  maxPoints: number;
-  status: "PENDING" | "GRADED" | "LATE";
-}
+  if (!session?.user?.id) redirect("/auth/signin");
+  if (session.user.role !== "STUDENT") redirect("/dashboard");
 
-export default function CourseGradesPage() {
-  const params = useParams();
-  const courseId = params?.courseId as string;
+  const userId = Number(session.user.id);
 
-  const { data: session, status } = useSession();
+  // ✅ 1. Récupérer les cours de l'utilisateur
+  const studentCourses = await prisma.studentCourse.findMany({
+    where: { userId },
+    include: {
+      course: {
+        include: {
+          modules: {
+            include: {
+              lessons: {
+                include: {
+                  // EXERCICES
+                  exercises: {
+                    include: {
+                      submissions: {
+                        where: { userId }, // ✅ FIX
+                      },
+                    },
+                  },
 
-  const [grades, setGrades] = useState<Grade[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [percentage, setPercentage] = useState(0);
+                  // ASSIGNMENTS
+                  assignmentSubmissions: {
+                    where: { userId }, // ✅ FIX
+                  },
 
-  useEffect(() => {
-    if (!courseId || status !== "authenticated") return;
+                  // QUIZZES
+                  quizzes: {
+                    include: {
+                      questions: true,
+                      submissions: {
+                        where: { userId }, // ✅ FIX
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
 
-    const fetchGrades = async () => {
-      setLoading(true);
-      setError(null);
+  // ❌ Aucun cours
+  if (!studentCourses || studentCourses.length === 0) {
+    return (
+      <div className="max-w-4xl mx-auto p-6">
+        <h1 className="text-2xl font-bold">Mes résultats</h1>
+        <p className="mt-4 text-gray-600">
+          Vous n’êtes inscrit à aucun cours.
+        </p>
+      </div>
+    );
+  }
 
-      try {
-        // 1. GET STUDENT
-        const studentRes = await fetch(
-          `/api/student/by-email?email=${session?.user?.email}`
-        );
+  // ✅ 2. Calcul des notes
+  const lessonGrades = studentCourses
+    .flatMap((sc) => sc.course.modules)
+    .flatMap((m) => m.lessons)
+    .map((lesson) => {
+      let obtained = 0;
+      let max = 0;
 
-        if (!studentRes.ok) {
-          throw new Error("Student introuvable");
+      // 🟢 EXERCICES
+      lesson.exercises.forEach((ex: any) => {
+        max += ex.points || 0;
+
+        const sub = ex.submissions?.[0];
+        if (sub && sub.answer === ex.answer) {
+          obtained += ex.points || 0;
         }
+      });
 
-        const student = await studentRes.json();
+      // 🟡 ASSIGNMENTS
+      lesson.assignmentSubmissions.forEach((a: any) => {
+        max += 100;
+        obtained += a.score || 0;
+      });
 
-        // 2. GET GRADES
-        const res = await fetch(
-          `/api/courses/${courseId}/grades?studentId=${student.id}`
+      // 🔵 QUIZZES
+      lesson.quizzes.forEach((q: any) => {
+        const quizMax = q.questions.reduce(
+          (sum: number, qu: any) => sum + (qu.points || 0),
+          0
         );
 
-        if (!res.ok) {
-          throw new Error("Impossible de charger les notes");
+        max += quizMax;
+
+        const sub = q.submissions?.[0];
+        if (sub?.score != null) {
+          obtained += sub.score;
         }
+      });
 
-        const data: Grade[] = await res.json();
-        setGrades(data);
+      if (max === 0) return null;
 
-        // 3. CALCUL POURCENTAGE
-        const totalEarned = data.reduce((a, g) => a + (g.score || 0), 0);
-        const totalPossible = data.reduce((a, g) => a + (g.maxPoints || 0), 0);
+      return {
+        lessonId: lesson.id,
+        title: lesson.title,
+        order: lesson.order,
+        obtained,
+        max,
+        percent: Math.round((obtained / max) * 100),
+      };
+    })
+    .filter(Boolean) as {
+    lessonId: number;
+    title: string;
+    order: number;
+    obtained: number;
+    max: number;
+    percent: number;
+  }[];
 
-        setPercentage(
-          totalPossible > 0 ? (totalEarned / totalPossible) * 100 : 0
-        );
-      } catch (err: any) {
-        console.error(err);
-        setError(err.message || "Erreur lors du chargement des notes");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchGrades();
-  }, [courseId, session, status]);
-
-  if (status === "loading") return <p>Chargement session...</p>;
-  if (!session) return <p>Vous devez être connecté</p>;
-  if (loading) return <p>Chargement des notes...</p>;
-  if (error) return <p className="text-red-600">{error}</p>;
+  // ✅ 3. Totaux globaux
+  const totalObtained = lessonGrades.reduce((a, l) => a + l.obtained, 0);
+  const totalMax = lessonGrades.reduce((a, l) => a + l.max, 0);
+  const globalPercent =
+    totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 0;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Notes du cours</h1>
+    <div className="max-w-5xl mx-auto p-6 space-y-8">
+      <h1 className="text-3xl font-bold">Mes résultats</h1>
 
-      <p className="mb-4 font-semibold">
-        Pourcentage global: {percentage.toFixed(2)}%
-      </p>
+      {/* GLOBAL SCORE */}
+      <div className="p-6 border rounded-xl bg-gray-50 text-center">
+        <p className="text-lg font-semibold">Performance globale</p>
+        <p className="text-4xl font-bold text-green-600">
+          {globalPercent}%
+        </p>
+        <p className="text-gray-600">
+          {totalObtained} / {totalMax} points
+        </p>
+      </div>
 
-      {grades.length === 0 ? (
-        <p>Aucune note disponible.</p>
-      ) : (
-        <div className="space-y-4">
-          {grades.map((g, i) => (
-            <div key={i} className="p-4 border rounded">
-              <p className="font-bold">Exercice {g.exerciseId}</p>
-              <p>Score: {g.score} / {g.maxPoints}</p>
-              <p>Status: {g.status}</p>
+      {/* LESSONS */}
+      <div className="space-y-4">
+        {lessonGrades.map((l) => (
+          <Link
+            key={l.lessonId}
+            href={`/dashboard/student/grades/${l.lessonId}`}
+            className="block p-4 border rounded hover:bg-gray-50"
+          >
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="font-bold">{l.title}</p>
+                <p className="text-sm text-gray-500">
+                  {l.obtained} / {l.max} points
+                </p>
+              </div>
+
+              <p className="text-xl font-bold">{l.percent}%</p>
             </div>
-          ))}
-        </div>
-      )}
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
