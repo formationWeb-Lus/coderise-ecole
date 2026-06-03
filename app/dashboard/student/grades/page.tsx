@@ -4,7 +4,11 @@ import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default async function GradesPage() {
+export default async function GradesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ courseId?: string }>;
+}) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.id) redirect("/auth/signin");
@@ -12,38 +16,53 @@ export default async function GradesPage() {
 
   const userId = Number(session.user.id);
 
-  // ✅ 1. Récupérer les cours de l'utilisateur
+  // ✅ FIX NEXT 15
+  const sp = await searchParams;
+
+  const selectedCourseId = sp?.courseId
+    ? Number(sp.courseId)
+    : null;
+
   const studentCourses = await prisma.studentCourse.findMany({
     where: { userId },
     include: {
-      course: {
+      course: true,
+    },
+  });
+
+  if (!studentCourses.length) {
+    return (
+      <div className="p-6">
+        Aucun cours
+      </div>
+    );
+  }
+
+  const activeCourseId =
+    selectedCourseId || studentCourses[0].course.id;
+
+  const courseData = await prisma.course.findUnique({
+    where: { id: activeCourseId },
+    include: {
+      modules: {
         include: {
-          modules: {
+          lessons: {
             include: {
-              lessons: {
+              exercises: {
                 include: {
-                  // EXERCICES
-                  exercises: {
-                    include: {
-                      submissions: {
-                        where: { userId }, // ✅ FIX
-                      },
-                    },
+                  submissions: {
+                    where: { userId },
                   },
-
-                  // ASSIGNMENTS
-                  assignmentSubmissions: {
-                    where: { userId }, // ✅ FIX
-                  },
-
-                  // QUIZZES
-                  quizzes: {
-                    include: {
-                      questions: true,
-                      submissions: {
-                        where: { userId }, // ✅ FIX
-                      },
-                    },
+                },
+              },
+              assignmentSubmissions: {
+                where: { userId },
+              },
+              quizzes: {
+                include: {
+                  questions: true,
+                  submissions: {
+                    where: { userId },
                   },
                 },
               },
@@ -54,27 +73,16 @@ export default async function GradesPage() {
     },
   });
 
-  // ❌ Aucun cours
-  if (!studentCourses || studentCourses.length === 0) {
-    return (
-      <div className="max-w-4xl mx-auto p-6">
-        <h1 className="text-2xl font-bold">Mes résultats</h1>
-        <p className="mt-4 text-gray-600">
-          Vous n’êtes inscrit à aucun cours.
-        </p>
-      </div>
-    );
+  if (!courseData) {
+    return <div className="p-6">Cours introuvable</div>;
   }
 
-  // ✅ 2. Calcul des notes
-  const lessonGrades = studentCourses
-    .flatMap((sc) => sc.course.modules)
+  const lessonGrades = courseData.modules
     .flatMap((m) => m.lessons)
     .map((lesson) => {
       let obtained = 0;
       let max = 0;
 
-      // 🟢 EXERCICES
       lesson.exercises.forEach((ex: any) => {
         max += ex.points || 0;
 
@@ -84,16 +92,14 @@ export default async function GradesPage() {
         }
       });
 
-      // 🟡 ASSIGNMENTS
       lesson.assignmentSubmissions.forEach((a: any) => {
         max += 100;
         obtained += a.score || 0;
       });
 
-      // 🔵 QUIZZES
       lesson.quizzes.forEach((q: any) => {
         const quizMax = q.questions.reduce(
-          (sum: number, qu: any) => sum + (qu.points || 0),
+          (s: number, qu: any) => s + (qu.points || 0),
           0
         );
 
@@ -110,39 +116,64 @@ export default async function GradesPage() {
       return {
         lessonId: lesson.id,
         title: lesson.title,
-        order: lesson.order,
         obtained,
         max,
         percent: Math.round((obtained / max) * 100),
       };
     })
-    .filter(Boolean) as {
-    lessonId: number;
-    title: string;
-    order: number;
-    obtained: number;
-    max: number;
-    percent: number;
-  }[];
+    .filter(Boolean) as any[];
 
-  // ✅ 3. Totaux globaux
-  const totalObtained = lessonGrades.reduce((a, l) => a + l.obtained, 0);
-  const totalMax = lessonGrades.reduce((a, l) => a + l.max, 0);
+  const totalObtained = lessonGrades.reduce(
+    (a, l) => a + l.obtained,
+    0
+  );
+
+  const totalMax = lessonGrades.reduce(
+    (a, l) => a + l.max,
+    0
+  );
+
   const globalPercent =
-    totalMax > 0 ? Math.round((totalObtained / totalMax) * 100) : 0;
+    totalMax > 0
+      ? Math.round((totalObtained / totalMax) * 100)
+      : 0;
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
-      <h1 className="text-3xl font-bold">Mes résultats</h1>
+      <h1 className="text-3xl font-bold">
+        Mes résultats
+      </h1>
 
-      {/* GLOBAL SCORE */}
-      <div className="p-6 border rounded-xl bg-gray-50 text-center">
-        <p className="text-lg font-semibold">Performance globale</p>
+      {/* ✅ FILTER (NO onChange → FIX SERVER COMPONENT) */}
+      <div className="border p-4 rounded bg-gray-50">
+        <p className="font-semibold mb-2">
+          Filtrer par cours :
+        </p>
+
+        <div className="flex flex-col gap-2">
+          {studentCourses.map((sc) => (
+            <Link
+              key={sc.course.id}
+              href={`/dashboard/student/grades?courseId=${sc.course.id}`}
+              className={`p-2 border rounded ${
+                activeCourseId === sc.course.id
+                  ? "bg-yellow-200"
+                  : "bg-white"
+              }`}
+            >
+              {sc.course.title}
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* GLOBAL */}
+      <div className="p-6 border rounded bg-gray-50 text-center">
         <p className="text-4xl font-bold text-green-600">
           {globalPercent}%
         </p>
-        <p className="text-gray-600">
-          {totalObtained} / {totalMax} points
+        <p>
+          {totalObtained} / {totalMax}
         </p>
       </div>
 
@@ -154,15 +185,9 @@ export default async function GradesPage() {
             href={`/dashboard/student/grades/${l.lessonId}`}
             className="block p-4 border rounded hover:bg-gray-50"
           >
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="font-bold">{l.title}</p>
-                <p className="text-sm text-gray-500">
-                  {l.obtained} / {l.max} points
-                </p>
-              </div>
-
-              <p className="text-xl font-bold">{l.percent}%</p>
+            <div className="flex justify-between">
+              <p className="font-bold">{l.title}</p>
+              <p className="font-bold">{l.percent}%</p>
             </div>
           </Link>
         ))}
