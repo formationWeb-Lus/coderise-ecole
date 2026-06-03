@@ -1,232 +1,168 @@
 import { prisma } from "@/lib/prisma";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
+import React from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import MarkLessonDone from "@/components/MarkLessonDone";
 
-interface LessonDetailPageProps {
-  params: { lessonId: string };
+interface LessonPageProps {
+  params: Promise<{
+    courseId: string;
+    week: string;
+    lessonId: string;
+  }>;
 }
 
-export default async function LessonDetailPage({
-  params,
-}: LessonDetailPageProps) {
-  const session = await getServerSession(authOptions);
+// 🎥 Composant vidéo
+function LessonVideo({ videoUrl }: { videoUrl: string }) {
+  const isYouTube = videoUrl.includes("youtu");
 
-  if (!session?.user?.id) redirect("/auth/signin");
-  if (session.user.role !== "STUDENT") redirect("/dashboard");
+  if (isYouTube) {
+    let videoId = "";
+    if (videoUrl.includes("youtu.be/")) {
+      videoId = videoUrl.split("youtu.be/")[1];
+    } else if (videoUrl.includes("youtube.com/watch?v=")) {
+      videoId = new URL(videoUrl).searchParams.get("v") || "";
+    }
 
-  const userId = Number(session.user.id);
-  const lessonIdNumber = Number(params.lessonId);
-
-  const lesson = await prisma.lesson.findUnique({
-    where: { id: lessonIdNumber },
-    include: {
-      exercises: {
-        include: {
-          submissions: {
-            where: { userId },
-          },
-        },
-      },
-      assignmentSubmissions: {
-        where: { userId },
-      },
-    },
-  });
-
-  if (!lesson) {
     return (
-      <div className="max-w-3xl mx-auto p-6 text-red-600 font-semibold">
-        Leçon non trouvée
+      <div className="relative aspect-video w-full mb-6">
+        <iframe
+          className="absolute inset-0 w-full h-full rounded"
+          src={`https://www.youtube.com/embed/${videoId}`}
+          title="Vidéo de la leçon"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        />
       </div>
     );
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-10">
-      {/* HEADER */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 shadow">
-        <h1 className="text-3xl font-bold text-yellow-900">
-          {lesson.title}
-        </h1>
+    <video controls className="w-full rounded mb-6">
+      <source src={videoUrl} type="video/mp4" />
+      Votre navigateur ne supporte pas la vidéo.
+    </video>
+  );
+}
 
-        {lesson.description && (
-          <p className="mt-3 text-lg text-gray-700">
-            {lesson.description}
-          </p>
+export default async function LessonPage({ params }: LessonPageProps) {
+  const { courseId, week, lessonId } = await params;
+
+  const numericId = Number(lessonId);
+  if (isNaN(numericId)) {
+    return <div className="p-4 text-red-600">ID de leçon invalide.</div>;
+  }
+
+  const lesson = await prisma.lesson.findUnique({
+    where: { id: numericId },
+    include: { exercises: true, quizzes: true },
+  });
+
+  if (!lesson) {
+    return <div className="p-4 text-red-600">Leçon non trouvée</div>;
+  }
+
+  // 🔁 Leçons du module (navigation)
+  const lessons = await prisma.lesson.findMany({
+    where: { moduleId: lesson.moduleId },
+    orderBy: { order: "asc" },
+    select: { id: true, order: true },
+  });
+
+  const index = lessons.findIndex((l) => l.id === lesson.id);
+  const prevLesson = lessons[index - 1];
+  const nextLesson = lessons[index + 1];
+
+  const firstExercise = lesson.exercises[0];
+
+  return (
+    <div className="p-4 max-w-3xl mx-auto">
+      {/* 🔝 TITRE + DEVOIR */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold text-yellow-900">{lesson.title}</h1>
+
+        {lesson.order === 5 && (
+          <a
+            href={`/dashboard/courses/${courseId}/modules/${lesson.moduleId}/lesson/${lesson.id}/assignment`}
+            className="bg-yellow-600 text-white px-4 py-2 rounded hover:bg-yellow-700"
+          >
+            Soumettre le devoir
+          </a>
         )}
       </div>
 
-      {/* VIDEO */}
-      {lesson.videoUrl && (
-        <div className="bg-white border rounded-xl p-6 shadow">
-          <h2 className="text-xl font-semibold mb-3">
-            Vidéo de la leçon
-          </h2>
+      {/* 📝 CONTENU */}
+      <div className="prose max-w-none mb-6 text-lg">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {lesson.content || "Pas de contenu pour cette leçon."}
+        </ReactMarkdown>
+      </div>
 
-          <video
-            src={lesson.videoUrl}
-            controls
-            className="w-full rounded-lg border"
-          />
-        </div>
+      {/* 📝 DESCRIPTION VIDÉO */}
+      {lesson.videoDescription && (
+        <div className="mb-3 text-gray-700 text-lg">{lesson.videoDescription}</div>
       )}
 
-      {/* PDF */}
-      {lesson.pdfUrl && (
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-          <p className="font-semibold text-gray-700">
-            Ressource PDF :
-          </p>
+      {/* 🎥 VIDÉO */}
+      {lesson.videoUrl && <LessonVideo videoUrl={lesson.videoUrl} />}
 
+      {/* 📄 PDF */}
+      {lesson.pdfUrl && (
+        <div className="mb-6">
+          <h2 className="font-semibold mb-2 text-yellow-900 text-xl">Ressources PDF</h2>
           <a
             href={lesson.pdfUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-green-700 font-semibold underline hover:text-green-900"
+            className="text-green-700 font-semibold underline"
           >
-            Télécharger le document
+            Télécharger le PDF
           </a>
         </div>
       )}
 
-      {/* EXERCICES */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-yellow-900">
-          Exercices
-        </h2>
-
-        {lesson.exercises.length === 0 && (
-          <p className="text-gray-600">
-            Aucun exercice pour cette leçon.
-          </p>
-        )}
-
-        {lesson.exercises.map((ex) => {
-          const sub = ex.submissions[0];
-          const isCorrect = sub ? sub.answer === ex.answer : false;
-
-          return (
-            <div
-              key={ex.id}
-              className="p-5 rounded-xl border shadow bg-white"
-            >
-              <p className="font-semibold text-lg">
-                {ex.question}
-              </p>
-
-              <p className="text-sm text-gray-600 mt-1">
-                Points : {ex.points}
-              </p>
-
-              <div className="mt-3 space-y-1">
-                <p>
-                  <span className="font-semibold">
-                    Votre réponse :
-                  </span>{" "}
-                  {sub?.answer ?? "Non soumis"}
-                </p>
-
-                {sub && (
-                  <p
-                    className={`font-semibold ${
-                      isCorrect ? "text-green-700" : "text-red-600"
-                    }`}
-                  >
-                    {isCorrect
-                      ? "✅ Réponse correcte"
-                      : "❌ Réponse incorrecte"}
-                  </p>
-                )}
-
-                <p>
-                  <span className="font-semibold">Score :</span>{" "}
-                  {sub?.score ?? 0}
-                </p>
-
-                <p>
-                  <span className="font-semibold">Statut :</span>{" "}
-                  {sub?.status ?? "PENDING"}
-                </p>
-
-                {sub?.submittedAt && (
-                  <p className="text-sm text-gray-500">
-                    Soumis le :{" "}
-                    {new Date(sub.submittedAt).toLocaleDateString()}
-                  </p>
-                )}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* DEVOIRS */}
-      <div className="space-y-4">
-        <h2 className="text-2xl font-bold text-yellow-900">
-          Devoirs soumis
-        </h2>
-
-        {lesson.assignmentSubmissions.length === 0 && (
-          <p className="text-gray-600">
-            Aucun devoir soumis pour cette leçon.
-          </p>
-        )}
-
-        {lesson.assignmentSubmissions.map((a) => (
-          <div
-            key={a.id}
-            className="p-5 rounded-xl border bg-yellow-50 shadow"
+      {/* 🧠 QUIZ */}
+      {lesson.quizzes && lesson.quizzes.length > 0 ? (
+        <div className="mt-6">
+          <a
+            href={`/dashboard/courses/${courseId}/modules/${lesson.moduleId}/lesson/${lesson.id}/quizzes/${lesson.quizzes[0].id}`}
+            className="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
           >
-            <p className="font-semibold">Fichier :</p>
+            Commencer le quiz
+          </a>
+        </div>
+      ) : (
+        <div className="mt-6">
+          <span className="inline-block bg-gray-400 text-white px-4 py-2 rounded cursor-not-allowed">
+            Pas de quiz disponible
+          </span>
+        </div>
+      )}
 
-            {a.filePath && (
-              <a
-                href={a.filePath}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-green-700 underline font-semibold break-all"
-              >
-                Télécharger le devoir
-              </a>
-            )}
+      {/* ✅ FIN : TERMINÉ + NAVIGATION */}
+      <div className="flex justify-between items-center mt-10 border-t pt-6">
+        <MarkLessonDone lessonId={lesson.id} courseId={Number(courseId)} />
 
-            <div className="mt-3 space-y-1 text-gray-700">
-              <p>
-                <span className="font-semibold">Score :</span>{" "}
-                {a.score ?? 0} / 100
-              </p>
+        <div className="flex gap-4">
+          {prevLesson && (
+            <a
+              href={`/dashboard/courses/${courseId}/modules/${lesson.moduleId}/lesson/${prevLesson.id}`}
+              className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Retour
+            </a>
+          )}
 
-              <p>
-                <span className="font-semibold">Statut :</span>{" "}
-                {a.status}
-              </p>
-
-              {a.feedback && (
-                <p>
-                  <span className="font-semibold">
-                    Feedback :
-                  </span>{" "}
-                  {a.feedback}
-                </p>
-              )}
-
-              {a.studentComment && (
-                <p>
-                  <span className="font-semibold">
-                    Commentaire étudiant :
-                  </span>{" "}
-                  {a.studentComment}
-                </p>
-              )}
-
-              <p className="text-sm text-gray-500">
-                Soumis le :{" "}
-                {new Date(a.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-          </div>
-        ))}
+          {nextLesson && (
+            <a
+              href={`/dashboard/courses/${courseId}/modules/${lesson.moduleId}/lesson/${nextLesson.id}`}
+              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            >
+              Suivant
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
