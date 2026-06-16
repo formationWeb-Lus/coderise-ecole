@@ -299,9 +299,12 @@ NULL,
 'Modélisation et conception de bases de données.');
 
 INSERT INTO "Quiz" (id, "lessonId", title, "order", "createdAt")
-VALUES
+VALUES   
 (1, 19, 'Les bases du CSS', 0, '2026-01-08 12:51:52.487'),
-(2, 25, 'Comprendre les données', 0, '2026-01-16 16:25:58.113');
+(2, 25, 'Comprendre les données', 0, '2026-01-16 16:25:58.113'),
+(3,5, 'Introduction au DOM' , 0, 2026-05-20 10:12:57.469),
+(4, 6, 'Quiz : Méthodes de tableaux JavaScript', 0, 2026-05-20 10:40:13.625),
+(5, 28, 'Quiz : Appelation des Fonctions en JavaScript', 0, 2026-05-20 11:03:28.212);
 
 INSERT INTO "Question" (
     id,
