@@ -303,89 +303,115 @@ VALUES
 (1, 19, 'Les bases du CSS', 0, '2026-01-08 12:51:52.487'),
 (2, 25, 'Comprendre les données', 0, '2026-01-16 16:25:58.113');
 
+INSERT INTO "Question" (
+    id,
+    "quizId",
+    question,
+    type,
+    options,
+    answer,
+    points
+) VALUES
 
-INSERT INTO "Question" (id, "quizId", question, type, options, answer, points)
-VALUES
-(1, 1, 'Quel est le rôle principal du CSS ?', 'QCM',
- '["Ajouter du contenu dynamique","Styliser et mettre en forme les éléments HTML","Créer des bases de données","Envoyer des emails"]',
- 'Styliser et mettre en forme les éléments HTML', 10),
+(1,1,'Quel est le rôle principal du CSS ?','QCM','["Ajouter du contenu dynamique","Styliser et mettre en forme les éléments HTML","Créer des bases de données","Envoyer des emails"]','Styliser et mettre en forme les éléments HTML',10),
 
-(2, 1, 'Que signifie `* { margin: 0; padding: 0; }` dans un reset CSS ?', 'QCM',
- '["Appliquer margin et padding par défaut","Supprimer les marges et paddings par défaut","Ajouter une bordure à tous les éléments","Créer des animations"]',
- 'Supprimer les marges et paddings par défaut', 10),
+(2,1,'Que signifie * { margin: 0; padding: 0; } dans un reset CSS ?','QCM','["Appliquer margin et padding par défaut","Supprimer les marges et paddings par défaut","Ajouter une bordure à tous les éléments","Créer des animations"]','Supprimer les marges et paddings par défaut',10),
 
-(3, 1, 'Quelle propriété CSS permet de changer la police de caractères ?', 'QCM',
- '["font-style","text-transform","font-family","font-weight"]',
- 'font-family', 10),
+(3,1,'Quelle propriété CSS permet de changer la police de caractères ?','QCM','["font-style","text-transform","font-family","font-weight"]','font-family',10),
 
-(4, 1, 'Que fait `display: grid;` ?', 'QCM',
- '["Active le modèle Flexbox","Permet d’aligner les éléments horizontalement uniquement","Active le modèle CSS Grid pour organiser les éléments","Masque les éléments"]',
- 'Active le modèle CSS Grid pour organiser les éléments', 10),
+(4,1,'Que fait display: grid; ?','QCM','["Active le modèle Flexbox","Permet d’aligner les éléments horizontalement uniquement","Active le modèle CSS Grid pour organiser les éléments","Masque les éléments"]','Active le modèle CSS Grid pour organiser les éléments',10),
 
-(5, 1, 'Comment créer 3 colonnes de taille égale dans CSS Grid ?', 'QCM',
- '["grid-template-columns: 1fr 2fr 3fr;","grid-template-columns: repeat(3, 1fr);","columns: 3;","grid-columns: 33%;"]',
- 'grid-template-columns: repeat(3, 1fr);', 10),
+(5,1,'Comment créer 3 colonnes de taille égale dans CSS Grid ?','QCM','["grid-template-columns: 1fr 2fr 3fr;","grid-template-columns: repeat(3, 1fr);","columns: 3;","grid-columns: 33%;"]','grid-template-columns: repeat(3, 1fr);',10),
 
-(6, 1, 'Quel `display` est utilisé pour aligner des éléments sur une seule ligne facilement ?', 'QCM',
- '["block","inline-block","flex","grid"]',
- 'flex', 10),
+(6,1,'Quel display est utilisé pour aligner des éléments sur une seule ligne facilement ?','QCM','["block","inline-block","flex","grid"]','flex',10),
 
-(7, 1, 'Comment supprimer les puces d’une liste non ordonnée ?', 'QCM',
- '["list-style: none;","display: none;","text-decoration: none;","margin: 0;"]',
- 'list-style: none;', 10),
+(7,1,'Comment supprimer les puces d’une liste non ordonnée ?','QCM','["list-style: none;","display: none;","text-decoration: none;","margin: 0;"]','list-style: none;',10),
 
-(8, 1, 'Quel pseudo-sélecteur permet d’ajouter un style au survol d’un lien ?', 'QCM',
- '[":hover",":active",":focus",":visited"]',
- ':hover', 10),
+(8,1,'Quel pseudo-sélecteur permet d’ajouter un style au survol d’un lien ?','QCM','[":hover",":active",":focus",":visited"]',':hover',10),
 
-(9, 1, 'Comment donner un fond rouge au deuxième `<section>` seulement ?', 'QCM',
- '["section:nth-child(2) { background-color: red; }","section:nth-of-type(2) { background-color: red; }","section[2] { background-color: red; }","section.second { background-color: red; }"]',
- 'section:nth-of-type(2) { background-color: red; }', 10),
+(9,1,'Comment donner un fond rouge au deuxième section seulement ?','QCM','["section:nth-child(2)","section:nth-of-type(2)","section[2]","section.second"]','section:nth-of-type(2)',10),
 
-(10, 1, 'Quelle propriété CSS arrondit les angles d’un élément ?', 'QCM',
- '["border-width","border-radius","border-style","border-color"]',
- 'border-radius', 10),
+(10,1,'Quelle propriété CSS arrondit les angles d’un élément ?','QCM','["border-width","border-radius","border-style","border-color"]','border-radius',10),
 
-(11, 2, 'Que sont les données ?', 'QCM',
- '["Des informations déjà interprétées","Des connaissances utilisées pour décider","Des bribes d’informations sans contexte","Des décisions stratégiques"]',
- 'Des bribes d’informations sans contexte', 10),
+(11,2,'Que sont les données ?','QCM','["Des informations déjà interprétées","Des connaissances utilisées pour décider","Des bribes d’informations sans contexte","Des décisions stratégiques"]','Des bribes d’informations sans contexte',10),
 
-(12, 2, 'Quand les données deviennent-elles des informations ?', 'QCM',
- '["Lorsqu’elles sont stockées dans une base de données","Lorsqu’elles sont triées","Lorsqu’elles sont pertinentes et ont du sens pour quelqu’un","Lorsqu’elles sont numériques"]',
- 'Lorsqu’elles sont pertinentes et ont du sens pour quelqu’un', 10),
+(12,2,'Quand les données deviennent-elles des informations ?','QCM','["Lorsqu’elles sont stockées dans une base de données","Lorsqu’elles sont triées","Lorsqu’elles sont pertinentes et ont du sens pour quelqu’un","Lorsqu’elles sont numériques"]','Lorsqu’elles sont pertinentes et ont du sens pour quelqu’un',10),
 
-(13, 2, 'Quelle est la différence principale entre information et connaissance ?', 'QCM',
- '["La connaissance est moins précise","La connaissance correspond à la compréhension de l’importance de l’information","L’information est toujours fausse","Il n’y a aucune différence"]',
- 'La connaissance correspond à la compréhension de l’importance de l’information', 8),
+(13,2,'Quelle est la différence principale entre information et connaissance ?','QCM','["La connaissance est moins précise","La connaissance correspond à la compréhension de l’importance de l’information","L’information est toujours fausse","Il n’y a aucune différence"]','La connaissance correspond à la compréhension de l’importance de l’information',8),
 
-(14, 2, 'La prise de décision consiste à :', 'QCM',
- '["Collecter des données","Trier des informations","Mettre en pratique les connaissances acquises","Stocker des données"]',
- 'Mettre en pratique les connaissances acquises', 8),
+(14,2,'La prise de décision consiste à :','QCM','["Collecter des données","Trier des informations","Mettre en pratique les connaissances acquises","Stocker des données"]','Mettre en pratique les connaissances acquises',8),
 
-(15, 2, 'Qu’est-ce qu’une entité ?', 'QCM',
- '["Une personne, un lieu, une chose ou un concept sur lequel on collecte des données","Une valeur unique","Une ligne dans une table","Une colonne dans une table"]',
- 'Une personne, un lieu, une chose ou un concept sur lequel on collecte des données', 9),
+(15,2,'Qu’est-ce qu’une entité ?','QCM','["Une personne, un lieu, une chose ou un concept sur lequel on collecte des données","Une valeur unique","Une ligne dans une table","Une colonne dans une table"]','Une personne, un lieu, une chose ou un concept sur lequel on collecte des données',9),
 
-(16, 2, 'Un attribut correspond à :', 'QCM',
- '["Une entité complète","Une caractéristique décrivant une entité","Une base de données","Une décision"]',
- 'Une caractéristique décrivant une entité', 8),
+(16,2,'Un attribut correspond à :','QCM','["Une entité complète","Une caractéristique décrivant une entité","Une base de données","Une décision"]','Une caractéristique décrivant une entité',8),
 
-(17, 2, 'Quel est l’objectif principal de la prise de décision fondée sur les données ?', 'QCM',
- '["Gagner du temps","Éviter les biais et les fausses hypothèses","Stocker plus de données","Utiliser uniquement l’intuition"]',
- 'Éviter les biais et les fausses hypothèses', 8),
+(17,2,'Quel est l’objectif principal de la prise de décision fondée sur les données ?','QCM','["Gagner du temps","Éviter les biais et les fausses hypothèses","Stocker plus de données","Utiliser uniquement l’intuition"]','Éviter les biais et les fausses hypothèses',8),
 
-(18, 2, 'Que fait une requête ?', 'QCM',
- '["Elle supprime les données","Elle stocke les données","Elle pose une question aux données","Elle crée une entité"]',
- 'Elle pose une question aux données', 8),
+(18,2,'Que fait une requête ?','QCM','["Elle supprime les données","Elle stocke les données","Elle pose une question aux données","Elle crée une entité"]','Elle pose une question aux données',8),
 
-(19, 2, 'Quelle est la conséquence de la redondance des données ?', 'QCM',
- '["Amélioration de la performance","Gain d’espace","Gaspillage d’espace et difficultés de mise à jour","Meilleure cohérence"]',
- 'Gaspillage d’espace et difficultés de mise à jour', 9),
+(19,2,'Quelle est la conséquence de la redondance des données ?','QCM','["Amélioration de la performance","Gain d’espace","Gaspillage d’espace et difficultés de mise à jour","Meilleure cohérence"]','Gaspillage d’espace et difficultés de mise à jour',9),
 
-(20, 2, 'L’intégrité des données signifie :', 'QCM',
- '["Que les données sont stockées dans Excel","Que les données sont exactes et fiables","Que les données sont nombreuses","Que les données sont publiques"]',
- 'Que les données sont exactes et fiables', 10);
+(20,2,'L’intégrité des données signifie :','QCM','["Que les données sont stockées dans Excel","Que les données sont exactes et fiables","Que les données sont nombreuses","Que les données sont publiques"]','Que les données sont exactes et fiables',10),
 
+(21,3,'Que signifie DOM en développement web ?','QCM','["Document Object Model","Data Object Method","Digital Output Manager","Document Online Module"]','Document Object Model',5),
+
+(22,3,'À quoi sert JavaScript dans une page web ?','QCM','["Ajouter des couleurs uniquement","Rendre la page interactive","Créer uniquement des images","Remplacer complètement le HTML"]','Rendre la page interactive',10),
+
+(23,3,'Que permet la méthode querySelector() ?','QCM','["Créer une page web","Supprimer le navigateur","Sélectionner un élément HTML","Ajouter une base de données"]','Sélectionner un élément HTML',10),
+
+(24,3,'Que fait article.innerHTML = "<strong>Bonjour</strong>" ?','QCM','["Supprime l’élément","Ajoute du HTML dans l’élément","Change la couleur de la page","Crée un bouton"]','Ajoute du HTML dans l’élément',10),
+
+(25,3,'Quelle méthode permet d’écouter un clic sur un bouton ?','QCM','["addEventListener()","createElement()","appendChild()","remove()"]','addEventListener()',10),
+
+(26,3,'Que permet document.createElement("p") ?','QCM','["Supprimer un paragraphe","Modifier une image","Créer un nouvel élément <p>","Ajouter du CSS"]','Créer un nouvel élément <p>',10),
+
+(27,3,'Que fait article.classList.add("active"); ?','QCM','["Supprime une classe CSS","Ajoute une classe CSS","Crée une page HTML","Change le texte du document"]','Ajoute une classe CSS',10),
+
+(28,3,'Quelle propriété permet de lire ce que l’utilisateur écrit dans un champ texte ?','QCM','["innerHTML","textContent","value","style"]','value',10),
+
+(29,3,'Que fait la méthode appendChild() ?','QCM','["Supprime un élément","Ajoute un élément à un autre élément","Modifie le CSS","Recharge la page"]','Ajoute un élément à un autre élément',10),
+
+(30,3,'Que permet la méthode remove() ?','QCM','["Ajouter une classe CSS","Créer un nouvel élément","Supprimer un élément du document","Modifier un texte"]','Supprimer un élément du document',10),
+
+(31,4,'Quelle méthode permet d’ajouter un élément à la fin d’un tableau ?','QCM','["push()","pop()","slice()","shift()"]','push()',5),
+
+(32,4,'Que fait la méthode pop() ?','QCM','["Ajoute un élément au début","Supprime le dernier élément","Fusionne deux tableaux","Recherche un élément"]','Supprime le dernier élément',10),
+
+(33,4,'Quelle méthode supprime le premier élément d’un tableau ?','QCM','["push()","concat()","join()","shift()"]','shift()',5),
+
+(34,4,'Que permet la méthode unshift() ?','QCM','["Supprimer le dernier élément","Ajouter un élément au début du tableau","Découper un tableau","Convertir un tableau en chaîne"]','Ajouter un élément au début du tableau',5),
+
+(35,4,'Quelle méthode permet de fusionner plusieurs tableaux ?','QCM','["splice()","concat()","indexOf()","pop()"]','concat()',5),
+
+(36,4,'Que fait la méthode slice() ?','QCM','["Supprime définitivement un élément","Extrait une partie d’un tableau","Ajoute un élément","Recherche un index"]','Extrait une partie d’un tableau',5),
+
+(37,4,'Quelle méthode permet d’ajouter ou supprimer des éléments dans un tableau ?','QCM','["join()","shift()","splice()","lastIndexOf()"]','splice()',5),
+
+(38,4,'Que fait la méthode join() ?','QCM','["Fusionne deux objets","Convertit les éléments d’un tableau en chaîne de caractères","Supprime le premier élément","Trie un tableau"]','Convertit les éléments d’un tableau en chaîne de caractères',4),
+
+(39,4,'Quelle méthode recherche le premier indice d’un élément dans un tableau ?','QCM','["lastIndexOf()","splice()","push()","indexOf()"]','indexOf()',10),
+
+(40,4,'Que fait la méthode lastIndexOf() ?','QCM','["Recherche le dernier indice d’un élément","Supprime le dernier élément","Ajoute un élément à la fin","Découpe un tableau"]','Recherche le dernier indice d’un élément',4),
+
+(41,5,'Que signifie l’appelation d’une fonction en JavaScript ?','QCM','["Supprimer une fonction","Exécuter une fonction","Créer une variable","Fermer le navigateur"]','Exécuter une fonction',7),
+
+(42,5,'Quelle syntaxe permet d’appeler une fonction nommée salut ?','QCM','["salut[]","salut{}","salut()","call salut"]','salut()',3),
+
+(43,5,'Que fait ce code : function salut(){ console.log("Bonjour !"); } salut(); ?','QCM','["Supprime la fonction","Affiche Bonjour !","Crée une erreur","Ferme la console"]','Affiche Bonjour !',7),
+
+(44,5,'Une fonction peut-elle être appelée plusieurs fois ?','QCM','["Non jamais","Oui uniquement une fois","Oui autant de fois que nécessaire","Seulement avec return"]','Oui autant de fois que nécessaire',9),
+
+(45,5,'Dans greet("Jean"), que représente Jean ?','QCM','["Une fonction","Un argument","Une boucle","Une erreur"]','Un argument',10),
+
+(46,5,'function add(a,b){ return a+b; } console.log(add(2,3));','QCM','["23","add(2,3)","5","undefined"]','5',7),
+
+(47,5,'function multiply(a,b){ return a*b; } retourne :','QCM','["Une chaîne de texte","Le produit de a et b","Une erreur","Rien"]','Le produit de a et b',10),
+
+(48,5,'Quel sera le résultat affiché lorsque second() appelle first() ?','QCM','["Deuxième fonction seulement","Première fonction puis Deuxième fonction","Une erreur JavaScript","Rien ne s’affiche"]','Première fonction puis Deuxième fonction',10),
+
+(49,5,'Une fonction fléchée est une autre manière d’écrire une fonction en JavaScript.','BOOLEAN','["Vrai","Faux"]','Vrai',10),
+
+(50,5,'Les parenthèses () servent à appeler une fonction en JavaScript.','BOOLEAN','["Vrai","Faux"]','Vrai',10);
 
 INSERT INTO "QuizSubmission" (id, "quizId", "userId", score, "submittedAt", "createdAt", "updatedAt")
 VALUES
