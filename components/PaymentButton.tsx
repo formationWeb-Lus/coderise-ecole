@@ -1,66 +1,75 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-export default function PaymentButton() {
+export default function PaymentButton({ courseId }: { courseId: number }) {
+  const [telecom, setTelecom] = useState("");
   const [loading, setLoading] = useState(false);
-  const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
-    let interval: any;
+  const phoneMap: Record<string, string> = {
+    AM: "0995271831",
+    OM: "0899864081",
+    AF: "0910128046",
+    MP: "0810946352",
+  };
 
-    if (loading) {
-      interval = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 90) return prev;
-          return prev + Math.random() * 5;
-        });
-      }, 200);
+  const pay = async () => {
+    if (!telecom) {
+      alert("Choisissez un moyen de paiement");
+      return;
     }
 
-    return () => clearInterval(interval);
-  }, [loading]);
-
-  const handlePayment = async () => {
     setLoading(true);
-    setProgress(10);
 
-    await new Promise((res) => setTimeout(res, 1500));
+    try {
+      const res = await fetch(
+        "https://api.coderise-solution.com/api/payment/initiate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            courseId,
+            amount: 15,
+            telecom,
+            phone: phoneMap[telecom],
+          }),
+        }
+      );
 
-    setProgress(100);
+      const data = await res.json();
 
-    setTimeout(() => {
-      alert("Paiement réussi ✅");
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+      }
+    } catch (error) {
+      alert("Erreur paiement");
+    } finally {
       setLoading(false);
-      setProgress(0);
-    }, 500);
+    }
   };
 
   return (
-    <button
-      onClick={handlePayment}
-      disabled={loading}
-      className="relative w-full py-4 rounded-xl
-                 bg-green-600 text-white text-xl font-bold
-                 overflow-hidden
-                 transition transform
-                 hover:scale-105 active:scale-95
-                 shadow-lg hover:shadow-xl"
-    >
-      {/* TEXTE */}
-      <span className="relative z-10">
-        {loading ? "Traitement..." : "Procéder au paiement"}
-      </span>
+    <div className="space-y-4 mt-6">
 
-      {/* BARRE */}
-      {loading && (
-        <span
-          className="absolute left-0 top-0 h-full
-                     bg-gradient-to-r from-yellow-400 to-yellow-500
-                     transition-all duration-200"
-          style={{ width: `${progress}%` }}
-        />
-      )}
-    </button>
+      <div className="grid grid-cols-2 gap-3">
+
+        <button onClick={() => setTelecom("AM")}>Airtel Money</button>
+        <button onClick={() => setTelecom("OM")}>Orange Money</button>
+        <button onClick={() => setTelecom("AF")}>Afrimoney</button>
+        <button onClick={() => setTelecom("MP")}>M-Pesa</button>
+
+      </div>
+
+      <button
+        onClick={pay}
+        disabled={loading}
+        className="w-full bg-yellow-700 text-white py-3 rounded"
+      >
+        {loading ? "Traitement..." : "Payer 15$"}
+      </button>
+
+    </div>
   );
 }
