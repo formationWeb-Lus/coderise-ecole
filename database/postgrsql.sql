@@ -138,223 +138,283 @@ INSERT INTO "Module" (id, "courseId", "order", title) VALUES
 
 
 
-INSERT INTO "Lesson"
-(id, "moduleId", "order", title, content, "videoUrl", "pdfUrl", description, "videoDescription")
-VALUES
+INSERT INTO Lesson (
+    module_id,
+    lesson_order,
+    title,
+    description,
+    video_url,
+    pdf_url,
+    summary
+) VALUES
 
-(1, 2, 1, 'Introduction de JavaScript',
-'JavaScript est un langage de programmation populaire et largement pris en charge, utilisé pour créer des pages web interactives et dynamiques, des applications mobiles, des applications de bureau, etc. C''est un langage interprété de haut niveau, conçu pour s''exécuter dans les navigateurs web, et il peut également être utilisé côté serveur grâce à des technologies comme Node.js.
-
-Dans ce cours, vous apprendrez à appliquer vos connaissances préalables en programmation au développement web en utilisant JavaScript. Ce langage utilise les mêmes principes et structures de contrôle communes que d''autres langages de programmation tels que Python et C#.',
+(2,1,'Introduction de JavaScript',
+'JavaScript est un langage de programmation populaire et largement pris en charge, utilisé pour créer des pages web interactives et dynamiques.',
 'https://youtu.be/7nsg0MFXoho',
 'https://dynamic-files.onrender.com/download/Document%20sans%20titre%20(2).pdf',
-'Découverte des bases de JavaScript et de son utilisation dans le développement web.',
-NULL),
+'Découverte des bases de JavaScript et de son utilisation dans le développement web.'),
 
-(2, 2, 2, 'Comprendre les variables en JavaScript',
-'Pour vous permettre de mieux comprendre le fonctionnement de JavaScript, ce cours aborde les fonctionnalités et les structures de contrôle fondamentales du langage, notamment les variables. Ces structures et concepts de programmation sont communs à tous les langages. Les cas d''utilisation présentés ici constituent une révision des notions abordées dans les cours préalables.',
+(2,2,'Comprendre les variables en JavaScript',
+'Comprendre le fonctionnement des variables et leur utilisation dans les programmes JavaScript.',
 'https://youtu.be/6528zecefnw',
 'https://dynamic-files.onrender.com/download/Document%20sans%20titre%20(2).pdf',
-'Comprendre la déclaration et l’utilisation des variables en JavaScript.',
-NULL),
+'Comprendre la déclaration et l’utilisation des variables en JavaScript.'),
 
-(3, 2, 3, 'Constructions JavaScript',
-'Les cours de programmation préalables vous ont permis d''acquérir une compréhension fondamentale des structures de programmation courantes, notamment les opérateurs, les expressions, les structures de décision, les boucles et les fonctions. Cette activité porte sur quelques structures de contrôle essentielles.',
+(2,3,'Constructions JavaScript',
+'Découverte des opérateurs, expressions, conditions, boucles et fonctions.',
 'https://youtu.be/-fwJ-hXRtSw',
 'https://dynamic-files.onrender.com/download/Constructions%20JavaScript.pdf',
-'Apprendre les structures de contrôle fondamentales en JavaScript.',
-NULL),
+'Apprendre les structures de contrôle fondamentales en JavaScript.'),
 
-(4, 2, 3, 'Vidéo pratique pour maîtriser les constructions JavaScript',
-'En programmation, les opérateurs sont des symboles utilisés pour effectuer des opérations sur des opérandes (variables et valeurs) et pour traiter des expressions. De nombreux opérateurs réalisent des opérations mathématiques telles que l''addition, la soustraction, la multiplication et la division. D''autres gèrent l''affectation, la comparaison et les opérations logiques.',
+(2,4,'Vidéo pratique pour maîtriser les constructions JavaScript',
+'Exercices pratiques sur les opérateurs et expressions JavaScript.',
 'https://youtu.be/0LRqsv9CuYw',
 'https://dynamic-files.onrender.com/download/Constructions%20JavaScript.pdf',
-'Maîtriser les opérateurs et expressions JavaScript à travers des exemples pratiques.',
-NULL),
+'Maîtriser les opérateurs et expressions JavaScript à travers des exemples pratiques.'),
 
-(5, 2, 4, 'Modèle objet de document',
-'Une compétence essentielle pour tout développeur web front-end est la capacité à manipuler le DOM (Document Object Model), un objet JavaScript créé par le navigateur après l''analyse du document HTML.
-
-Manipuler le DOM signifie lire, modifier, mettre à jour ou supprimer dynamiquement des éléments et leurs propriétés CSS. Le DOM est la représentation arborescente de la structure et du contenu de votre page.
-
-L''objectif de cette activité est de présenter le DOM HTML et d''apprendre à manipuler le document à l''aide de JavaScript.',
+(2,5,'Modèle objet de document',
+'Introduction au DOM et à la manipulation des éléments HTML avec JavaScript.',
 'https://youtu.be/wVIjdaoXHvQ',
 'https://dynamic-files.onrender.com/download/DOM%20JavaScript.pdf',
-'Découvrir et manipuler le DOM avec JavaScript.',
-NULL),
+'Découvrir et manipuler le DOM avec JavaScript.'),
 
-(6, 2, 5, 'Maîtriser les méthodes de tableaux JavaScript comme un pro',
-'Prêts à explorer l''univers fascinant des tableaux JavaScript ? Accrochez-vous, car nous allons découvrir quelques-unes des méthodes les plus originales et utiles qu''ils offrent. De l''ajout et la suppression d''éléments au découpage et à la manipulation de tableaux, nous allons tout vous apprendre.',
+(2,6,'Maîtriser les méthodes de tableaux JavaScript comme un pro',
+'Manipulation avancée des tableaux JavaScript.',
 'https://youtu.be/9rnBvw0_8Js',
 'https://dynamic-files.onrender.com/download/OBJECT%20JavaScript.pdf',
-'Apprendre les principales méthodes de manipulation des tableaux JavaScript.',
-NULL),
+'Apprendre les principales méthodes de manipulation des tableaux JavaScript.'),
 
-(15, 1, 1, 'Lesson1: instalation Git',
-'Dans ce cours, les étudiants apprendront ce qu’est Git, pourquoi il est indispensable pour le développement logiciel moderne, et comment l’installer correctement sur leur ordinateur (Windows, macOS ou Linux). À la fin de cette leçon, ils seront capables de vérifier l’installation de Git et de l’utiliser pour la gestion de versions de leurs projets.',
+(2,7,'Les Fonctions en JavaScript',
+'Comprendre la création et l’utilisation des fonctions.',
+'https://youtu.be/gh6RXftMEmk',
+'https://dynamic-files.onrender.com/download/Les%20Fonctions%20en%20JavaScript.pdf',
+'Apprendre à créer et utiliser des fonctions JavaScript.'),
+
+(2,8,'Appelation des Fonctions en JavaScript',
+'Comprendre comment exécuter et appeler des fonctions.',
+'https://youtu.be/LBxvPuAa3Jw',
+'https://dynamic-files.onrender.com/download/Appel%20Fonctions%20en%20JavaScript.pdf',
+'Maîtriser l’appel des fonctions JavaScript.'),
+
+(1,1,'Lesson1: Installation Git',
+'Installation et configuration de Git sur différents systèmes.',
 'https://youtu.be/Wv2O7cBsUto',
 'https://dynamic-files.onrender.com/download/1767678019831-Configuration%20W01.pdf',
-'Installation de Git sur Windows, macOS et Linux, avec vérification du bon fonctionnement de l’outil.',
-NULL),
+'Installation de Git sur Windows, macOS et Linux.'),
 
-(16, 6, 1, 'Lesson1: instalation Git',
-'Dans ce cours, les étudiants apprendront ce qu’est Git, pourquoi il est indispensable pour le développement logiciel moderne, et comment l’installer correctement sur leur ordinateur (Windows, macOS ou Linux). À la fin de cette leçon, ils seront capables de vérifier l’installation de Git et de l’utiliser pour la gestion de versions de leurs projets.',
-'https://youtu.be/Wv2O7cBsUto',
-'https://dynamic-files.onrender.com/download/1767678019831-Configuration%20W01.pdf',
-'Installation de Git sur Windows, macOS et Linux, avec vérification du bon fonctionnement de l’outil.',
-NULL),
-
-(17, 6, 1, 'Lesson2: Outils – Hébergement – Dépôt GitHub',
-'Ce cours utilise la plateforme GitHub pour héberger vos travaux et le service GitHub Pages pour les afficher sous forme de site web classique, accessible aux utilisateurs.',
+(1,2,'Lesson2: Outils – Hébergement – Dépôt GitHub',
+'Découverte de GitHub et création de dépôts distants.',
 'https://youtu.be/FWZ1gtnrhS0',
 'https://dynamic-files.onrender.com/download/1767678019831-Configuration%20W01.pdf',
-'L''objectif de cette activité de configuration est de mettre en place un dépôt distant qui permettra de générer et de diffuser des pages web aux clients.',
-NULL),
+'Créer et gérer un dépôt GitHub.'),
 
-(18, 1, 2, 'Lesson2: Outils – Hébergement – Dépôt GitHub',
-'GitHub est une plateforme web de gestion de versions et de collaboration. Elle offre les fonctionnalités de contrôle de versions distribué et de gestion du code source de Git, tout en possédant ses propres caractéristiques.',
-'https://youtu.be/FWZ1gtnrhS0',
-'https://dynamic-files.onrender.com/download/1767678019831-Configuration%20W01.pdf',
-'Ce cours utilise la plateforme GitHub pour héberger vos travaux et le service GitHub Pages pour les afficher sous forme de site web classique, accessible aux utilisateurs.',
-NULL),
-
-(19, 1, 3, 'Lesson3 CSS avec exemples concrets',
-'Tandis que le CSS définit l’apparence visuelle. Sans CSS, une page web fonctionne, mais elle est très basique et peu agréable à lire.',
+(1,3,'Lesson3 CSS avec exemples concrets',
+'Introduction au CSS et à la mise en forme des pages web.',
 'https://youtu.be/X5xF-XD2LB0',
 'https://dynamic-files.onrender.com/download/1767811170221-Activit%C3%83%C2%A9%20d''apprentissage%20S1%20_%20Conventions%20de%20d%C3%83%C2%A9nomination.pdf',
-'Le CSS (Cascading Style Sheets) est le langage qui permet de styliser une page HTML.',
-NULL),
+'Le CSS permet de styliser une page HTML.'),
 
-(20, 1, 4, 'Comment effectuer un commit efficace sur GitHub',
-'Un commit est un enregistrement de modifications dans votre projet. Il permet de garder l’historique de votre travail et de collaborer facilement avec d’autres développeurs.',
+(1,4,'Comment effectuer un commit efficace sur GitHub',
+'Apprendre à enregistrer et suivre les modifications du code.',
 'https://youtu.be/HUobLR60M2w',
 NULL,
-'Apprenez à sauvegarder vos modifications dans Git et à les envoyer sur GitHub grâce à des commits clairs et organisés.',
-NULL),
+'Apprenez à sauvegarder vos modifications avec Git.'),
 
-(21, 1, 5, 'Lesson5 Comment créer une page sur GitHub',
-'GitHub Pages est un service gratuit qui permet d’héberger des sites web directement depuis un dépôt GitHub.',
+(1,5,'Lesson5 Comment créer une page sur GitHub',
+'Publication de sites web grâce à GitHub Pages.',
 'https://youtu.be/CUmxGWiNpRY',
 NULL,
-'Apprenez à publier votre site web directement depuis un dépôt GitHub en utilisant GitHub Pages.',
-NULL),
+'Publier un site web gratuitement avec GitHub Pages.'),
 
-(22, 11, 1, 'Configuration S1 : MySQL Workbench',
-'Il est utile de disposer d''une application graphique performante pour travailler avec des bases de données.',
+(3,1,'Comprendre les pseudo-classes CSS',
+'Utilisation des pseudo-classes pour créer des interfaces interactives.',
+'https://youtu.be/viDYoSYgfzk?si=_Ur1zjAwXPXmJv4n',
+'https://dynamic-files.onrender.com/download/pseudoclasspfd.pdf',
+'Découverte des pseudo-classes CSS.'),
+
+(3,2,'Requêtes média CSS',
+'Créer des sites adaptatifs avec les media queries.',
+'https://youtu.be/2zySh5-CP2o?si=otY3jwFIs6ZRtwW8',
+'https://dynamic-files.onrender.com/download/@mediapdf.pdf',
+'Créer des pages web responsives.'),
+
+(3,3,'Principes de conception',
+'Appliquer les bonnes pratiques de conception web.',
+'https://youtu.be/o7QqvxCrc3A?si=WD8rcKbn1ojS0fS8',
+'https://dynamic-files.onrender.com/download/_Principes%20de%20conceptionpdf.pdf',
+'Comprendre les principes fondamentaux du design web.'),
+
+(11,1,'Configuration S1 : MySQL Workbench',
+'Installation et configuration de MySQL Workbench.',
 'https://youtu.be/8iunlY-pH5o',
 'https://drive.google.com/file/d/1r9Z0bky3IKColtZezFKkrwY8tYnnSpaA/view?usp=sharing',
-'Installation de Windows MySQL Workbench',
-NULL),
+'Installation de MySQL Workbench.'),
 
-(23, 11, 2, 'Explorer MySQL Workbench',
-'Regardez les quatre vidéos suivantes et suivez les instructions sur votre ordinateur.',
+(11,2,'Explorer MySQL Workbench',
+'Prise en main de l’outil de gestion de bases de données.',
 'https://youtu.be/lPEfJHA2KEo',
 NULL,
-'Se familiariser avec l''outil CASE utilisé dans le cadre de ce cours.',
-NULL),
+'Découverte de MySQL Workbench.'),
 
-(24, 11, 3, 'Explorer MySQL Workbench',
-'Se familiariser avec l''outil CASE utilisé dans le cadre de ce cours.',
+(11,3,'Explorer MySQL Workbench - Partie 2',
+'Approfondissement de l’utilisation de MySQL Workbench.',
 'https://youtu.be/H7gd0_RIjNM',
 NULL,
-'Objectif : Se familiariser avec l''outil CASE utilisé dans le cadre de ce cours.',
-NULL),
+'Approfondissement de MySQL Workbench.'),
 
-(25, 11, 4, 'Activité d''apprentissage S1 : Comprendre les données',
-'Cette semaine, vous allez apprendre ce que sont les données et les bases de données.',
+(11,4,'Activité d''apprentissage S1 : Comprendre les données',
+'Comprendre les données et les bases de données.',
 'https://youtu.be/E08bJKZXN3E',
 'https://drive.google.com/file/d/1dTTaJ85u2Dp4OAkJfqqTvzHltZ5T_P_8/view?usp=sharing',
-'Termes à connaître : téléchargez le PDF et lisez-le attentivement.',
-NULL);  
+'Introduction aux données et bases de données.'),
+
+(4,1,'Tables pour les utilisateurs malvoyants',
+'Créer des tableaux accessibles aux utilisateurs de lecteurs d’écran.',
+'https://youtu.be/7VlJHE-oxU4?si=EBQRR4AL0pQJBTsr',
+'https://dynamic-files.onrender.com/download/Tables%20pour%20les%20utilisateurs%20malvoyants.pdf',
+'Accessibilité des tableaux HTML.'),
+
+(4,2,'Tables avec colspan et scope',
+'Utilisation des attributs colspan et scope dans les tableaux.',
+'https://youtu.be/jNNyEaUXFIA?si=Q_ZWGHUka4QQaEXe',
+NULL,
+'Maîtriser colspan et scope.'),
+
+(4,3,'Rowspan et scope attribut',
+'Utilisation de rowspan et associations d’en-têtes.',
+'https://youtu.be/yTJ_PhMHAYA?si=yr3tX-JZPzoFeRum',
+NULL,
+'Comprendre rowspan et scope.'),
+
+(11,5,'Introduction aux bases de données relationnelles',
+'Comprendre les concepts fondamentaux des bases de données relationnelles.',
+NULL,
+NULL,
+'Introduction aux bases de données relationnelles.'),
+
+(11,6,'Modélisation des données et conception de bases de données',
+'Apprendre à concevoir une base de données efficace.',
+NULL,
+NULL,
+'Modélisation et conception de bases de données.');
 
 INSERT INTO "Quiz" (id, "lessonId", title, "order", "createdAt")
-VALUES
+VALUES   
 (1, 19, 'Les bases du CSS', 0, '2026-01-08 12:51:52.487'),
-(2, 25, 'Comprendre les données', 0, '2026-01-16 16:25:58.113');
+(2, 25, 'Comprendre les données', 0, '2026-01-16 16:25:58.113'),
+(3,5, 'Introduction au DOM' , 0, 2026-05-20 10:12:57.469),
+(4, 6, 'Quiz : Méthodes de tableaux JavaScript', 0, 2026-05-20 10:40:13.625),
+(5, 28, 'Quiz : Appelation des Fonctions en JavaScript', 0, 2026-05-20 11:03:28.212);
 
+INSERT INTO "Question" (
+    id,
+    "quizId",
+    question,
+    type,
+    options,
+    answer,
+    points
+) VALUES
 
-INSERT INTO "Question" (id, "quizId", question, type, options, answer, points)
-VALUES
-(1, 1, 'Quel est le rôle principal du CSS ?', 'QCM',
- '["Ajouter du contenu dynamique","Styliser et mettre en forme les éléments HTML","Créer des bases de données","Envoyer des emails"]',
- 'Styliser et mettre en forme les éléments HTML', 10),
+(1,1,'Quel est le rôle principal du CSS ?','QCM','["Ajouter du contenu dynamique","Styliser et mettre en forme les éléments HTML","Créer des bases de données","Envoyer des emails"]','Styliser et mettre en forme les éléments HTML',10),
 
-(2, 1, 'Que signifie `* { margin: 0; padding: 0; }` dans un reset CSS ?', 'QCM',
- '["Appliquer margin et padding par défaut","Supprimer les marges et paddings par défaut","Ajouter une bordure à tous les éléments","Créer des animations"]',
- 'Supprimer les marges et paddings par défaut', 10),
+(2,1,'Que signifie * { margin: 0; padding: 0; } dans un reset CSS ?','QCM','["Appliquer margin et padding par défaut","Supprimer les marges et paddings par défaut","Ajouter une bordure à tous les éléments","Créer des animations"]','Supprimer les marges et paddings par défaut',10),
 
-(3, 1, 'Quelle propriété CSS permet de changer la police de caractères ?', 'QCM',
- '["font-style","text-transform","font-family","font-weight"]',
- 'font-family', 10),
+(3,1,'Quelle propriété CSS permet de changer la police de caractères ?','QCM','["font-style","text-transform","font-family","font-weight"]','font-family',10),
 
-(4, 1, 'Que fait `display: grid;` ?', 'QCM',
- '["Active le modèle Flexbox","Permet d’aligner les éléments horizontalement uniquement","Active le modèle CSS Grid pour organiser les éléments","Masque les éléments"]',
- 'Active le modèle CSS Grid pour organiser les éléments', 10),
+(4,1,'Que fait display: grid; ?','QCM','["Active le modèle Flexbox","Permet d’aligner les éléments horizontalement uniquement","Active le modèle CSS Grid pour organiser les éléments","Masque les éléments"]','Active le modèle CSS Grid pour organiser les éléments',10),
 
-(5, 1, 'Comment créer 3 colonnes de taille égale dans CSS Grid ?', 'QCM',
- '["grid-template-columns: 1fr 2fr 3fr;","grid-template-columns: repeat(3, 1fr);","columns: 3;","grid-columns: 33%;"]',
- 'grid-template-columns: repeat(3, 1fr);', 10),
+(5,1,'Comment créer 3 colonnes de taille égale dans CSS Grid ?','QCM','["grid-template-columns: 1fr 2fr 3fr;","grid-template-columns: repeat(3, 1fr);","columns: 3;","grid-columns: 33%;"]','grid-template-columns: repeat(3, 1fr);',10),
 
-(6, 1, 'Quel `display` est utilisé pour aligner des éléments sur une seule ligne facilement ?', 'QCM',
- '["block","inline-block","flex","grid"]',
- 'flex', 10),
+(6,1,'Quel display est utilisé pour aligner des éléments sur une seule ligne facilement ?','QCM','["block","inline-block","flex","grid"]','flex',10),
 
-(7, 1, 'Comment supprimer les puces d’une liste non ordonnée ?', 'QCM',
- '["list-style: none;","display: none;","text-decoration: none;","margin: 0;"]',
- 'list-style: none;', 10),
+(7,1,'Comment supprimer les puces d’une liste non ordonnée ?','QCM','["list-style: none;","display: none;","text-decoration: none;","margin: 0;"]','list-style: none;',10),
 
-(8, 1, 'Quel pseudo-sélecteur permet d’ajouter un style au survol d’un lien ?', 'QCM',
- '[":hover",":active",":focus",":visited"]',
- ':hover', 10),
+(8,1,'Quel pseudo-sélecteur permet d’ajouter un style au survol d’un lien ?','QCM','[":hover",":active",":focus",":visited"]',':hover',10),
 
-(9, 1, 'Comment donner un fond rouge au deuxième `<section>` seulement ?', 'QCM',
- '["section:nth-child(2) { background-color: red; }","section:nth-of-type(2) { background-color: red; }","section[2] { background-color: red; }","section.second { background-color: red; }"]',
- 'section:nth-of-type(2) { background-color: red; }', 10),
+(9,1,'Comment donner un fond rouge au deuxième section seulement ?','QCM','["section:nth-child(2)","section:nth-of-type(2)","section[2]","section.second"]','section:nth-of-type(2)',10),
 
-(10, 1, 'Quelle propriété CSS arrondit les angles d’un élément ?', 'QCM',
- '["border-width","border-radius","border-style","border-color"]',
- 'border-radius', 10),
+(10,1,'Quelle propriété CSS arrondit les angles d’un élément ?','QCM','["border-width","border-radius","border-style","border-color"]','border-radius',10),
 
-(11, 2, 'Que sont les données ?', 'QCM',
- '["Des informations déjà interprétées","Des connaissances utilisées pour décider","Des bribes d’informations sans contexte","Des décisions stratégiques"]',
- 'Des bribes d’informations sans contexte', 10),
+(11,2,'Que sont les données ?','QCM','["Des informations déjà interprétées","Des connaissances utilisées pour décider","Des bribes d’informations sans contexte","Des décisions stratégiques"]','Des bribes d’informations sans contexte',10),
 
-(12, 2, 'Quand les données deviennent-elles des informations ?', 'QCM',
- '["Lorsqu’elles sont stockées dans une base de données","Lorsqu’elles sont triées","Lorsqu’elles sont pertinentes et ont du sens pour quelqu’un","Lorsqu’elles sont numériques"]',
- 'Lorsqu’elles sont pertinentes et ont du sens pour quelqu’un', 10),
+(12,2,'Quand les données deviennent-elles des informations ?','QCM','["Lorsqu’elles sont stockées dans une base de données","Lorsqu’elles sont triées","Lorsqu’elles sont pertinentes et ont du sens pour quelqu’un","Lorsqu’elles sont numériques"]','Lorsqu’elles sont pertinentes et ont du sens pour quelqu’un',10),
 
-(13, 2, 'Quelle est la différence principale entre information et connaissance ?', 'QCM',
- '["La connaissance est moins précise","La connaissance correspond à la compréhension de l’importance de l’information","L’information est toujours fausse","Il n’y a aucune différence"]',
- 'La connaissance correspond à la compréhension de l’importance de l’information', 8),
+(13,2,'Quelle est la différence principale entre information et connaissance ?','QCM','["La connaissance est moins précise","La connaissance correspond à la compréhension de l’importance de l’information","L’information est toujours fausse","Il n’y a aucune différence"]','La connaissance correspond à la compréhension de l’importance de l’information',8),
 
-(14, 2, 'La prise de décision consiste à :', 'QCM',
- '["Collecter des données","Trier des informations","Mettre en pratique les connaissances acquises","Stocker des données"]',
- 'Mettre en pratique les connaissances acquises', 8),
+(14,2,'La prise de décision consiste à :','QCM','["Collecter des données","Trier des informations","Mettre en pratique les connaissances acquises","Stocker des données"]','Mettre en pratique les connaissances acquises',8),
 
-(15, 2, 'Qu’est-ce qu’une entité ?', 'QCM',
- '["Une personne, un lieu, une chose ou un concept sur lequel on collecte des données","Une valeur unique","Une ligne dans une table","Une colonne dans une table"]',
- 'Une personne, un lieu, une chose ou un concept sur lequel on collecte des données', 9),
+(15,2,'Qu’est-ce qu’une entité ?','QCM','["Une personne, un lieu, une chose ou un concept sur lequel on collecte des données","Une valeur unique","Une ligne dans une table","Une colonne dans une table"]','Une personne, un lieu, une chose ou un concept sur lequel on collecte des données',9),
 
-(16, 2, 'Un attribut correspond à :', 'QCM',
- '["Une entité complète","Une caractéristique décrivant une entité","Une base de données","Une décision"]',
- 'Une caractéristique décrivant une entité', 8),
+(16,2,'Un attribut correspond à :','QCM','["Une entité complète","Une caractéristique décrivant une entité","Une base de données","Une décision"]','Une caractéristique décrivant une entité',8),
 
-(17, 2, 'Quel est l’objectif principal de la prise de décision fondée sur les données ?', 'QCM',
- '["Gagner du temps","Éviter les biais et les fausses hypothèses","Stocker plus de données","Utiliser uniquement l’intuition"]',
- 'Éviter les biais et les fausses hypothèses', 8),
+(17,2,'Quel est l’objectif principal de la prise de décision fondée sur les données ?','QCM','["Gagner du temps","Éviter les biais et les fausses hypothèses","Stocker plus de données","Utiliser uniquement l’intuition"]','Éviter les biais et les fausses hypothèses',8),
 
-(18, 2, 'Que fait une requête ?', 'QCM',
- '["Elle supprime les données","Elle stocke les données","Elle pose une question aux données","Elle crée une entité"]',
- 'Elle pose une question aux données', 8),
+(18,2,'Que fait une requête ?','QCM','["Elle supprime les données","Elle stocke les données","Elle pose une question aux données","Elle crée une entité"]','Elle pose une question aux données',8),
 
-(19, 2, 'Quelle est la conséquence de la redondance des données ?', 'QCM',
- '["Amélioration de la performance","Gain d’espace","Gaspillage d’espace et difficultés de mise à jour","Meilleure cohérence"]',
- 'Gaspillage d’espace et difficultés de mise à jour', 9),
+(19,2,'Quelle est la conséquence de la redondance des données ?','QCM','["Amélioration de la performance","Gain d’espace","Gaspillage d’espace et difficultés de mise à jour","Meilleure cohérence"]','Gaspillage d’espace et difficultés de mise à jour',9),
 
-(20, 2, 'L’intégrité des données signifie :', 'QCM',
- '["Que les données sont stockées dans Excel","Que les données sont exactes et fiables","Que les données sont nombreuses","Que les données sont publiques"]',
- 'Que les données sont exactes et fiables', 10);
+(20,2,'L’intégrité des données signifie :','QCM','["Que les données sont stockées dans Excel","Que les données sont exactes et fiables","Que les données sont nombreuses","Que les données sont publiques"]','Que les données sont exactes et fiables',10),
 
+(21,3,'Que signifie DOM en développement web ?','QCM','["Document Object Model","Data Object Method","Digital Output Manager","Document Online Module"]','Document Object Model',5),
+
+(22,3,'À quoi sert JavaScript dans une page web ?','QCM','["Ajouter des couleurs uniquement","Rendre la page interactive","Créer uniquement des images","Remplacer complètement le HTML"]','Rendre la page interactive',10),
+
+(23,3,'Que permet la méthode querySelector() ?','QCM','["Créer une page web","Supprimer le navigateur","Sélectionner un élément HTML","Ajouter une base de données"]','Sélectionner un élément HTML',10),
+
+(24,3,'Que fait article.innerHTML = "<strong>Bonjour</strong>" ?','QCM','["Supprime l’élément","Ajoute du HTML dans l’élément","Change la couleur de la page","Crée un bouton"]','Ajoute du HTML dans l’élément',10),
+
+(25,3,'Quelle méthode permet d’écouter un clic sur un bouton ?','QCM','["addEventListener()","createElement()","appendChild()","remove()"]','addEventListener()',10),
+
+(26,3,'Que permet document.createElement("p") ?','QCM','["Supprimer un paragraphe","Modifier une image","Créer un nouvel élément <p>","Ajouter du CSS"]','Créer un nouvel élément <p>',10),
+
+(27,3,'Que fait article.classList.add("active"); ?','QCM','["Supprime une classe CSS","Ajoute une classe CSS","Crée une page HTML","Change le texte du document"]','Ajoute une classe CSS',10),
+
+(28,3,'Quelle propriété permet de lire ce que l’utilisateur écrit dans un champ texte ?','QCM','["innerHTML","textContent","value","style"]','value',10),
+
+(29,3,'Que fait la méthode appendChild() ?','QCM','["Supprime un élément","Ajoute un élément à un autre élément","Modifie le CSS","Recharge la page"]','Ajoute un élément à un autre élément',10),
+
+(30,3,'Que permet la méthode remove() ?','QCM','["Ajouter une classe CSS","Créer un nouvel élément","Supprimer un élément du document","Modifier un texte"]','Supprimer un élément du document',10),
+
+(31,4,'Quelle méthode permet d’ajouter un élément à la fin d’un tableau ?','QCM','["push()","pop()","slice()","shift()"]','push()',5),
+
+(32,4,'Que fait la méthode pop() ?','QCM','["Ajoute un élément au début","Supprime le dernier élément","Fusionne deux tableaux","Recherche un élément"]','Supprime le dernier élément',10),
+
+(33,4,'Quelle méthode supprime le premier élément d’un tableau ?','QCM','["push()","concat()","join()","shift()"]','shift()',5),
+
+(34,4,'Que permet la méthode unshift() ?','QCM','["Supprimer le dernier élément","Ajouter un élément au début du tableau","Découper un tableau","Convertir un tableau en chaîne"]','Ajouter un élément au début du tableau',5),
+
+(35,4,'Quelle méthode permet de fusionner plusieurs tableaux ?','QCM','["splice()","concat()","indexOf()","pop()"]','concat()',5),
+
+(36,4,'Que fait la méthode slice() ?','QCM','["Supprime définitivement un élément","Extrait une partie d’un tableau","Ajoute un élément","Recherche un index"]','Extrait une partie d’un tableau',5),
+
+(37,4,'Quelle méthode permet d’ajouter ou supprimer des éléments dans un tableau ?','QCM','["join()","shift()","splice()","lastIndexOf()"]','splice()',5),
+
+(38,4,'Que fait la méthode join() ?','QCM','["Fusionne deux objets","Convertit les éléments d’un tableau en chaîne de caractères","Supprime le premier élément","Trie un tableau"]','Convertit les éléments d’un tableau en chaîne de caractères',4),
+
+(39,4,'Quelle méthode recherche le premier indice d’un élément dans un tableau ?','QCM','["lastIndexOf()","splice()","push()","indexOf()"]','indexOf()',10),
+
+(40,4,'Que fait la méthode lastIndexOf() ?','QCM','["Recherche le dernier indice d’un élément","Supprime le dernier élément","Ajoute un élément à la fin","Découpe un tableau"]','Recherche le dernier indice d’un élément',4),
+
+(41,5,'Que signifie l’appelation d’une fonction en JavaScript ?','QCM','["Supprimer une fonction","Exécuter une fonction","Créer une variable","Fermer le navigateur"]','Exécuter une fonction',7),
+
+(42,5,'Quelle syntaxe permet d’appeler une fonction nommée salut ?','QCM','["salut[]","salut{}","salut()","call salut"]','salut()',3),
+
+(43,5,'Que fait ce code : function salut(){ console.log("Bonjour !"); } salut(); ?','QCM','["Supprime la fonction","Affiche Bonjour !","Crée une erreur","Ferme la console"]','Affiche Bonjour !',7),
+
+(44,5,'Une fonction peut-elle être appelée plusieurs fois ?','QCM','["Non jamais","Oui uniquement une fois","Oui autant de fois que nécessaire","Seulement avec return"]','Oui autant de fois que nécessaire',9),
+
+(45,5,'Dans greet("Jean"), que représente Jean ?','QCM','["Une fonction","Un argument","Une boucle","Une erreur"]','Un argument',10),
+
+(46,5,'function add(a,b){ return a+b; } console.log(add(2,3));','QCM','["23","add(2,3)","5","undefined"]','5',7),
+
+(47,5,'function multiply(a,b){ return a*b; } retourne :','QCM','["Une chaîne de texte","Le produit de a et b","Une erreur","Rien"]','Le produit de a et b',10),
+
+(48,5,'Quel sera le résultat affiché lorsque second() appelle first() ?','QCM','["Deuxième fonction seulement","Première fonction puis Deuxième fonction","Une erreur JavaScript","Rien ne s’affiche"]','Première fonction puis Deuxième fonction',10),
+
+(49,5,'Une fonction fléchée est une autre manière d’écrire une fonction en JavaScript.','BOOLEAN','["Vrai","Faux"]','Vrai',10),
+
+(50,5,'Les parenthèses () servent à appeler une fonction en JavaScript.','BOOLEAN','["Vrai","Faux"]','Vrai',10);
 
 INSERT INTO "QuizSubmission" (id, "quizId", "userId", score, "submittedAt", "createdAt", "updatedAt")
 VALUES
