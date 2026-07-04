@@ -7,6 +7,27 @@ generator client {
   provider = "prisma-client-js"
 }
 
+model Payment {
+  id              Int      @id @default(autoincrement())
+  transactionId   String   @unique
+  userId          Int?
+  courseId        Int?
+  
+  phone           String?
+  telecom         String?
+  amount          Float
+
+  status          PaymentStatus @default(PENDING)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User?    @relation(fields: [userId], references: [id])
+  course          Course?  @relation(fields: [courseId], references: [id])
+}
+
+
+
 model User {
   name                  String
   email                 String?                @unique
@@ -24,6 +45,7 @@ model User {
   quizSubmissions       QuizSubmission[] // <-- relation inverse
   codeFiles             CodeFile[]
   folders               CodeFolder[]
+  payments               Payment[]
 }
 
 model CodeFolder {
@@ -92,6 +114,7 @@ model Course {
   announcements  Announcement[]
   modules        Module[]
   studentCourses StudentCourse[]
+  payments        Payment[]
 }
 
 model Module {
@@ -275,6 +298,11 @@ enum Role {
   STUDENT
   TEACHER
   ADMIN
+}
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }
 
 enum ExerciseType {
