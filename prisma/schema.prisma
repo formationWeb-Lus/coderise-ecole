@@ -9,10 +9,13 @@ generator client {
 
 model Payment {
   id              Int      @id @default(autoincrement())
-  transactionId   String   @unique
+
+  transactionId   String?  @unique
+  sessionId       String?  @unique
+
   userId          Int?
   courseId        Int?
-  
+
   phone           String?
   telecom         String?
   amount          Float
@@ -22,8 +25,8 @@ model Payment {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
-  user            User?    @relation(fields: [userId], references: [id])
-  course          Course?  @relation(fields: [courseId], references: [id])
+  user   User?   @relation(fields:[userId], references:[id])
+  course Course? @relation(fields:[courseId], references:[id])
 }
 
 
@@ -316,4 +319,11 @@ enum SubmissionStatus {
   SUBMITTED // ✅ ajouter ici
   GRADED
   LATE
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  name      String
+  phone     String   @unique
+  createdAt DateTime @default(now())
 }
