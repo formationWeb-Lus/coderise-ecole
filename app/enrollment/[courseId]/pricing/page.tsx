@@ -1,65 +1,57 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import PaymentButton from "@/components/PaymentButton";
 
 interface PageProps {
   params: Promise<{ courseId: string }>;
 }
 
 export default async function PricingPage({ params }: PageProps) {
-  const { courseId } = await params;
-  const courseIdNum = Number(courseId);
+  const session = await getServerSession(authOptions);
 
-  if (isNaN(courseIdNum)) notFound();
+  if (!session?.user?.id) {
+    redirect("/auth/signin");
+  }
+
+  const { courseId } = await params;
 
   const course = await prisma.course.findUnique({
-    where: { id: courseIdNum },
+    where: {
+      id: Number(courseId),
+    },
   });
 
-  if (!course) notFound();
+  if (!course) {
+    notFound();
+  }
 
   return (
     <div className="min-h-screen bg-yellow-50 px-6 py-12">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <h1 className="text-4xl font-extrabold text-yellow-900 mb-2">
-          Tarification – {course.title}
+      <div className="max-w-xl mx-auto bg-white p-8 rounded-xl shadow">
+        <h1 className="text-3xl font-bold">
+          Tarification : {course.title}
         </h1>
-        <p className="text-yellow-800 text-lg mb-10">
-          Investissez dans vos compétences et accédez à un apprentissage de qualité.
-        </p>
 
-        {/* Carte de paiement */}
-        <div className="bg-white border-2 border-yellow-900 rounded-2xl shadow-xl p-10">
-          <h2 className="text-2xl font-bold text-yellow-900 mb-6">
-            Détails du paiement
-          </h2>
+        <div className="mt-4 rounded-lg bg-yellow-50 border border-yellow-200 p-4">
+  <p className="text-lg">
+    <strong>Montant du cours et de tous les livres associés à cette formation</strong>
+  </p>
 
-          <div className="space-y-4 text-lg text-yellow-900">
-            <div className="flex justify-between">
-              <span>💻 Accès complet au cours</span>
-              <span className="font-semibold">10 $</span>
-            </div>
-            <div className="flex justify-between">
-              <span>📘 Livre & syllabus</span>
-              <span className="font-semibold">5 $</span>
-            </div>
+  <p className="text-2xl font-bold text-yellow-700 mt-2">
+    💵 15 USD
+  </p>
 
-            <div className="border-t border-yellow-300 my-6" />
+  <p className="text-xl font-semibold text-green-700 mt-1">
+    ou en 🇨🇩 33 450 CDF
+  </p>
+</div>
 
-            <div className="flex justify-between text-2xl font-extrabold">
-              <span>Total</span>
-              <span>15 $</span>
-            </div>
-          </div>
-
-          <button
-            className="mt-10 w-full py-4 rounded-xl
-                       bg-green-600 text-white text-xl font-bold
-                       hover:bg-green-700 transition"
-          >
-            Procéder au paiement
-          </button>
-        </div>
+        <PaymentButton
+          courseId={course.id}
+          userId={Number(session.user.id)}
+        />
       </div>
     </div>
   );

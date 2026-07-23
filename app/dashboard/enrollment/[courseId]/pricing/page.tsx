@@ -34,9 +34,19 @@ export default async function PricingPage({ params }: PageProps) {
           Tarification : {course.title}
         </h1>
 
-        <p className="mt-4 text-lg">
-          Total : <strong>15$</strong>
-        </p>
+        <div className="mt-4 rounded-lg bg-yellow-50 border border-yellow-200 p-4">
+  <p className="text-lg">
+    <strong>Montant du cours et de tous les livres associés à cette formation</strong>
+  </p>
+
+  <p className="text-2xl font-bold text-yellow-700 mt-2">
+    💵 15 USD
+  </p>
+
+  <p className="text-xl font-semibold text-green-700 mt-1">
+    ou en 🇨🇩 33 450 CDF
+  </p>
+</div>
 
         <PaymentButton
           courseId={course.id}

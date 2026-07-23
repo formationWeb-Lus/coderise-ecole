@@ -16,6 +16,9 @@ export default function PaymentButton({
 
   const [telecom, setTelecom] = useState("");
   const [phone, setPhone] = useState("243");
+  const [currency, setCurrency] = useState<"USD" | "CDF">("USD");
+
+const amount = currency === "USD" ? 15 : 33450;
 
   const [loading, setLoading] = useState(false);
 
@@ -38,19 +41,18 @@ const pay = async () => {
     alert("Entrez votre numéro.");
     return;
   }
+setLoading(true);
 
-  setLoading(true);
+const payload = {
+  userId,
+  courseId,
+  amount,
+  phone,
+  telecom,
+  currency,
+};
 
-  const payload = {
-    userId,
-    courseId,
-    amount: 15,
-    phone,
-    telecom,
-    currency: "USD",
-  };
-
-  console.log("Payload :", payload);
+console.log("Payload :", payload);
 
   try {
     const res = await fetch(
@@ -279,10 +281,10 @@ const pay = async () => {
 
 </div>
 
-{telecom && (
+
   <div className="mt-5">
     <label className="block text-lg font-semibold mb-2">
-      Numéro Mobile Money
+      Entrez Votre Numéro Mobile Money
     </label>
 
     <div className="
@@ -323,11 +325,11 @@ const pay = async () => {
 
     {phone.length > 0 && phone.length < 12 && (
       <p className="text-red-500 text-sm mt-2">
-        Le numéro doit contenir 12 chiffres (ex: 243971234567)
+        Le numéro doit contenir 11 chiffres (ex: 243971234567)
       </p>
     )}
   </div>
-)}
+
 
 
       {message && (
@@ -347,13 +349,70 @@ const pay = async () => {
 
       {sessionId && (
 
-        <div className="rounded bg-blue-100 p-3 text-blue-700">
+  <div className="rounded bg-blue-100 p-3 text-blue-700">
 
-          Paiement en attente de confirmation...
+    Paiement en attente de confirmation...
 
-        </div>
+  </div>
 
-      )}
+)}
+
+{/* ============================
+    Affichage des devises
+============================ */}
+<div className="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-5 text-center shadow-sm">
+
+  <p className="text-gray-500 uppercase tracking-wide text-sm font-semibold">
+    Montant à payer
+  </p>
+
+  <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+    {/* USD */}
+    <div className="bg-white rounded-xl border border-yellow-300 p-4 shadow-sm">
+      <p className="text-sm text-gray-500">
+        Paiement en Dollar Américain
+      </p>
+
+      <h2 className="text-3xl font-bold text-yellow-700 mt-2">
+        💵 15 USD
+      </h2>
+    </div>
+
+    {/* CDF */}
+    <div className="bg-white rounded-xl border border-green-300 p-4 shadow-sm">
+      <p className="text-sm text-gray-500">
+        Paiement en Franc Congolais
+      </p>
+
+      <h2 className="text-3xl font-bold text-green-700 mt-2">
+        🇨🇩 33 450 CDF
+      </h2>
+    </div>
+
+  </div>
+
+  <p className="mt-4 text-sm text-gray-600">
+    Vous pouvez effectuer votre paiement en <strong>Dollar Américain (USD)</strong> ou en <strong>Franc Congolais (CDF)</strong>, selon votre devise.
+  </p>
+
+</div>
+
+<button
+
+  disabled={loading}
+
+  onClick={pay}
+
+  className="w-full rounded bg-yellow-700 py-3 text-white font-semibold hover:bg-yellow-800 transition"
+
+>
+
+  {loading
+    ? "Initialisation..."
+    : "Payer 15 USD (33 450 CDF)"}
+
+</button>
 
 
 

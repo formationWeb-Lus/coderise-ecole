@@ -56,7 +56,7 @@ export default async function StudentDashboardPage() {
 </div>
 
             {/* 🔥 BOUTON PREMIUM */}
-            <Link href="/dashboard/enrollment" className="inline-block">
+            <Link href="/enrollment" className="inline-block">
               <div className="
                 px-10 py-4 
                 text-lg font-bold text-white 
