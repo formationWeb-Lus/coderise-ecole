@@ -386,7 +386,7 @@ console.log("Payload :", payload);
       </p>
 
       <h2 className="text-3xl font-bold text-green-700 mt-2">
-        🇨🇩 33 450 CDF
+         33 450 CDF
       </h2>
     </div>
 
@@ -397,45 +397,24 @@ console.log("Payload :", payload);
   </p>
 
 </div>
+<div className="flex justify-center gap-4">
+  <button
+    disabled={loading}
+    onClick={pay}
+    className="inline-block rounded bg-yellow-700 px-6 py-3 text-white font-semibold hover:bg-yellow-800 transition"
+  >
+    {loading ? "Initialisation..." : "Payer 33 450 FC"}
+  </button>
 
-<button
-
-  disabled={loading}
-
-  onClick={pay}
-
-  className="w-full rounded bg-yellow-700 py-3 text-white font-semibold hover:bg-yellow-800 transition"
-
->
-
-  {loading
-    ? "Initialisation..."
-    : "Payer 15 USD (33 450 CDF)"}
-
-</button>
-
-
-
-
-
-
-      <button
-
-        disabled={loading}
-
-        onClick={pay}
-
-        className="w-full rounded bg-yellow-700 py-3 text-white"
-
-      >
-
-        {loading ? "Initialisation..." : "Payer 15 USD"}
-
-      </button>
-
-
-    </div>
-
+  <button
+    disabled={loading}
+    onClick={pay}
+    className="inline-block rounded bg-yellow-700 px-6 py-3 text-white font-semibold hover:bg-yellow-800 transition"
+  >
+    {loading ? "Initialisation..." : "Payer 15 USD"}
+  </button>
+</div>
+</div>
   );
 
 }

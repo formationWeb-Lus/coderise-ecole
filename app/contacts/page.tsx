@@ -1,80 +1,10 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { User, Phone, ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 
 export default function HomePage() {
-
-  const router = useRouter();
-
-
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  function normalizePhone(phone: string) {
-  const cleaned = phone.replace(/\D/g, "");
-
-  if (cleaned.startsWith("243")) {
-    return cleaned;
-  }
-
-  if (cleaned.startsWith("0")) {
-    return "243" + cleaned.substring(1);
-  }
-
-  return "243" + cleaned;
-}
-
-async function handleSubmit(e: React.FormEvent) {
-
-  e.preventDefault();
-
-  const formattedPhone = normalizePhone(phone);
-
-  try {
-
-    setLoading(true);
-
-    const response = await fetch("/api/contacts", {
-
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify({
-        name,
-        phone: formattedPhone,
-      }),
-
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message);
-    }
-
-    router.push("/dashboard/enrollment");
-
-  } catch (error) {
-
-    console.error(error);
-    alert("Erreur lors de l'enregistrement.");
-
-  } finally {
-
-    setLoading(false);
-
-  }
-
-}
-
-
 
   return (
 
@@ -247,230 +177,50 @@ async function handleSubmit(e: React.FormEvent) {
 
 
 
-              <p className="
-                text-gray-500
-                text-center
-                mt-3
-                mb-8
-              ">
 
-                Entrez vos informations pour choisir une formation.
-
-              </p>
-
-
-
-
-
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-6"
-              >
-
-
-
-                {/* NOM */}
-
-
-                <div>
-
-
-                  <label className="
-                    block
-                    font-semibold
-                    text-gray-700
-                    mb-2
-                  ">
-
-                    Nom complet
-
-                  </label>
-
-
-
-                  <div className="relative">
-
-
-                    <User
-
-                      size={20}
-
-                      className="
-                        absolute
-                        left-4
-                        top-1/2
-                        -translate-y-1/2
-                        text-gray-400
-                      "
-
-                    />
-
-
-
-                    <input
-
-                      type="text"
-
-                      placeholder="Ex : Alexandre Jiresse"
-
-                      value={name}
-
-                      onChange={(e)=>setName(e.target.value)}
-
-                      required
-
-                      className="
-                        w-full
-                        pl-12
-                        py-4
-                        rounded-xl
-                        border
-                        border-gray-300
-                        text-gray-900
-                        focus:ring-4
-                        focus:ring-yellow-200
-                        outline-none
-                      "
-
-                    />
-
-
-                  </div>
-
-
-                </div>
-
-
-
-
-
-                {/* TELEPHONE */}
-
-
-                <div>
-
-
-                  <label className="
-                    block
-                    font-semibold
-                    text-gray-700
-                    mb-2
-                  ">
-
-                    Numéro WhatsApp
-
-                  </label>
-
-
-
-                  <div className="relative">
-
-
-                    <Phone
-
-                      size={20}
-
-                      className="
-                        absolute
-                        left-4
-                        top-1/2
-                        -translate-y-1/2
-                        text-gray-400
-                      "
-
-                    />
-
-
-
-                 <input
-  type="tel"
-  placeholder="0812345678"
-  value={phone}
-  onChange={(e) => setPhone(e.target.value.replace(/\D/g, ""))}
-  required
-  pattern="^(243\d{9}|0\d{9}|\d{9})$"
-  title="Formats acceptés : 0812345678, 243812345678 ou 812345678"
-  className="
-    w-full
-    pl-12
-    py-4
-    rounded-xl
-    border
-    border-gray-300
-    text-gray-900
-    focus:ring-4
-    focus:ring-yellow-200
-    outline-none
-  "
-/>
-
-
-                    
-                       
-
-
-                  </div>
-
-
-                </div>
-
-
-
-
-
-                <button
-
-                  type="submit"
-
-                  disabled={loading}
-
-                  className="
-                    w-full
-                    bg-yellow-400
-                    hover:bg-yellow-500
-                    text-[#08192d]
-                    font-bold
-                    py-4
-                    rounded-xl
-                    flex
-                    justify-center
-                    items-center
-                    gap-3
-                  "
-
-                >
-
-
-                  {
-                    loading ?
-
-                    "Enregistrement..." :
-
-                    <>
-                      Continuer
-                      <ArrowRight size={20}/>
-                    </>
-
-                  }
-
-
-                </button>
-
-
-
-                <p className="
-                  text-center
-                  text-sm
-                  text-gray-500
-                ">
-
-                  Vos informations restent confidentielles.
-
-                </p>
-
-
-
-              </form>
+<div className="space-y-5">
+  <Link
+    href="/register"
+    className="
+      block
+      w-full
+      text-center
+      bg-white
+      text-black
+      font-bold
+      py-4
+      rounded-xl
+      border
+      border-gray-300
+      hover:bg-gray-100
+      transition
+    "
+  >
+    Commencer gratuitement
+  </Link>
+
+  <Link
+    href="/auth/signin"
+    className="
+      block
+      w-full
+      text-center
+      bg-blue-800
+      text-yellow-200
+      font-bold
+      py-4
+      rounded-xl
+      hover:bg-blue-700
+      transition
+    "
+  >
+    Se connecter
+  </Link>
+
+  <p className="text-center text-sm text-gray-500 mt-4">
+    Choisissez une option pour accéder à la plateforme.
+  </p>
+</div>
 
 
 
@@ -1509,5 +1259,4 @@ async function handleSubmit(e: React.FormEvent) {
     </div>
 
   );
-
 }

@@ -44,7 +44,7 @@ export default async function PricingPage({ params }: PageProps) {
   </p>
 
   <p className="text-xl font-semibold text-green-700 mt-1">
-    ou en 🇨🇩 33 450 CDF
+    ou en  33 450 CDF
   </p>
 </div>
 
