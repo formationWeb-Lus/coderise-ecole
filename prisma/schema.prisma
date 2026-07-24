@@ -91,7 +91,7 @@ model Course {
   title          String
   description    String
   imageUrl       String?
-  duration       Int
+  duration       Int  
   createdAt      DateTime        @default(now())
   announcements  Announcement[]
   modules        Module[]

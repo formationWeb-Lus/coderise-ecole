@@ -10,22 +10,20 @@ import SessionTimer from "@/components/SessionTimer";
 import { SessionDurations } from "@/utils/sessionExpiration";
 
 export default async function StudentDashboardPage() {
-  const session = await getServerSession(authOptions);
+ const session = await getServerSession(authOptions);
 
-  if (!session?.user?.id) redirect("/auth/signin");
-  if (session.user.role !== "STUDENT") redirect("/dashboard");
+if (!session?.user?.id) redirect("/auth/signin");
+if (session.user.role !== "STUDENT") redirect("/dashboard");
 
-  const student = await prisma.student.findFirst({
-    where: { email: session.user.email ?? undefined },
-  });
-
-  const studentCourses = student
-    ? await prisma.studentCourse.findMany({
-        where: { studentId: student.id },
-        include: { course: true },
-      })
-    : [];
-
+// Récupérer les cours de l'utilisateur connecté
+const studentCourses = await prisma.studentCourse.findMany({
+  where: {
+    userId: Number(session.user.id),
+  },
+  include: {
+    course: true,
+  },
+});
   return (
     <div className="min-h-screen bg-gray-100">
       <SessionTimer duration={SessionDurations.LONG} />

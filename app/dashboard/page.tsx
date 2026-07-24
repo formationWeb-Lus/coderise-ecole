@@ -7,7 +7,13 @@ import { useSession } from "next-auth/react";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { data: session, status } = useSession();
+const { data: session, status } = useSession();
+
+useEffect(() => {
+  console.log("SESSION CLIENT :", session);
+  console.log("ROLE CLIENT :", session?.user?.role);
+}, [session]);
+
 
   useEffect(() => {
     if (status === "loading") return; // attendre que la session soit chargée
@@ -41,6 +47,7 @@ export default function AdminDashboardPage() {
         <Link href="/dashboard/admin/courses" className="bg-blue-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-blue-700">
           Créer un cours
         </Link>
+        
 
         <Link href="/dashboard/admin/courses/1/modules/create" className="bg-green-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-green-700">
           Créer un module

@@ -47,13 +47,17 @@ export default function AuthPage() {
         redirect: false,
       });
 
-      if (res?.error) throw new Error("Identifiants incorrects");
+     if (res?.error) throw new Error("Identifiants incorrects");
 
-      // 👉 récupérer session pour role
-      const session = await fetch("/api/auth/session").then(r => r.json());
-      const role = session?.user?.role;
+// 👉 récupérer session pour role
+const session = await fetch("/api/auth/session").then(r => r.json());
 
-      setProgress(100);
+console.log("SESSION :", session);
+console.log("ROLE :", session?.user?.role);
+
+const role = session?.user?.role;
+
+setProgress(100);
 
       setTimeout(() => {
         if (role === "ADMIN") {
