@@ -30,7 +30,13 @@ export default async function EnrollmentPage() {
           <Link
             key={course.id}
             href={`/enrollment/${course.id}/pricing`}
-            className="group bg-white border rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+           className="group bg-white border rounded-lg overflow-hidden
+hover:shadow-xl
+hover:border-blue-500
+transition-all
+duration-300
+hover:-translate-y-1
+active:scale-95"
           >
             {/* Image */}
             {course.imageUrl ? (
@@ -47,9 +53,11 @@ export default async function EnrollmentPage() {
 
             {/* Contenu */}
             <div className="p-3">
-              <h2 className="font-semibold text-sm md:text-base line-clamp-2 group-hover:text-blue-600">
-                {course.title}
-              </h2>
+              <h2 className="font-semibold text-sm md:text-base text-blue-600 underline underline-offset-2 group-hover:text-blue-700 transition-colors">
+
+📘 {course.title}
+
+</h2>
 
               <p className="text-xs md:text-sm text-gray-600 mt-1 line-clamp-2">
                 {course.description}
