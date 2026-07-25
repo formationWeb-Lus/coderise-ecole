@@ -3,6 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import PaymentButton from "@/components/PaymentButton";
+import PaymentFooter from "@/components/PaymentFooter";
 
 interface PageProps {
   params: Promise<{ courseId: string }>;
