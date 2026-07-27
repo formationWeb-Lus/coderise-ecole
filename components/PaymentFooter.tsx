@@ -1,96 +1,144 @@
 import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import PaymentFooter from "@/components/PaymentFooter";
 
-export default function PaymentFooter() {
+interface Props {
+  searchParams: Promise<{
+    sessionId?: string;
+  }>;
+}
+
+export default async function PaymentSuccessPage({
+  searchParams,
+}: Props) {
+  const params = await searchParams;
+
+  const sessionId = params.sessionId;
+
+  let payment = null;
+
+  if (sessionId) {
+    payment = await prisma.payment.findFirst({
+      where: {
+        sessionId: String(sessionId),
+      },
+      include: {
+        course: true,
+        user: true,
+      },
+    });
+  }
+
   return (
-    <footer className="mt-20 bg-[#08192d] text-white">
-      <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="grid gap-12 md:grid-cols-3">
-          {/* À propos */}
-          <div>
-            <h2 className="mb-5 text-2xl font-bold text-yellow-300">
-              CodeRise Academy
-            </h2>
+    <div className="min-h-screen flex flex-col bg-green-50">
 
-            <p className="leading-8 text-gray-300">
-              Notre équipe est disponible pour vous accompagner avant,
-              pendant et après votre paiement afin de vous garantir une
-              expérience simple, rapide et sécurisée.
-            </p>
+      {/* Contenu principal */}
+      <main className="flex-1 flex items-center justify-center px-6 py-16">
+
+        <div className="bg-white max-w-lg w-full rounded-2xl shadow-lg p-8 text-center">
+
+          {/* Icône */}
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
+            <span className="text-5xl">✅</span>
           </div>
 
-          {/* Navigation */}
-          <div>
-            <h3 className="mb-6 text-xl font-bold text-yellow-300">
-              Navigation
-            </h3>
+          <h1 className="text-3xl font-bold text-green-700">
+            Paiement réussi !
+          </h1>
 
-            <ul className="space-y-3 text-gray-300">
-              <li>
-                <Link
-                  href="/dashboard/enrollment"
-                  className="hover:text-yellow-300 transition"
-                >
-                  Formations
-                </Link>
-              </li>
+          <p className="mt-4 text-gray-600">
+            Merci pour votre paiement.
+            Votre inscription a été confirmée avec succès.
+          </p>
 
-              <li>
-                <Link
-                  href="/pricing"
-                  className="hover:text-yellow-300 transition"
-                >
-                  Paiement
-                </Link>
-              </li>
+          {payment && (
+            <div className="mt-8 rounded-xl bg-gray-50 p-5 text-left space-y-3">
 
-              <li>
-                <Link
-                  href="/dashboard"
-                  className="hover:text-yellow-300 transition"
-                >
-                  Tableau de bord
-                </Link>
-              </li>
-            </ul>
-          </div>
+              <div>
+                <span className="font-semibold">
+                  Formation :
+                </span>
 
-          {/* Contact */}
-          <div>
-            <h3 className="mb-6 text-xl font-bold text-yellow-300">
-              Contact
-            </h3>
+                {payment.course ? (
+                  <p className="text-gray-700">
+                    {payment.course.title}
+                  </p>
+                ) : (
+                  <p className="text-gray-500">
+                    Formation non trouvée
+                  </p>
+                )}
+              </div>
 
-            <div className="space-y-4">
-              <a
-                href="https://wa.me/243899864081"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block text-gray-300 transition hover:text-green-400"
-              >
-                💬 WhatsApp : +243 899 864 081
-              </a>
+              <div>
+                <span className="font-semibold">
+                  Montant :
+                </span>
 
-              <a
-                href="tel:+243995271831"
-                className="block text-gray-300 transition hover:text-blue-400"
-              >
-                📞 +243 995 271 831
-              </a>
+                <p className="text-gray-700">
+                  {payment.amount} USD
+                </p>
+              </div>
 
-              <a
-                href="mailto:jiresselusa127@gmail.com"
-                className="block text-gray-300 transition hover:text-red-400"
-              >
-                ✉️ jiresselusa127@gmail.com
-              </a>
+              <div>
+                <span className="font-semibold">
+                  Téléphone :
+                </span>
+
+                <p className="text-gray-700">
+                  {payment.phone}
+                </p>
+              </div>
+
+              <div>
+                <span className="font-semibold">
+                  Transaction :
+                </span>
+
+                <p className="text-gray-700 break-all">
+                  {payment.transactionId || "En attente"}
+                </p>
+              </div>
+
+              <div>
+                <span className="font-semibold">
+                  Statut :
+                </span>
+
+                <p className="text-green-600 font-bold">
+                  CONFIRMÉ
+                </p>
+              </div>
+
             </div>
+          )}
+
+          <div className="mt-8 space-y-4">
+
+            <Link
+              href="/dashboard/student"
+              className="block w-full rounded-lg bg-yellow-600 py-3 text-white font-semibold hover:bg-yellow-700 transition"
+            >
+              Accéder à votre espace étudiant
+            </Link>
+
+            {payment?.courseId && (
+              <Link
+                href={`/courses/${payment.courseId}`}
+                className="block w-full rounded-lg border border-gray-300 py-3 font-semibold hover:bg-gray-100 transition"
+              >
+                Commencer la formation
+              </Link>
+            )}
+
           </div>
+
         </div>
 
-        <div className="mt-14 border-t border-gray-700 pt-8 text-center text-gray-400">
-          © {new Date().getFullYear()} CodeRise Academy — Tous droits réservés.
-        </div>
-      </div>
-    </footer>
+      </main>
+
+     
+
+    </div>
   );
 }
