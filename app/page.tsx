@@ -6,12 +6,67 @@ import Link from "next/link";
 
 export default function HomePage() {
 
+
+
   return (
+
+    
 
     <div className="min-h-screen bg-[#08192d]">
 
 
       {/* HEADER */}
+
+        
+
+<section className="bg-yellow-400 text-[#08192d]">
+  <div
+    className="
+      max-w-7xl
+      mx-auto
+      px-6
+      py-4
+      flex
+      flex-col
+      md:flex-row
+      items-center
+      justify-between
+      gap-4
+    "
+  >
+    <div>
+      <h2 className="text-2xl font-extrabold">
+        🔥 Promotion exceptionnelle
+      </h2>
+
+      <p className="mt-1 font-medium">
+        Inscrivez-vous aujourd'hui pour seulement
+        <span className="font-bold text-red-600"> 15 USD</span>.
+      </p>
+
+      <p className="text-sm mt-1">
+        ⏳ La promotion prendra bientôt fin.
+      </p>
+    </div>
+
+    <Link
+      href="/register"
+      className="
+        bg-[#08192d]
+        text-yellow-300
+        px-8
+        py-4
+        rounded-xl
+        font-bold
+        hover:bg-[#102c4e]
+        transition
+        whitespace-nowrap
+      "
+    >
+      Je profite de la promotion
+    </Link>
+  </div>
+</section>
 
       <header className="border-b border-blue-900">
 
@@ -102,49 +157,56 @@ export default function HomePage() {
 
 
               <h2 className="
-                text-5xl
-                font-bold
-                text-white
-                leading-tight
-              ">
+  text-5xl
+  font-bold
+  text-white
+  leading-tight
+">
+  Devenez
 
-                Apprenez les métiers
+  <span className="text-yellow-300">
+    {" "}Développeur Web,
+  </span>
 
-                <span className="
-                  text-yellow-300
-                ">
-                  {" "}du numérique
-                </span>
+  Mobile ou Expert en IA
+</h2>
 
+<p className="
+  text-gray-300
+  text-lg
+  mt-6
+  leading-8
+">
+  Apprenez à créer des sites web modernes, des applications
+  mobiles et des solutions d'intelligence artificielle grâce
+  à une formation 100 % pratique, accompagnée par un mentor
+  expérimenté.
+</p>
 
-              </h2>
+<div className="mt-8 space-y-2 text-white">
 
+  <p>✅ Formation 100 % pratique</p>
 
+  <p>✅ Projets professionnels</p>
 
-              <p className="
-                text-gray-300
-                text-lg
-                mt-6
-                leading-8
-              ">
+  <p>✅ Certificat de fin de formation</p>
 
-                Rejoignez CodeRise Academy et développez
-                vos compétences en développement web,
-                mobile, intelligence artificielle et technologie.
+  <p>✅ Accompagnement personnalisé</p>
 
-              </p>
+</div>
 
+<p className="
+  mt-8
+  text-yellow-300
+  text-xl
+  font-bold
+">
+  🔥 Offre de lancement : seulement 15 USD
+</p>
 
-
-              <p className="
-                text-yellow-300
-                mt-8
-                font-semibold
-              ">
-
-                🚀 Commencez votre parcours maintenant
-
-              </p>
+<p className="text-red-400 font-semibold mt-2">
+  ⏳ Places limitées. La promotion prendra bientôt fin.
+</p>
 
 
             </div>
@@ -171,7 +233,7 @@ export default function HomePage() {
                 text-center
               ">
 
-                Commencer
+                Profiter de la promotion
 
               </h2>
 
@@ -194,7 +256,7 @@ export default function HomePage() {
     transition
   "
 >
-  Commencer gratuitement
+  Profiter de la promotion
 </Link>
 
   <Link
@@ -852,7 +914,7 @@ export default function HomePage() {
       transition
     "
   >
-    Commencer gratuitement
+    Je profite de la promotion 
   </Link>
 </div>
 
@@ -1113,7 +1175,7 @@ export default function HomePage() {
 
               <p className="mb-3">
 
-                📱 WhatsApp : +243 XXX XXX XXX
+                📱 WhatsApp : +243 995271831
 
               </p>
 
@@ -1122,7 +1184,7 @@ export default function HomePage() {
 
               <p className="mb-3">
 
-                ✉ contact@coderise.africa
+                ✉ africoms879@gmail.com
 
               </p>
 
