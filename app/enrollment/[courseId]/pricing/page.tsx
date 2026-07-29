@@ -38,7 +38,7 @@ export default async function PricingPage({ params }: PageProps) {
 
           <div className="mt-6 rounded-lg border border-yellow-200 bg-yellow-50 p-5">
             <p className="text-lg font-semibold text-gray-800">
-              Montant du cours et de tous les livres associés à cette formation
+              Montant du cours pour toutes la formation et les livres associés à cette formation
             </p>
 
             <p className="mt-3 text-3xl font-bold text-yellow-700">
