@@ -45,6 +45,11 @@ useEffect(() => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <Link href="/dashboard/admin/courses" className="bg-blue-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-blue-700">
+
+       <Link href="/dashboard/admin" className="bg-green-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-green-700">
+          Modifier et supprimer les cours
+        </Link>
+
           Créer un cours
         </Link>
         
