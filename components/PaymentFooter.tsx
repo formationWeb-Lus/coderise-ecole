@@ -1,144 +1,167 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
-import PaymentFooter from "@/components/PaymentFooter";
 
-interface Props {
-  searchParams: Promise<{
-    sessionId?: string;
-  }>;
-}
-
-export default async function PaymentSuccessPage({
-  searchParams,
-}: Props) {
-  const params = await searchParams;
-
-  const sessionId = params.sessionId;
-
-  let payment = null;
-
-  if (sessionId) {
-    payment = await prisma.payment.findFirst({
-      where: {
-        sessionId: String(sessionId),
-      },
-      include: {
-        course: true,
-        user: true,
-      },
-    });
-  }
-
+export default function PaymentFooter() {
   return (
-    <div className="min-h-screen flex flex-col bg-green-50">
+    <footer className="mt-20 bg-[#08192d] text-white">
+      <div className="mx-auto max-w-7xl px-6 py-16">
 
-      {/* Contenu principal */}
-      <main className="flex-1 flex items-center justify-center px-6 py-16">
+        {/* Assistance */}
+        <div className="rounded-3xl border border-yellow-500/20 bg-white/5 backdrop-blur-sm p-8">
 
-        <div className="bg-white max-w-lg w-full rounded-2xl shadow-lg p-8 text-center">
+          <h2 className="text-center text-3xl font-bold text-yellow-300">
+            📞 Besoin d'assistance ?
+          </h2>
 
-          {/* Icône */}
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-            <span className="text-5xl">✅</span>
-          </div>
-
-          <h1 className="text-3xl font-bold text-green-700">
-            Paiement réussi !
-          </h1>
-
-          <p className="mt-4 text-gray-600">
-            Merci pour votre paiement.
-            Votre inscription a été confirmée avec succès.
+          <p className="mx-auto mt-5 max-w-3xl text-center leading-8 text-gray-300">
+            Si vous rencontrez un problème pour accéder à votre espace étudiant,
+            visualiser vos cours ou si vous avez une question concernant votre
+            paiement, notre équipe est disponible pour vous accompagner.
           </p>
 
-          {payment && (
-            <div className="mt-8 rounded-xl bg-gray-50 p-5 text-left space-y-3">
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
 
-              <div>
-                <span className="font-semibold">
-                  Formation :
-                </span>
+            {/* WhatsApp */}
 
-                {payment.course ? (
-                  <p className="text-gray-700">
-                    {payment.course.title}
-                  </p>
-                ) : (
-                  <p className="text-gray-500">
-                    Formation non trouvée
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <span className="font-semibold">
-                  Montant :
-                </span>
-
-                <p className="text-gray-700">
-                  {payment.amount} USD
-                </p>
-              </div>
-
-              <div>
-                <span className="font-semibold">
-                  Téléphone :
-                </span>
-
-                <p className="text-gray-700">
-                  {payment.phone}
-                </p>
-              </div>
-
-              <div>
-                <span className="font-semibold">
-                  Transaction :
-                </span>
-
-                <p className="text-gray-700 break-all">
-                  {payment.transactionId || "En attente"}
-                </p>
-              </div>
-
-              <div>
-                <span className="font-semibold">
-                  Statut :
-                </span>
-
-                <p className="text-green-600 font-bold">
-                  CONFIRMÉ
-                </p>
-              </div>
-
-            </div>
-          )}
-
-          <div className="mt-8 space-y-4">
-
-            <Link
-              href="/dashboard/student"
-              className="block w-full rounded-lg bg-yellow-600 py-3 text-white font-semibold hover:bg-yellow-700 transition"
+            <a
+              href="https://wa.me/243899864081"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group rounded-2xl bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-green-50 hover:shadow-xl"
             >
-              Accéder à votre espace étudiant
-            </Link>
+              <div className="text-5xl">💬</div>
 
-            {payment?.courseId && (
-              <Link
-                href={`/courses/${payment.courseId}`}
-                className="block w-full rounded-lg border border-gray-300 py-3 font-semibold hover:bg-gray-100 transition"
-              >
-                Commencer la formation
-              </Link>
-            )}
+              <h3 className="mt-4 text-xl font-bold text-gray-800">
+                WhatsApp
+              </h3>
+
+              <p className="mt-2 text-green-600 font-semibold">
+                +243 899 864 081
+              </p>
+            </a>
+
+            {/* Téléphone */}
+
+            <a
+              href="tel:+243995271831"
+              className="group rounded-2xl bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-blue-50 hover:shadow-xl"
+            >
+              <div className="text-5xl">📞</div>
+
+              <h3 className="mt-4 text-xl font-bold text-gray-800">
+                Téléphone
+              </h3>
+
+              <p className="mt-2 text-blue-600 font-semibold">
+                +243 995 271 831
+              </p>
+            </a>
+
+            {/* Email */}
+
+            <a
+              href="mailto:jiresselusa127@gmail.com"
+              className="group rounded-2xl bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:bg-red-50 hover:shadow-xl"
+            >
+              <div className="text-5xl">✉️</div>
+
+              <h3 className="mt-4 text-xl font-bold text-gray-800">
+                Email
+              </h3>
+
+              <p className="mt-2 break-all text-red-600 font-semibold">
+                jiresselusa127@gmail.com
+              </p>
+            </a>
+
+          </div>
+
+          <div className="mt-8 rounded-2xl bg-white p-6 text-center">
+            <p className="text-gray-700 leading-7">
+              <strong>Notre engagement :</strong> Nous répondons rapidement à
+              toutes les demandes afin que vous puissiez commencer votre
+              formation sans difficulté.
+            </p>
+          </div>
+
+        </div>
+
+        {/* Footer principal */}
+
+        <div className="mt-16 grid gap-12 md:grid-cols-3">
+
+          <div>
+
+            <h3 className="text-2xl font-bold text-yellow-300">
+              CodeRise Academy
+            </h3>
+
+            <p className="mt-5 leading-8 text-gray-300">
+              Plateforme de formation en ligne destinée à accompagner les
+              étudiants vers l'excellence grâce à des formations modernes,
+              accessibles et professionnelles.
+            </p>
+
+          </div>
+
+          <div>
+
+            <h3 className="text-xl font-bold text-yellow-300">
+              Navigation
+            </h3>
+
+            <ul className="mt-5 space-y-4">
+
+              <li>
+                <Link
+                  href="/dashboard/enrollment"
+                  className="text-gray-300 transition hover:text-yellow-300"
+                >
+                  📘 Formations
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/dashboard/student"
+                  className="text-gray-300 transition hover:text-yellow-300"
+                >
+                  🎓 Tableau de bord
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/"
+                  className="text-gray-300 transition hover:text-yellow-300"
+                >
+                  🏠 Accueil
+                </Link>
+              </li>
+
+            </ul>
+
+          </div>
+
+          <div>
+
+            <h3 className="text-xl font-bold text-yellow-300">
+              Informations
+            </h3>
+
+            <p className="mt-5 leading-8 text-gray-300">
+              Paiement sécurisé, accès immédiat aux formations après
+              confirmation et assistance disponible pour tous les étudiants.
+            </p>
 
           </div>
 
         </div>
 
-      </main>
+        <div className="mt-12 border-t border-gray-700 pt-8 text-center text-gray-400">
+          © {new Date().getFullYear()} CodeRise Academy — Tous droits réservés.
+        </div>
 
-     
-
-    </div>
+      </div>
+    </footer>
   );
 }

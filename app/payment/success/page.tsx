@@ -2,7 +2,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
 interface Props {
-  searchParams: Promise<{
+  searchParams?: Promise<{
     sessionId?: string;
   }>;
 }
@@ -10,9 +10,9 @@ interface Props {
 export default async function PaymentSuccessPage({
   searchParams,
 }: Props) {
-  const params = await searchParams;
+  const params = searchParams ? await searchParams : undefined;
 
-  const sessionId = params.sessionId;
+  const sessionId = params?.sessionId;
 
   let payment = null;
 
