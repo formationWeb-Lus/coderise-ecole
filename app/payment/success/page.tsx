@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import FacebookPurchase from "@/components/FacebookPurchase";
 
 interface Props {
   searchParams?: Promise<{
@@ -30,6 +31,19 @@ export default async function PaymentSuccessPage({
 
   return (
     <div className="min-h-screen bg-green-50 py-16 px-6">
+
+      {/* Envoi de l'évènement Meta Pixel */}
+     {payment && payment.status === "SUCCESS" && (
+  <FacebookPurchase
+  amount={payment.amount}
+  eventId={
+    payment.transactionId ??
+    payment.sessionId ??
+    payment.id.toString()
+  }
+/>
+)}
+
       <div className="mx-auto max-w-xl rounded-2xl bg-white p-8 shadow-lg">
 
         {/* Icône */}
@@ -182,7 +196,7 @@ export default async function PaymentSuccessPage({
                 <p className="font-semibold text-gray-800">
                   Email
                 </p>
-                <p className="text-red-600 break-all">
+                <p className="break-all text-red-600">
                   jiresselusa127@gmail.com
                 </p>
               </div>
@@ -199,6 +213,7 @@ export default async function PaymentSuccessPage({
         </div>
 
       </div>
+
     </div>
   );
 }
