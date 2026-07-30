@@ -40,7 +40,7 @@ export default function HomePage() {
       </h2>
 
       <p className="mt-1 font-medium">
-        Inscrivez-vous aujourd'hui pour seulement
+        Inscrivez-vous aujourd'hui et profitez toute la formation complete pour seulement
         <span className="font-bold text-red-600"> 15 USD</span>.
       </p>
 
