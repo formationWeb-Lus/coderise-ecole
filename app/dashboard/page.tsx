@@ -43,6 +43,14 @@ export default function AdminDashboardPage() {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* 🔹 BOUTON : MODIFIER LE QUIZ (COURS 34 / MODULE 16 / LEÇON 29) */}
+        <Link 
+          href="/dashboard/admin/courses/34/modules/16/lessons/29/quizzes/edit" 
+          className="bg-purple-700 text-white px-6 py-4 rounded text-center font-semibold hover:bg-purple-800 col-span-1 sm:col-span-2 lg:col-span-3 border-2 border-purple-900 shadow-md transition-all"
+        >
+          📝 Modifier le Quiz (Cours 34 - Module 16 - Leçon 29)
+        </Link>
+
         {/* 🔹 BOUTON : VOIR / MODIFIER LES MODULES DU COURS 34 */}
         <Link 
           href="/dashboard/admin/courses/34/modules" 
