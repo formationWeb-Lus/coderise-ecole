@@ -3,17 +3,28 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
+type Params = {
+  moduleId: string;
+};
+
 // 🔹 GET
 export async function GET(
   req: Request,
-  { params }: { params: { moduleId: string } }
+  { params }: { params: Promise<Params> }
 ) {
   try {
-    const { moduleId } = params;
+    const { moduleId } = await params; // 👈 Résolution de la promesse
 
     const moduleData = await prisma.module.findUnique({
       where: { id: Number(moduleId) },
     });
+
+    if (!moduleData) {
+      return NextResponse.json(
+        { error: "Module non trouvé" },
+        { status: 404 }
+      );
+    }
 
     return NextResponse.json(moduleData);
   } catch (error) {
@@ -28,17 +39,17 @@ export async function GET(
 // 🔹 PUT
 export async function PUT(
   req: Request,
-  { params }: { params: { moduleId: string } }
+  { params }: { params: Promise<Params> }
 ) {
   try {
-    const { moduleId } = params;
+    const { moduleId } = await params; // 👈 Résolution de la promesse
     const body = await req.json();
 
     const updated = await prisma.module.update({
       where: { id: Number(moduleId) },
       data: {
         title: body.title,
-        order: body.order,
+        order: body.order ? Number(body.order) : undefined,
       },
     });
 
@@ -55,10 +66,10 @@ export async function PUT(
 // 🔹 DELETE
 export async function DELETE(
   req: Request,
-  { params }: { params: { moduleId: string } }
+  { params }: { params: Promise<Params> }
 ) {
   try {
-    const { moduleId } = params;
+    const { moduleId } = await params; // 👈 Résolution de la promesse
 
     await prisma.module.delete({
       where: { id: Number(moduleId) },

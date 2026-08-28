@@ -1,19 +1,33 @@
-import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// 🔹 GET
+type Params = {
+  lessonId: string;
+};
+
+// 🔹 GET (Accéder à une leçon spécifique)
 export async function GET(
   req: Request,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<Params> }
 ) {
   try {
-    const { lessonId } = params;
+    const { lessonId } = await params;
+    const idNumber = parseInt(lessonId, 10);
+
+    if (isNaN(idNumber)) {
+      return NextResponse.json({ error: "lessonId invalide" }, { status: 400 });
+    }
 
     const lesson = await prisma.lesson.findUnique({
-      where: { id: Number(lessonId) },
+      where: { id: idNumber },
     });
+
+    if (!lesson) {
+      return NextResponse.json({ error: "Leçon non trouvée" }, { status: 404 });
+    }
 
     return NextResponse.json(lesson);
   } catch (error) {
@@ -25,23 +39,29 @@ export async function GET(
   }
 }
 
-// 🔹 PUT
+// 🔹 PUT (Mettre à jour une leçon)
 export async function PUT(
   req: Request,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<Params> }
 ) {
   try {
-    const { lessonId } = params;
+    const { lessonId } = await params;
+    const idNumber = parseInt(lessonId, 10);
+
+    if (isNaN(idNumber)) {
+      return NextResponse.json({ error: "lessonId invalide" }, { status: 400 });
+    }
+
     const body = await req.json();
 
     const updated = await prisma.lesson.update({
-      where: { id: Number(lessonId) },
+      where: { id: idNumber },
       data: {
         title: body.title,
-        order: body.order,
+        order: body.order ? Number(body.order) : undefined,
         content: body.content,
-        videoUrl: body.videoUrl,
-        pdfUrl: body.pdfUrl,
+        videoUrl: body.videoUrl || null,
+        pdfUrl: body.pdfUrl || null,
       },
     });
 
@@ -55,19 +75,24 @@ export async function PUT(
   }
 }
 
-// 🔹 DELETE
+// 🔹 DELETE (Supprimer une leçon)
 export async function DELETE(
   req: Request,
-  { params }: { params: { lessonId: string } }
+  { params }: { params: Promise<Params> }
 ) {
   try {
-    const { lessonId } = params;
+    const { lessonId } = await params;
+    const idNumber = parseInt(lessonId, 10);
+
+    if (isNaN(idNumber)) {
+      return NextResponse.json({ error: "lessonId invalide" }, { status: 400 });
+    }
 
     await prisma.lesson.delete({
-      where: { id: Number(lessonId) },
+      where: { id: idNumber },
     });
 
-    return NextResponse.json({ message: "Leçon supprimée" });
+    return NextResponse.json({ message: "Leçon supprimée avec succès" });
   } catch (error) {
     console.error("DELETE LESSON ERROR:", error);
     return NextResponse.json(

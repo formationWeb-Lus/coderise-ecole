@@ -14,7 +14,6 @@ export async function GET(
 ) {
   try {
     const { moduleId } = await params;
-
     const moduleIdNumber = parseInt(moduleId, 10);
 
     if (isNaN(moduleIdNumber)) {
@@ -45,7 +44,6 @@ export async function POST(
 ) {
   try {
     const { moduleId } = await params;
-
     const moduleIdNumber = parseInt(moduleId, 10);
 
     if (isNaN(moduleIdNumber)) {
@@ -56,8 +54,6 @@ export async function POST(
     }
 
     const body = await req.json();
-
-    // ✅ AJOUT DES CHAMPS MANQUANTS
     const { title, content, order, videoUrl, pdfUrl } = body;
 
     const lesson = await prisma.lesson.create({

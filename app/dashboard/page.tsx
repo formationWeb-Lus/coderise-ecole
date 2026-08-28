@@ -7,16 +7,15 @@ import { useSession } from "next-auth/react";
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-const { data: session, status } = useSession();
-
-useEffect(() => {
-  console.log("SESSION CLIENT :", session);
-  console.log("ROLE CLIENT :", session?.user?.role);
-}, [session]);
-
+  const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status === "loading") return; // attendre que la session soit chargée
+    console.log("SESSION CLIENT :", session);
+    console.log("ROLE CLIENT :", session?.user?.role);
+  }, [session]);
+
+  useEffect(() => {
+    if (status === "loading") return;
 
     // 🔒 Non connecté → redirige vers login
     if (!session) {
@@ -44,49 +43,96 @@ useEffect(() => {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Link href="/dashboard/admin/courses" className="bg-blue-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-blue-700">
+        {/* 🔹 BOUTON : VOIR / MODIFIER LES MODULES DU COURS 34 */}
+        <Link 
+          href="/dashboard/admin/courses/34/modules" 
+          className="bg-indigo-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-indigo-700 col-span-1 sm:col-span-2 lg:col-span-3 border-2 border-indigo-800"
+        >
+          📚 Voir et modifier les modules (Cours 34)
+        </Link>
 
-       <Link href="/dashboard/admin" className="bg-green-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-green-700">
+        {/* 🔹 BOUTON : MODIFIER ET GÉRER LES LEÇONS DU COURS 34 / MODULE 16 */}
+        <Link 
+          href="/dashboard/admin/courses/34/modules/16/lessons" 
+          className="bg-amber-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-amber-700 col-span-1 sm:col-span-2 lg:col-span-3 border-2 border-amber-800"
+        >
+          ✏️ Modifier les leçons (Cours 34 - Module 16)
+        </Link>
+
+        <Link 
+          href="/dashboard/admin/courses" 
+          className="bg-blue-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-blue-700"
+        >
+          Créer un cours
+        </Link>
+
+        <Link 
+          href="/dashboard/admin" 
+          className="bg-green-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-green-700"
+        >
           Modifier et supprimer les cours
         </Link>
 
-          Créer un cours
-        </Link>
-        
-
-        <Link href="/dashboard/admin/courses/1/modules/create" className="bg-green-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-green-700">
+        <Link 
+          href="/dashboard/admin/courses/1/modules/create" 
+          className="bg-emerald-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-emerald-700"
+        >
           Créer un module
         </Link>
 
-        <Link href="/dashboard/admin/courses/2/modules/17/lessons/create" className="bg-yellow-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-yellow-700">
+        <Link 
+          href="/dashboard/admin/courses/2/modules/17/lessons/create" 
+          className="bg-yellow-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-yellow-700"
+        >
           Créer une leçon
         </Link>
 
-        <Link href="/dashboard/admin/courses/2/modules/17/lessons/35/exercises/create" className="bg-purple-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-purple-700">
+        <Link 
+          href="/dashboard/admin/courses/2/modules/17/lessons/35/exercises/create" 
+          className="bg-purple-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-purple-700"
+        >
           Créer un exercice
         </Link>
 
-        <Link href="/dashboard/admin/courses/2/modules/17/lessons/35/quizzes" className="bg-indigo-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-indigo-700">
-          Creer les quizzes
+        <Link 
+          href="/dashboard/admin/courses/2/modules/17/lessons/35/quizzes" 
+          className="bg-indigo-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-indigo-700"
+        >
+          Créer les quizzes
         </Link>
 
-        <Link href="/dashboard/admin/submissions" className="bg-pink-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-pink-700">
+        <Link 
+          href="/dashboard/admin/submissions" 
+          className="bg-pink-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-pink-700"
+        >
           Gestion des assignments
         </Link>
 
-        <Link href="/dashboard/admin/students" className="bg-teal-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-teal-700">
+        <Link 
+          href="/dashboard/admin/students" 
+          className="bg-teal-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-teal-700"
+        >
           Voir les étudiants
         </Link>
 
-        <Link href="/enrollment" className="bg-orange-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-orange-700">
-          voir les cours d'inscriptions
+        <Link 
+          href="/enrollment" 
+          className="bg-orange-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-orange-700"
+        >
+          Voir les cours d'inscriptions
         </Link>
 
-        <Link href="/dashboard/admin/enroll" className="bg-gray-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-gray-700">
-          Enroller etudiants au cours
+        <Link 
+          href="/dashboard/admin/enroll" 
+          className="bg-gray-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-gray-700"
+        >
+          Enrôler étudiants au cours
         </Link>
 
-        <Link href="/dashboard/courses/1/modules/week/lesson/12/assignment" className="bg-red-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-red-700">
+        <Link 
+          href="/dashboard/courses/1/modules/week/lesson/12/assignment" 
+          className="bg-red-600 text-white px-6 py-4 rounded text-center font-semibold hover:bg-red-700"
+        >
           Soumission d’assignment (étudiant)
         </Link>
       </div>
