@@ -20,7 +20,7 @@ export default async function EnrollmentLandingPage() {
 
   // Configuration des contacts
   const whatsappNumber = "243899864081";
-  const whatsappMessage = encodeURIComponent("Bonjour, je souhaite finaliser mon inscription.");
+  const whatsappMessage = encodeURIComponent("Bonjour, je souhaite acheter les 2 livres d'accompagnement (20$) et finaliser mon inscription.");
   const emailAddress = "africoms879@gmail.com";
   const phoneNumber = "2438995271831";
 
@@ -45,7 +45,7 @@ export default async function EnrollmentLandingPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between font-sans">
       
-      {/* CODE PIXEL META COMPLET (BASE + EVENT COMPLETE REGISTRATION) */}
+      {/* CODE PIXEL META CONFIGURÉ AVEC VOTRE ID (4331977260409210) */}
       <Script id="meta-pixel-full" strategy="afterInteractive">
         {`
           !function(f,b,e,v,n,t,s)
@@ -57,11 +57,22 @@ export default async function EnrollmentLandingPage() {
           s.parentNode.insertBefore(t,s)}(window, document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
           
-          fbq('init', 'VOTRE_PIXEL_ID'); // <-- REMPLACEZ VOTRE_PIXEL_ID PAR VOTRE VRAI ID META
+          fbq('init', '4331977260409210');
           fbq('track', 'PageView');
           fbq('track', 'CompleteRegistration');
         `}
       </Script>
+
+      {/* Rendu fallback sans JS pour Meta */}
+      <noscript>
+        <img
+          height="1"
+          width="1"
+          style={{ display: "none" }}
+          src="https://www.facebook.com/tr?id=4331977260409210&ev=PageView&noscript=1"
+          alt=""
+        />
+      </noscript>
 
       <div>
         <Header session={session} />
