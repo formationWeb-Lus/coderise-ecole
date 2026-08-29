@@ -209,8 +209,11 @@ export default async function EnrollmentLandingPage() {
               {/* SECTION APPEL À L'ACTION */}
               <div>
                 <h3 className="text-center font-bold text-slate-800 text-lg mb-6">
-                  Choisissez votre moyen de contact pour finaliser :
+                  Choisissez votre moyen de contact et commnandez vos cours pour finaliser votre inscription
                 </h3>
+                <p className="text-center text-sm text-slate-600 mb-6">
+                  Nous vous contacterons pour confirmer votre inscription et vous fournir les détails pour recevoir vos livres.
+                </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {/* WhatsApp */}
