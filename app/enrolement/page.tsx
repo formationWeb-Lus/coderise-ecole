@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Header from "@/components/HeaderClient";
 import Image from "next/image";
-import Script from "next/script"; // <-- IMPORT DU COMPOSANT NEXT.JS SCRIPT
+import Script from "next/script";
 import { 
   CheckCircle2, 
   BookOpen, 
@@ -44,12 +44,22 @@ export default async function EnrollmentLandingPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between font-sans">
-      {/* ÉVÈNEMENT PIXEL META (Inscription terminée) */}
-      <Script id="meta-pixel-complete-registration" strategy="afterInteractive">
+      
+      {/* CODE PIXEL META COMPLET (BASE + EVENT COMPLETE REGISTRATION) */}
+      <Script id="meta-pixel-full" strategy="afterInteractive">
         {`
-          if (typeof window.fbq === 'function') {
-            window.fbq('track', 'CompleteRegistration');
-          }
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}(window, document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
+          
+          fbq('init', 'VOTRE_PIXEL_ID'); // <-- REMPLACEZ VOTRE_PIXEL_ID PAR VOTRE VRAI ID META
+          fbq('track', 'PageView');
+          fbq('track', 'CompleteRegistration');
         `}
       </Script>
 
@@ -136,7 +146,7 @@ export default async function EnrollmentLandingPage() {
                       className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
                     >
                       <div>
-                        {/* Image du livre avec hauteur et contain pour éviter le rognage */}
+                        {/* Image du livre */}
                         <div className="relative w-full h-72 bg-slate-100 p-4 flex items-center justify-center">
                           <Image
                             src={book.imageUrl}
