@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import Header from "@/components/HeaderClient";
 import Image from "next/image";
+import Script from "next/script"; // <-- IMPORT DU COMPOSANT NEXT.JS SCRIPT
 import { 
   CheckCircle2, 
   BookOpen, 
@@ -18,7 +19,7 @@ export default async function EnrollmentLandingPage() {
   const session = await getServerSession(authOptions);
 
   // Configuration des contacts
-  const whatsappNumber = "243899864081"; // Ex: 243810000000 (sans le +)
+  const whatsappNumber = "243899864081";
   const whatsappMessage = encodeURIComponent("Bonjour, je souhaite acheter les 2 livres d'accompagnement (20$) et finaliser mon inscription.");
   const emailAddress = "africoms879@gmail.com";
   const phoneNumber = "2438995271831";
@@ -43,6 +44,15 @@ export default async function EnrollmentLandingPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between font-sans">
+      {/* ÉVÈNEMENT PIXEL META (Inscription terminée) */}
+      <Script id="meta-pixel-complete-registration" strategy="afterInteractive">
+        {`
+          if (typeof window.fbq === 'function') {
+            window.fbq('track', 'CompleteRegistration');
+          }
+        `}
+      </Script>
+
       <div>
         <Header session={session} />
 
