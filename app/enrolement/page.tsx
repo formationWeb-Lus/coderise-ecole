@@ -20,7 +20,7 @@ export default async function EnrollmentLandingPage() {
 
   // Configuration des contacts
   const whatsappNumber = "243899864081";
-  const whatsappMessage = encodeURIComponent("Bonjour, je souhaite acheter les 2 livres d'accompagnement (20$) et finaliser mon inscription.");
+  const whatsappMessage = encodeURIComponent("Bonjour, je souhaite finaliser mon inscription.");
   const emailAddress = "africoms879@gmail.com";
   const phoneNumber = "2438995271831";
 
