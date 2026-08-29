@@ -106,7 +106,7 @@ export default async function StudentDashboardPage() {
                       transition-all duration-300
                     ">
                       <GraduationCap className="w-6 h-6" />
-                      <span>Voir les cours & finaliser l'inscription</span>
+                      <span> finaliser l'inscription</span>
                       <ArrowRight className="w-5 h-5" />
                     </div>
                   </Link>
