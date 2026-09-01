@@ -14,6 +14,10 @@ export async function GET(request: Request, context: Context) {
     const { lessonId } = await context.params;
     const parsedLessonId = Number(lessonId);
 
+    if (isNaN(parsedLessonId)) {
+      return NextResponse.json({ error: "lessonId invalide" }, { status: 400 });
+    }
+
     const quizzes = await prisma.quiz.findMany({
       where: { lessonId: parsedLessonId },
       include: {
@@ -34,17 +38,22 @@ export async function GET(request: Request, context: Context) {
 export async function PUT(request: Request, context: Context) {
   try {
     const { lessonId } = await context.params;
-    const { quizId, title, questions } = await request.json();
+    const body = await request.json();
+    const { quizId, title, questions } = body;
 
     const parsedQuizId = Number(quizId);
     const parsedLessonId = Number(lessonId);
+
+    if (!parsedQuizId || isNaN(parsedQuizId)) {
+      return NextResponse.json({ error: "quizId requis et doit être un nombre" }, { status: 400 });
+    }
 
     const updatedQuiz = await prisma.$transaction(async (tx) => {
       // 1. Mettre à jour le titre du Quiz
       await tx.quiz.update({
         where: { id: parsedQuizId },
         data: {
-          title: title.trim(),
+          title: title?.trim() || "",
           lessonId: parsedLessonId,
         },
       });
@@ -54,21 +63,18 @@ export async function PUT(request: Request, context: Context) {
         where: { quizId: parsedQuizId },
       });
 
-      // 3. Re-créer les questions avec le format exact attendu en BDD
+      // 3. Re-créer les questions
       if (questions && questions.length > 0) {
         const questionsData = questions.map((q: any) => {
-          // Extraire l'option cochée comme réponse correcte
-          const correctOption = q.options.find((opt: any) => opt.isCorrect);
+          const correctOption = q.options?.find((opt: any) => opt.isCorrect);
           const answerText = correctOption ? correctOption.text.trim() : "";
 
           let optionsJson = "";
 
-          // FIX DU BUG BOOLEAN:
-          // Pour les questions BOOLEAN, on écrit obligatoirement ["Vrai", "Faux"]
           if (q.type === "BOOLEAN") {
             optionsJson = JSON.stringify(["Vrai", "Faux"]);
           } else {
-            const rawOptionsArray = q.options.map((opt: any) => opt.text.trim());
+            const rawOptionsArray = q.options ? q.options.map((opt: any) => opt.text.trim()) : [];
             optionsJson = JSON.stringify(rawOptionsArray);
           }
 
@@ -76,8 +82,8 @@ export async function PUT(request: Request, context: Context) {
             quizId: parsedQuizId,
             question: q.question.trim(),
             type: q.type || "QCM",
-            options: optionsJson, // ["Vrai", "Faux"] au lieu de ["","","",""]
-            answer: answerText,   // Contient "Vrai" ou "Faux"
+            options: optionsJson,
+            answer: answerText,
             points: Number(q.points) || 5,
           };
         });
