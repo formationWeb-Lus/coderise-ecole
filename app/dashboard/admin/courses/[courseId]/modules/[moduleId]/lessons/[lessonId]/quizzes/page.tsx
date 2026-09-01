@@ -33,7 +33,95 @@ interface CreateQuizFormProps {
   lessonId?: string;
 }
 
-export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId = "" }: CreateQuizFormProps) {
+// 🔹 Questionnaire pré-rempli (10 questions avec options et bonnes réponses)
+const INITIAL_QUESTIONS: QuizQuestion[] = [
+  {
+    question: "Quel éditeur de code est principalement recommandé pour le développement Web Full-Stack modern ?",
+    type: "QCM",
+    options: ["Notepad++", "Visual Studio Code", "Sublime Text 2", "Vim"],
+    answer: "Visual Studio Code",
+    points: 10,
+  },
+  {
+    question: "Le terminal/invite de commande est inutile en développement Web modern.",
+    type: "BOOLEAN",
+    options: ["Vrai", "Faux", "", ""],
+    answer: "Faux",
+    points: 10,
+  },
+  {
+    question: "Que signifie l'acronyme CLI ?",
+    type: "QCM",
+    options: [
+      "Command Line Interface",
+      "Code Language Integration",
+      "Control Level Interaction",
+      "Central Logic Input",
+    ],
+    answer: "Command Line Interface",
+    points: 10,
+  },
+  {
+    question: "Quelle commande permet d'afficher la version actuellement installée de Node.js ?",
+    type: "TEXT",
+    options: ["", "", "", ""],
+    answer: "node -v",
+    points: 10,
+  },
+  {
+    question: "Git et GitHub représentent exactement la même technologie.",
+    type: "BOOLEAN",
+    options: ["Vrai", "Faux", "", ""],
+    answer: "Faux",
+    points: 10,
+  },
+  {
+    question: "Quel outil est un gestionnaire de paquets officiel pour Node.js ?",
+    type: "QCM",
+    options: ["Composer", "npm", "Pip", "Maven"],
+    answer: "npm",
+    points: 10,
+  },
+  {
+    question: "Quelle extension VS Code permet de formater automatiquement le code HTML, CSS et JS ?",
+    type: "QCM",
+    options: ["Live Server", "Prettier", "GitLens", "ESLint"],
+    answer: "Prettier",
+    points: 10,
+  },
+  {
+    question: "Quelle commande permet d'initialiser un projet avec un fichier package.json par défaut ?",
+    type: "TEXT",
+    options: ["", "", "", ""],
+    answer: "npm init -y",
+    points: 10,
+  },
+  {
+    question: "Les variables d'environnement confidentielles doivent être stockées dans le fichier .env.",
+    type: "BOOLEAN",
+    options: ["Vrai", "Faux", "", ""],
+    answer: "Vrai",
+    points: 10,
+  },
+  {
+    question: "Quel est le rôle principal des DevTools intégrés aux navigateurs (Chrome/Firefox/Edge) ?",
+    type: "QCM",
+    options: [
+      "Écrire le code source du projet",
+      "Déboguer, inspecter le DOM et analyser les requêtes réseau",
+      "Héberger l'application en ligne",
+      "Compiler le code TypeScript",
+    ],
+    answer: "Déboguer, inspecter le DOM et analyser les requêtes réseau",
+    points: 10,
+  },
+];
+
+export default function CreateQuizForm({
+  courseId = "",
+  moduleId = "",
+  lessonId = "",
+}: CreateQuizFormProps) {
   const [courses, setCourses] = useState<Course[]>([]);
   const [modules, setModules] = useState<Module[]>([]);
   const [lessons, setLessons] = useState<Lesson[]>([]);
@@ -42,23 +130,17 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
   const [selectedModule, setSelectedModule] = useState<string>(moduleId);
   const [selectedLesson, setSelectedLesson] = useState<string>(lessonId);
 
-  const [title, setTitle] = useState("");
-  const [questions, setQuestions] = useState<QuizQuestion[]>(
-    Array.from({ length: 10 }, () => ({
-      question: "",
-      type: "QCM",
-      options: ["", "", "", ""],
-      answer: "",
-      points: 10,
-    }))
+  const [title, setTitle] = useState(
+    "Evaluation : Maîtriser les outils et configurer son environnement"
   );
+  const [questions, setQuestions] = useState<QuizQuestion[]>(INITIAL_QUESTIONS);
 
   const types: QuizType[] = ["TEXT", "QCM", "BOOLEAN"];
 
   // 🔹 Fetch courses
   useEffect(() => {
     fetch("/api/admin/courses")
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setCourses)
       .catch(console.error);
   }, []);
@@ -67,7 +149,7 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
   useEffect(() => {
     if (!selectedCourse) return;
     fetch(`/api/admin/courses/${selectedCourse}/modules`)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setModules)
       .catch(console.error);
 
@@ -79,16 +161,22 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
   // 🔹 Fetch lessons quand module sélectionné
   useEffect(() => {
     if (!selectedCourse || !selectedModule) return;
-    fetch(`/api/admin/courses/${selectedCourse}/modules/${selectedModule}/lessons`)
-      .then(res => res.json())
+    fetch(
+      `/api/admin/courses/${selectedCourse}/modules/${selectedModule}/lessons`
+    )
+      .then((res) => res.json())
       .then(setLessons)
       .catch(console.error);
 
     setSelectedLesson("");
   }, [selectedCourse, selectedModule]);
 
-  const handleChangeQuestion = (index: number, field: keyof QuizQuestion, value: string | number | string[]) => {
-    setQuestions(prev => {
+  const handleChangeQuestion = (
+    index: number,
+    field: keyof QuizQuestion,
+    value: string | number | string[]
+  ) => {
+    setQuestions((prev) => {
       const copy = [...prev];
       const q = { ...copy[index] };
 
@@ -109,17 +197,24 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
 
     for (let i = 0; i < questions.length; i++) {
       const q = questions[i];
-      if (!q.question || !q.answer || (q.type === "QCM" && q.options.some(o => !o))) {
+      if (
+        !q.question ||
+        !q.answer ||
+        (q.type === "QCM" && q.options.some((o) => !o))
+      ) {
         return alert(`Veuillez remplir correctement la question ${i + 1}`);
       }
     }
 
     try {
-      const res = await fetch(`/api/admin/courses/${selectedCourse}/modules/${selectedModule}/lessons/${selectedLesson}/quizzes`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, questions }),
-      });
+      const res = await fetch(
+        `/api/admin/courses/${selectedCourse}/modules/${selectedModule}/lessons/${selectedLesson}/quizzes`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, questions }),
+        }
+      );
 
       if (!res.ok) {
         const data = await res.json();
@@ -128,20 +223,17 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
 
       alert("Quiz créé avec succès !");
       setTitle("");
-      setQuestions(Array.from({ length: 10 }, () => ({
-        question: "",
-        type: "QCM",
-        options: ["", "", "", ""],
-        answer: "",
-        points: 10,
-      })));
+      setQuestions(INITIAL_QUESTIONS);
     } catch (err: any) {
       alert("Erreur : " + err.message);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-4xl p-6 bg-white rounded shadow space-y-6">
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto max-w-4xl p-6 bg-white rounded shadow space-y-6"
+    >
       {/* ===== Sélecteurs ===== */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
@@ -149,11 +241,13 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
           <select
             className="w-full border px-2 py-2 rounded focus:ring-2 focus:ring-yellow-400"
             value={selectedCourse}
-            onChange={e => setSelectedCourse(e.target.value)}
+            onChange={(e) => setSelectedCourse(e.target.value)}
           >
             <option value="">-- Sélectionner un cours --</option>
-            {courses.map(c => (
-              <option key={c.id} value={c.id}>{c.title}</option>
+            {courses.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.title}
+              </option>
             ))}
           </select>
         </div>
@@ -163,12 +257,14 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
           <select
             className="w-full border px-2 py-2 rounded focus:ring-2 focus:ring-yellow-400"
             value={selectedModule}
-            onChange={e => setSelectedModule(e.target.value)}
+            onChange={(e) => setSelectedModule(e.target.value)}
             disabled={!selectedCourse}
           >
             <option value="">-- Sélectionner un module --</option>
-            {modules.map(m => (
-              <option key={m.id} value={m.id}>{m.title}</option>
+            {modules.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.title}
+              </option>
             ))}
           </select>
         </div>
@@ -178,12 +274,14 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
           <select
             className="w-full border px-2 py-2 rounded focus:ring-2 focus:ring-yellow-400"
             value={selectedLesson}
-            onChange={e => setSelectedLesson(e.target.value)}
+            onChange={(e) => setSelectedLesson(e.target.value)}
             disabled={!selectedModule}
           >
             <option value="">-- Sélectionner une leçon --</option>
-            {lessons.map(l => (
-              <option key={l.id} value={l.id}>{l.title}</option>
+            {lessons.map((l) => (
+              <option key={l.id} value={l.id}>
+                {l.title}
+              </option>
             ))}
           </select>
         </div>
@@ -196,7 +294,7 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
           type="text"
           className="w-full border px-3 py-2 rounded focus:ring-2 focus:ring-yellow-400"
           value={title}
-          onChange={e => setTitle(e.target.value)}
+          onChange={(e) => setTitle(e.target.value)}
           required
         />
       </div>
@@ -204,68 +302,95 @@ export default function CreateQuizForm({ courseId = "", moduleId = "", lessonId 
       {/* ===== Questions ===== */}
       {questions.map((q, i) => (
         <div key={i} className="border p-4 rounded space-y-3 bg-gray-50">
-          <h3 className="font-semibold text-lg">Question {i + 1}</h3>
+          <h3 className="font-semibold text-lg text-blue-800">Question {i + 1}</h3>
 
           <input
             type="text"
             placeholder="Question"
-            className="w-full border px-3 py-2 rounded"
+            className="w-full border px-3 py-2 rounded font-medium"
             value={q.question}
-            onChange={e => handleChangeQuestion(i, "question", e.target.value)}
+            onChange={(e) =>
+              handleChangeQuestion(i, "question", e.target.value)
+            }
             required
           />
 
           <select
-            className="w-full border px-2 py-2 rounded"
+            className="w-full border px-2 py-2 rounded bg-white"
             value={q.type}
-            onChange={e => handleChangeQuestion(i, "type", e.target.value as QuizType)}
+            onChange={(e) =>
+              handleChangeQuestion(i, "type", e.target.value as QuizType)
+            }
           >
-            {types.map(t => (
+            {types.map((t) => (
               <option key={t} value={t}>
                 {t === "TEXT" ? "Texte" : t === "QCM" ? "QCM" : "Vrai / Faux"}
               </option>
             ))}
           </select>
 
-          {q.type === "QCM" &&
-            q.options.map((opt, idx) => (
+          {q.type === "QCM" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-2 border-l-2 border-blue-400">
+              {q.options.map((opt, idx) => (
+                <input
+                  key={idx}
+                  type="text"
+                  placeholder={`Option ${idx + 1}`}
+                  className="w-full border px-2 py-1.5 rounded bg-white"
+                  value={opt}
+                  onChange={(e) => {
+                    const newOpts = [...q.options];
+                    newOpts[idx] = e.target.value;
+                    handleChangeQuestion(i, "options", newOpts);
+                  }}
+                  required
+                />
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Bonne Réponse :
+              </label>
               <input
-                key={idx}
                 type="text"
-                placeholder={`Option ${idx + 1}`}
-                className="w-full border px-2 py-2 rounded"
-                value={opt}
-                onChange={e => {
-                  const newOpts = [...q.options];
-                  newOpts[idx] = e.target.value;
-                  handleChangeQuestion(i, "options", newOpts);
-                }}
+                placeholder="Réponse exacte"
+                className="w-full border px-2 py-2 rounded bg-green-50 border-green-300 font-semibold"
+                value={q.answer}
+                onChange={(e) =>
+                  handleChangeQuestion(i, "answer", e.target.value)
+                }
                 required
               />
-            ))}
+            </div>
 
-          <input
-            type="text"
-            placeholder="Réponse"
-            className="w-full border px-2 py-2 rounded"
-            value={q.answer}
-            onChange={e => handleChangeQuestion(i, "answer", e.target.value)}
-            required
-          />
-
-          <input
-            type="number"
-            placeholder="Points"
-            className="w-full border px-2 py-2 rounded"
-            value={q.points}
-            onChange={e => handleChangeQuestion(i, "points", Number(e.target.value))}
-          />
+            <div className="w-32">
+              <label className="block text-xs font-semibold text-gray-600 mb-1">
+                Points :
+              </label>
+              <input
+                type="number"
+                placeholder="Points"
+                className="w-full border px-2 py-2 rounded bg-white"
+                value={q.points}
+                onChange={(e) =>
+                  handleChangeQuestion(
+                    i,
+                    "points",
+                    Number(e.target.value)
+                  )
+                }
+              />
+            </div>
+          </div>
         </div>
       ))}
 
       <button
         type="submit"
-        className="bg-blue-600 text-white px-6 py-2 rounded mt-4 hover:bg-blue-700"
+        className="w-full bg-blue-600 text-white font-bold px-6 py-3 rounded mt-4 hover:bg-blue-700 transition-colors shadow"
       >
         Créer le quiz
       </button>
