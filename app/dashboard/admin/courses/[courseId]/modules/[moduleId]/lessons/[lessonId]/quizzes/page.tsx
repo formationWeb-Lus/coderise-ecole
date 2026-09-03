@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-type QuizType = "TEXT" | "QCM" | "BOOLEAN";
+type QuizType = "TEXT" | "QCM";
 
 interface QuizQuestion {
   question: string;
@@ -33,7 +33,7 @@ interface CreateQuizFormProps {
   lessonId?: string;
 }
 
-// 🔹 Questionnaire pré-rempli (10 questions avec options et bonnes réponses)
+// 🔹 Questionnaire pré-rempli (Toutes les questions Vrai/Faux ont été transformées en TEXT)
 const INITIAL_QUESTIONS: QuizQuestion[] = [
   {
     question: "Quel éditeur de code est principalement recommandé pour le développement Web Full-Stack modern ?",
@@ -43,10 +43,10 @@ const INITIAL_QUESTIONS: QuizQuestion[] = [
     points: 10,
   },
   {
-    question: "Le terminal/invite de commande est inutile en développement Web modern.",
-    type: "BOOLEAN",
-    options: ["Vrai", "Faux", "", ""],
-    answer: "Faux",
+    question: "Pourquoi le terminal est-il indispensable en développement Web moderne ?",
+    type: "TEXT",
+    options: ["", "", "", ""],
+    answer: "Pour exécuter des commandes CLI, lancer des serveurs et gérer les paquets",
     points: 10,
   },
   {
@@ -69,10 +69,10 @@ const INITIAL_QUESTIONS: QuizQuestion[] = [
     points: 10,
   },
   {
-    question: "Git et GitHub représentent exactement la même technologie.",
-    type: "BOOLEAN",
-    options: ["Vrai", "Faux", "", ""],
-    answer: "Faux",
+    question: "Quelle est la différence principale entre Git et GitHub ?",
+    type: "TEXT",
+    options: ["", "", "", ""],
+    answer: "Git est un système de contrôle de version local et GitHub est un service d'hébergement distant",
     points: 10,
   },
   {
@@ -97,10 +97,10 @@ const INITIAL_QUESTIONS: QuizQuestion[] = [
     points: 10,
   },
   {
-    question: "Les variables d'environnement confidentielles doivent être stockées dans le fichier .env.",
-    type: "BOOLEAN",
-    options: ["Vrai", "Faux", "", ""],
-    answer: "Vrai",
+    question: "Dans quel fichier de configuration doit-on stocker les clés API et variables d'environnement confidentielles ?",
+    type: "TEXT",
+    options: ["", "", "", ""],
+    answer: ".env",
     points: 10,
   },
   {
@@ -135,7 +135,7 @@ export default function CreateQuizForm({
   );
   const [questions, setQuestions] = useState<QuizQuestion[]>(INITIAL_QUESTIONS);
 
-  const types: QuizType[] = ["TEXT", "QCM", "BOOLEAN"];
+  const types: QuizType[] = ["TEXT", "QCM"];
 
   // 🔹 Fetch courses
   useEffect(() => {
@@ -324,7 +324,7 @@ export default function CreateQuizForm({
           >
             {types.map((t) => (
               <option key={t} value={t}>
-                {t === "TEXT" ? "Texte" : t === "QCM" ? "QCM" : "Vrai / Faux"}
+                {t === "TEXT" ? "Texte" : "QCM"}
               </option>
             ))}
           </select>

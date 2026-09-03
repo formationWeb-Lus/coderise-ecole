@@ -1,51 +1,18 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import Header from "@/components/HeaderClient";
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import Script from "next/script";
-import { 
-  CheckCircle2, 
-  BookOpen, 
-  MessageSquare, 
-  Mail, 
-  Phone, 
-  Sparkles, 
-  Compass, 
-  GraduationCap, 
-  ShieldAlert 
-} from "lucide-react";
 
-export default async function EnrollmentLandingPage() {
-  const session = await getServerSession(authOptions);
-
-  // Configuration des contacts
-  const whatsappNumber = "243899864081";
-  const whatsappMessage = encodeURIComponent("Bonjour, je souhaite acheter les 2 livres d'accompagnement (20$) et finaliser mon inscription.");
-  const emailAddress = "africoms879@gmail.com";
-  const phoneNumber = "2438995271831";
-
-  // Informations sur les 2 livres
-  const books = [
-    {
-      id: 1,
-      title: "Livre 1 : Développement Full-Stack",
-      price: "10 $",
-      description: "Maîtrisez la création d'applications web complètes de A à Z : du frontend (interfaces utilisateur dynamiques) au backend (bases de données, serveurs et API).",
-      imageUrl: "/images/book1.png",
-    },
-    {
-      id: 2,
-      title: "Livre 2 : Cybersécurité & Guerre Numérique",
-      price: "10 $",
-      description: "Découvrez les principes fondamentaux de la protection des systèmes, la défense contre les cyberattaques, le hacking éthique et la sécurité des données.",
-      imageUrl: "/images/book2.png",
-    },
-  ];
+export default function HomePage() {
+  // État local pour valider l'engagement obligatoire
+  const [isChecked, setIsChecked] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col justify-between font-sans">
+    <div className="min-h-screen bg-[#08192d]">
       
-      {/* CODE PIXEL META CONFIGURÉ AVEC VOTRE ID (4331977260409210) */}
+      {/* META PIXEL */}
       <Script id="meta-pixel-full" strategy="afterInteractive">
         {`
           !function(f,b,e,v,n,t,s)
@@ -63,229 +30,210 @@ export default async function EnrollmentLandingPage() {
         `}
       </Script>
 
-      {/* Rendu fallback sans JS pour Meta */}
-      <noscript>
-        <img
-          height="1"
-          width="1"
-          style={{ display: "none" }}
-          src="https://www.facebook.com/tr?id=4331977260409210&ev=PageView&noscript=1"
-          alt=""
-        />
-      </noscript>
+      {/* BANNIÈRE PROMOTIONNEL - GRATUITÉ */}
+      <section className="bg-yellow-400 text-[#08192d]">
+        <div className="max-w-7xl mx-auto px-6 py-3 flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-left">
+          <div>
+            <h2 className="text-xl font-extrabold flex items-center gap-2 justify-center md:justify-start">
+              🎁 FORMATION 100% GRATUITE
+            </h2>
+            <p className="text-sm mt-0.5 font-medium">
+              Accès complet aux cours dispensés par des experts. Pour terminer toute la formation, vous devrez acheter **2 livres pédagogiques au prix total de 20 $**.
 
-      <div>
-        <Header session={session} />
-
-        <main className="pt-28 sm:pt-32 pb-16 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto">
-          
-          {/* EN-TÊTE PRINCIPALE */}
-          <div className="text-center mb-10">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-800 mb-4 border border-green-200 shadow-sm">
-              <Sparkles className="w-4 h-4 text-green-600" />
-              Formation 100% Gratuite
-            </span>
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
-              Finalisez votre inscription & démarrez votre formation
-            </h1>
-            <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto">
-              Apprenez à votre rythme, étape par étape, module par module et leçon par leçon.
             </p>
           </div>
+        </div>
+      </section>
 
-          {/* CARTE PRINCIPALE */}
-          <div className="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden mb-10">
-            
-            {/* BANNIÈRE D'AVERTISSEMENT */}
-            <div className="bg-amber-50 border-b border-amber-100 p-6 flex items-start gap-4">
-              <div className="p-2.5 bg-amber-100 rounded-xl text-amber-700 shrink-0 mt-0.5">
-                <ShieldAlert className="w-6 h-6" />
-              </div>
-              <div>
-                <h3 className="font-bold text-amber-900 text-base mb-1">
-                  Activation manuelle requise
-                </h3>
-                <p className="text-amber-800 text-sm leading-relaxed">
-                  L'activation de votre compte se fait manuellement après vérification par notre équipe. Veuillez nous contacter directement via l'un des moyens ci-dessous pour valider votre accès.
-                </p>
-              </div>
-            </div>
-
-            <div className="p-6 sm:p-10 space-y-8">
-
-              {/* BLOC FORMATION GRATUITE */}
-              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center">
-                      <GraduationCap className="w-5 h-5" />
-                    </div>
-                    <h4 className="text-lg font-bold text-slate-800">
-                      Accès au Programme
-                    </h4>
-                  </div>
-                  <p className="text-slate-600 text-sm leading-relaxed">
-                    La formation est entièrement <strong className="text-slate-900">100 % gratuite</strong>. Vous aurez un suivi structuré, leçon par leçon et module par module.
-                  </p>
-                </div>
-                <span className="hidden sm:flex items-center gap-1.5 text-xs font-semibold text-green-600 bg-green-50 px-3 py-1.5 rounded-lg shrink-0">
-                  <CheckCircle2 className="w-4 h-4" /> 100% Gratuit
-                </span>
-              </div>
-
-              {/* SECTION DES 2 LIVRES AVEC CARTES IMAGES COMPLÈTES */}
-              <div>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-amber-100 text-amber-700 rounded-lg">
-                    <BookOpen className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-slate-900">
-                      Matériel d'étude obligatoire (2 Livres)
-                    </h3>
-                    <p className="text-xs text-slate-500">
-                      Ces deux manuels sont indispensables pour suivre la formation.
-                    </p>
-                  </div>
-                </div>
-
-                {/* GRILLE DES CARTES DE LIVRES */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                  {books.map((book) => (
-                    <div 
-                      key={book.id} 
-                      className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between"
-                    >
-                      <div>
-                        {/* Image du livre */}
-                        <div className="relative w-full h-72 bg-slate-100 p-4 flex items-center justify-center">
-                          <Image
-                            src={book.imageUrl}
-                            alt={book.title}
-                            fill
-                            className="object-contain p-2 drop-shadow-md"
-                            unoptimized 
-                          />
-                        </div>
-
-                        {/* Contenu de la carte */}
-                        <div className="p-5">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full">
-                              Matériel obligatoire
-                            </span>
-                            <span className="text-lg font-extrabold text-slate-900">
-                              {book.price}
-                            </span>
-                          </div>
-                          <h4 className="font-bold text-slate-800 text-base mb-2">
-                            {book.title}
-                          </h4>
-                          <p className="text-slate-600 text-xs leading-relaxed">
-                            {book.description}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="px-5 pb-5">
-                        <div className="w-full text-center text-xs font-semibold text-slate-600 bg-slate-100 py-2 rounded-lg">
-                          Prix : {book.price}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* RECAPITULATIF DU PRIX TOTAL */}
-                <div className="mt-4 bg-amber-50 border border-amber-200 p-4 rounded-xl flex items-center justify-between">
-                  <span className="text-sm font-semibold text-amber-900">
-                    Total pour les 2 livres d'accompagnement :
-                  </span>
-                  <span className="text-base font-extrabold bg-amber-600 text-white px-3 py-1 rounded-lg">
-                    20 $ USD
-                  </span>
-                </div>
-              </div>
-
-              {/* SECTION REPÈRES & ÉTAPES */}
-              <div className="bg-blue-50/60 p-6 rounded-2xl border border-blue-100">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-2 bg-blue-600 text-white rounded-lg">
-                    <Compass className="w-5 h-5" />
-                  </div>
-                  <h4 className="text-base font-bold text-blue-950">
-                    Vos repères dès votre arrivée dans la formation
-                  </h4>
-                </div>
-                <p className="text-blue-900/80 text-sm leading-relaxed mb-4">
-                  Juste après la présentation et l'introduction initiale aux cours, vous recevrez l'ensemble de vos accès ainsi que vos repères de démarrage pour suivre la formation sans difficulté.
-                </p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-                  <div className="bg-white p-3 rounded-xl border border-blue-100 text-center">
-                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Étape 1</span>
-                    <p className="text-xs font-medium text-slate-700 mt-2">Paiement des 2 livres (20$)</p>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-blue-100 text-center">
-                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Étape 2</span>
-                    <p className="text-xs font-medium text-slate-700 mt-2">Validation manuelle de l'accès</p>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-blue-100 text-center">
-                    <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">Étape 3</span>
-                    <p className="text-xs font-medium text-slate-700 mt-2">Réception des accès & repères</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* SECTION APPEL À L'ACTION */}
-              <div>
-                <h3 className="text-center font-bold text-slate-800 text-lg mb-6">
-                  Choisissez votre moyen de contact et commnandez vos cours pour finaliser votre inscription
-                </h3>
-                <p className="text-center text-sm text-slate-600 mb-6">
-                  Nous vous contacterons pour confirmer votre inscription et vous fournir les détails pour recevoir vos livres.
-                </p>
-
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {/* WhatsApp */}
-                  <a
-                    href={`https://wa.me/${whatsappNumber}?text=${whatsappMessage}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col items-center justify-center p-5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 transition-all duration-300 group hover:-translate-y-1"
-                  >
-                    <MessageSquare className="w-7 h-7 mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="font-bold text-sm">WhatsApp</span>
-                    <span className="text-[11px] opacity-80 mt-0.5">Réponse rapide</span>
-                  </a>
-
-                  {/* Email */}
-                  <a
-                    href={`mailto:${emailAddress}?subject=Finalisation%20Inscription%20-%20Achat%20des%20livres&body=Bonjour,%20je%20souhaite%20finaliser%20mon%20inscription%20et%20acheter%20les%202%20livres%20(20$).`}
-                    className="flex flex-col items-center justify-center p-5 bg-rose-500 hover:bg-rose-600 text-white rounded-2xl shadow-lg shadow-rose-500/20 hover:shadow-rose-500/30 transition-all duration-300 group hover:-translate-y-1"
-                  >
-                    <Mail className="w-7 h-7 mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="font-bold text-sm">Par Émail</span>
-                    <span className="text-[11px] opacity-80 mt-0.5">Formulaire direct</span>
-                  </a>
-
-                  {/* Appel direct */}
-                  <a
-                    href={`tel:${phoneNumber}`}
-                    className="flex flex-col items-center justify-center p-5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl shadow-lg shadow-blue-600/20 hover:shadow-blue-600/30 transition-all duration-300 group hover:-translate-y-1"
-                  >
-                    <Phone className="w-7 h-7 mb-2 group-hover:scale-110 transition-transform" />
-                    <span className="font-bold text-sm">Appel Direct</span>
-                    <span className="text-[11px] opacity-80 mt-0.5">Contact immédiat</span>
-                  </a>
-                </div>
-              </div>
-
+      {/* HEADER */}
+      <header className="border-b border-blue-900">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Image
+              src="/favicon.png"
+              width={50}
+              height={50}
+              alt="CodeRise Academy"
+            />
+            <div>
+              <h1 className="text-xl font-bold text-yellow-300">
+                CodeRise Academy
+              </h1>
+              <p className="text-gray-300 text-xs">
+                Formation Numérique Professionnelle
+              </p>
             </div>
           </div>
+        </div>
+      </header>
 
-        </main>
-      </div>
+      {/* HERO SECTION */}
+      <main>
+        <section className="py-12">
+          <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-start">
+            
+            {/* DÉTAILS DE LA FORMATION */}
+            <div>
+              <span className="inline-block bg-green-500/10 text-green-400 text-xs font-semibold px-3 py-1 rounded-full border border-green-500/20 mb-4">
+                100% Gratuit — Sans frais de scolarité
+              </span>
+              <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+                Devenez <span className="text-yellow-300">Développeur Web,</span> Mobile ou Expert en IA
+              </h2>
+
+              <p className="text-gray-300 text-base mt-4 leading-relaxed">
+                Rejoignez un programme intensif et 100% pratique. Apprenez à concevoir des applications web et mobiles modernes guidé par des mentors en direct.
+              </p>
+
+              <div className="mt-6 space-y-2.5 text-gray-200 text-sm">
+                <p className="flex items-center gap-2">✅ <strong>Formation 100% Gratuite</strong> (aucun frais d'inscription)</p>
+                <p className="flex items-center gap-2">✅ Projets professionnels réels</p>
+                <p className="flex items-center gap-2">✅ Suivi et mentorat personnalisé</p>
+              </div>
+
+              {/* TIMELINE DES 4 JOURS */}
+              <div className="mt-8 bg-blue-950/60 border border-blue-800/60 rounded-2xl p-5">
+                <h3 className="text-yellow-300 font-bold text-sm mb-2">
+                  💡 Comment fonctionne l'offre ?
+                </h3>
+                <ul className="text-xs text-gray-300 space-y-2 leading-relaxed">
+                  <li><strong>Jour 1 à 4 :</strong> Suivez les cours en direct gratuitement.</li>
+                  <li><strong>Au 4ᵉ jour :</strong> Procurez-vous les 2 livres d'accompagnement indispensables (20$ total) pour poursuivre la pratique.</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* BLOC D'INSCRIPTION & IMAGES DES LIVRES */}
+            <div id="inscription" className="bg-white rounded-3xl p-6 shadow-2xl">
+              <div className="text-center mb-4">
+                <span className="bg-yellow-100 text-yellow-800 text-xs font-bold px-3 py-1 rounded-full uppercase">
+                  Inscription Gratuite
+                </span>
+                <h2 className="text-2xl font-bold text-gray-900 mt-2">
+                  Matériel d'étude obligatoire
+                </h2>
+                <p className="text-xs text-gray-600 mt-1">
+                  Les 2 livres sont payables 4 jours après le début des cours.
+                </p>
+              </div>
+
+              {/* AFFICHAGE DES IMAGES DES 2 LIVRES */}
+              <div className="grid grid-cols-2 gap-3 mb-5">
+                {/* LIVRE 1 */}
+                <div className="border border-gray-200 rounded-xl p-3 text-center bg-gray-50 flex flex-col items-center">
+                  <div className="relative w-24 h-32 mb-2 shadow-md rounded overflow-hidden bg-gray-200">
+                    <Image
+                      src="/images/book1.png"
+                      alt="Livre 1: Développement Full-Stack"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <h4 className="font-bold text-gray-800 text-xs">Livre 1 : Full-Stack</h4>
+                  <p className="text-yellow-600 font-extrabold text-sm mt-1">10 USD</p>
+                </div>
+
+                {/* LIVRE 2 */}
+                <div className="border border-gray-200 rounded-xl p-3 text-center bg-gray-50 flex flex-col items-center">
+                  <div className="relative w-24 h-32 mb-2 shadow-md rounded overflow-hidden bg-gray-200">
+                    <Image
+                      src="/images/book2.png"
+                      alt="Livre 2: Cybersécurité & IA"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <h4 className="font-bold text-gray-800 text-xs">Livre 2 : Cybersécurité</h4>
+                  <p className="text-yellow-600 font-extrabold text-sm mt-1">10 USD</p>
+                </div>
+              </div>
+
+              {/* RECAPITULATIF TOTAL */}
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mb-5 text-center">
+                <p className="text-xs text-gray-700">
+                  Total du matériel d'étude : <strong className="text-gray-900">20 USD</strong> (10$ × 2 livres)
+                </p>
+                <p className="text-[11px] text-red-600 font-semibold mt-0.5">
+                  ⏰ À régler obligatoirement 4 jours après le début de la formation.
+                </p>
+              </div>
+
+             {/* CASE À COCHER OBLIGATOIRE */}
+<div className="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 mb-5 shadow-sm">
+  <label className="flex items-start gap-3 cursor-pointer select-none">
+    <input
+      type="checkbox"
+      checked={isChecked}
+      onChange={(e) => setIsChecked(e.target.checked)}
+      className="mt-0.5 w-5 h-5 text-yellow-500 border-gray-400 rounded focus:ring-yellow-400 shrink-0 cursor-pointer"
+    />
+
+    <span className="text-sm font-semibold text-gray-800 leading-relaxed">
+      Je comprends que la formation est gratuite et je m'engage à acheter
+      les deux livres d'accompagnement{" "}
+      <span className="text-red-600 font-bold bg-red-100 px-2 py-0.5 rounded">
+        20 USD au total
+      </span>{" "}
+      pour terminer toute la formation.
+    </span>
+  </label>
+</div>
+
+              {/* BOUTONS D'ACTION */}
+              <div className="space-y-3">
+                {isChecked ? (
+                  <Link
+                    href="/register"
+                    className="block w-full text-center bg-yellow-400 text-[#08192d] font-bold py-3.5 rounded-xl hover:bg-yellow-500 shadow-md transition text-sm"
+                  >
+                    🚀 Valider mon inscription gratuite
+                  </Link>
+                ) : (
+                  <button
+                    disabled
+                    className="block w-full text-center bg-gray-200 text-gray-400 font-bold py-3.5 rounded-xl cursor-not-allowed text-sm"
+                  >
+                    🔒 Cochez l'engagement ci-dessus pour t'inscrire
+                  </button>
+                )}
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* STATISTIQUES */}
+        <section className="bg-white py-16">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <h3 className="text-4xl font-bold text-[#08192d]">500+</h3>
+                <p className="mt-1 text-gray-600 text-sm">Étudiants formés</p>
+              </div>
+              <div>
+                <h3 className="text-4xl font-bold text-[#08192d]">0 $</h3>
+                <p className="mt-1 text-gray-600 text-sm">Frais de cours</p>
+              </div>
+              <div>
+                <h3 className="text-4xl font-bold text-[#08192d]">90%</h3>
+                <p className="mt-1 text-gray-600 text-sm">Pratique sur projets</p>
+              </div>
+              <div>
+                <h3 className="text-4xl font-bold text-[#08192d]">100%</h3>
+                <p className="mt-1 text-gray-600 text-sm">En ligne</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      {/* FOOTER */}
+      <footer className="bg-[#08192d] border-t border-blue-900 text-white py-8">
+        <div className="max-w-7xl mx-auto px-6 text-center text-xs text-gray-400">
+          © {new Date().getFullYear()} CodeRise Academy — Tous droits réservés.
+        </div>
+      </footer>
+
     </div>
   );
 }
