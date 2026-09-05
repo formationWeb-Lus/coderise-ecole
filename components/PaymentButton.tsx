@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Script from "next/script";
 
 interface Props {
   courseId: number;
@@ -80,542 +81,562 @@ export default function PaymentButton({
     OPERATORS.find(
       (op) => op.code === telecom
     );
-    const pay = async () => {
 
-  if (loading) return;
+  const pay = async () => {
 
-  if (!telecom) {
-    alert("Choisissez un opérateur.");
-    return;
-  }
+    if (loading) return;
 
-  if (!phoneValid) {
-    alert("Entrez un numéro valide.");
-    return;
-  }
-
-  setLoading(true);
-
-  try {
-
-    const payload = {
-      userId,
-      courseId,
-      amount,
-      phone,
-      telecom,
-      currency,
-    };
-
-    console.log(payload);
-
-    const res = await fetch(
-      "https://api.coderise-solution.com/api/payment/initiate",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type":
-            "application/json",
-        },
-        body: JSON.stringify(payload),
-      }
-    );
-
-    const data = await res.json();
-
-    console.log(data);
-
-    if (!res.ok || !data.success) {
-
-      throw new Error(
-        data.message ??
-        "Erreur lors du paiement."
-      );
-
+    if (!telecom) {
+      alert("Choisissez un opérateur.");
+      return;
     }
 
-    setMessage(
-      data.data?.message ??
-      "Paiement initialisé."
-    );
-
-    const payment =
-      data.data?.payment ??
-      data.data?.serdiPay?.payment;
-
-    if (!payment) {
-
-      throw new Error(
-        "Session de paiement introuvable."
-      );
-
+    if (!phoneValid) {
+      alert("Entrez un numéro valide.");
+      return;
     }
 
-    setSessionId(
-      String(payment.sessionId)
-    );
-
-  } catch (error: any) {
-
-    console.error(error);
-
-    alert(
-      error.message ??
-      "Une erreur est survenue."
-    );
-
-  } finally {
-
-    setLoading(false);
-
-  }
-
-};
-
-/**
- * ==========================================
- * Vérification automatique du paiement
- * ==========================================
- */
-
-useEffect(() => {
-  if (!sessionId) return;
-
-  setMessage(
-    "Votre demande de paiement a été envoyée. Veuillez confirmer le paiement sur votre téléphone."
-  );
-
-  let attempts = 0;
-
-  const interval = setInterval(async () => {
-    attempts++;
+    setLoading(true);
 
     try {
-      const res = await fetch(
-        `https://api.coderise-solution.com/api/payment/status/${sessionId}`
-      );
 
-      if (!res.ok) return;
+      const payload = {
+        userId,
+        courseId,
+        amount,
+        phone,
+        telecom,
+        currency,
+      };
+
+      console.log(payload);
+
+      const res = await fetch(
+        "https://api.coderise-solution.com/api/payment/initiate",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await res.json();
 
-      const status = data.payment?.status;
+      console.log(data);
 
-      if (status === "SUCCESS") {
-        clearInterval(interval);
+      if (!res.ok || !data.success) {
 
-        setMessage("Paiement confirmé. Redirection...");
-
-        setTimeout(() => {
-          router.push(
-            `/payment/success?sessionId=${sessionId}`
-          );
-        }, 1500);
-      }
-
-      if (status === "FAILED") {
-        clearInterval(interval);
-
-        setLoading(false);
-
-        setMessage(
-          "Le paiement a été refusé."
+        throw new Error(
+          data.message ??
+          "Erreur lors du paiement."
         );
+
       }
 
-      if (attempts >= 60) {
-        clearInterval(interval);
+      setMessage(
+        data.data?.message ??
+        "Paiement initialisé."
+      );
 
-        setLoading(false);
+      const payment =
+        data.data?.payment ??
+        data.data?.serdiPay?.payment;
 
-        setMessage(
-          "Le délai de confirmation a expiré."
+      if (!payment) {
+
+        throw new Error(
+          "Session de paiement introuvable."
         );
+
       }
 
-    } catch (error) {
+      setSessionId(
+        String(payment.sessionId)
+      );
+
+    } catch (error: any) {
+
       console.error(error);
+
+      alert(
+        error.message ??
+        "Une erreur est survenue."
+      );
+
+    } finally {
+
+      setLoading(false);
+
     }
 
-  }, 3000);
+  };
 
-  return () => clearInterval(interval);
+  /**
+   * ==========================================
+   * Vérification automatique du paiement
+   * ==========================================
+   */
 
-}, [sessionId, router]);
+  useEffect(() => {
+    if (!sessionId) return;
 
-/**
- * ==========================================
- * AFFICHAGE
- * ==========================================
- */
+    setMessage(
+      "Votre demande de paiement a été envoyée. Veuillez confirmer le paiement sur votre téléphone."
+    );
 
-return (
+    let attempts = 0;
 
-<div className="max-w-3xl mx-auto rounded-3xl border bg-white shadow-xl overflow-hidden">
+    const interval = setInterval(async () => {
+      attempts++;
 
-  {/* Header */}
+      try {
+        const res = await fetch(
+          `https://api.coderise-solution.com/api/payment/status/${sessionId}`
+        );
 
-  <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-8">
+        if (!res.ok) return;
 
-    <h1 className="text-3xl font-bold">
+        const data = await res.json();
 
-      Paiement sécurisé
+        const status = data.payment?.status;
 
-    </h1>
+        if (status === "SUCCESS") {
+          clearInterval(interval);
 
-    <p className="mt-2 text-white/90">
+          setMessage("Paiement confirmé. Redirection...");
 
-      Finalisez votre inscription en quelques secondes.
+          setTimeout(() => {
+            router.push(
+              `/payment/success?sessionId=${sessionId}`
+            );
+          }, 1500);
+        }
 
-    </p>
+        if (status === "FAILED") {
+          clearInterval(interval);
 
-  </div>
+          setLoading(false);
 
-  <div className="p-8 space-y-8">
+          setMessage(
+            "Le paiement a été refusé."
+          );
+        }
 
-    {/* Choix opérateur */}
+        if (attempts >= 60) {
+          clearInterval(interval);
 
-    <div>
+          setLoading(false);
 
-      <h2 className="font-bold text-xl mb-4">
+          setMessage(
+            "Le délai de confirmation a expiré."
+          );
+        }
 
-        1. Choisissez votre opérateur Mobile Money
+      } catch (error) {
+        console.error(error);
+      }
 
-      </h2>
+    }, 3000);
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+    return () => clearInterval(interval);
 
-        {OPERATORS.map((operator) => (
+  }, [sessionId, router]);
 
-          <button
-            key={operator.code}
-            disabled={loading}
-            onClick={() => setTelecom(operator.code)}
-            className={`rounded-2xl border-2 p-5 transition-all hover:shadow-lg hover:scale-105 ${
-              telecom === operator.code
-                ? operator.color
-                : "border-gray-200"
-            }`}
-          >
+  /**
+   * ==========================================
+   * AFFICHAGE
+   * ==========================================
+   */
 
-            <img
-              src={operator.image}
-              alt={operator.name}
-              className="w-14 h-14 mx-auto object-contain"
-            />
+  return (
+    <>
+      {/* META PIXEL */}
+      <Script id="meta-pixel-full" strategy="afterInteractive">
+        {`
+          !function(f,b,e,v,n,t,s)
+          {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}(window, document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
+          
+          fbq('init', '4331977260409210');
+          fbq('track', 'PageView');
+          fbq('track', 'CompleteRegistration');
+        `}
+      </Script>
 
-            <p className="mt-3 text-sm font-semibold">
+      <div className="max-w-3xl mx-auto rounded-3xl border bg-white shadow-xl overflow-hidden">
 
-              {operator.name}
+        {/* Header */}
 
-            </p>
+        <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-8">
 
-          </button>
+          <h1 className="text-3xl font-bold">
 
-        ))}
+            Paiement sécurisé
 
-      </div>
+          </h1>
 
-    </div>
-        {/* ==========================================
-        Téléphone
-    ========================================== */}
+          <p className="mt-2 text-white/90">
 
-    {telecom && (
-
-      <div className="space-y-4">
-
-        <h2 className="font-bold text-xl">
-
-          2. Numéro Mobile Money
-
-        </h2>
-
-        <p className="text-gray-600">
-
-          Opérateur sélectionné :
-          <span className="ml-2 font-semibold">
-            {selectedOperator?.name}
-          </span>
-
-        </p>
-
-        <div className="rounded-2xl border-2 border-gray-300 px-5 py-4 focus-within:border-yellow-500">
-
-          <input
-            type="tel"
-            placeholder="243XXXXXXXXX"
-            value={phone}
-            onChange={(e) => {
-
-              let value = e.target.value.replace(/\D/g, "");
-
-              if (!value.startsWith("243")) {
-                value = "243";
-              }
-
-              if (value.length <= 12) {
-                setPhone(value);
-              }
-
-            }}
-            className="w-full outline-none text-xl"
-          />
-
-        </div>
-
-        {!phoneValid && phone.length > 3 && (
-
-          <p className="text-red-500 text-sm">
-
-            Numéro invalide.
+            Finalisez votre inscription en quelques secondes.
 
           </p>
 
-        )}
-
-      </div>
-
-    )}
-
-    {/* ==========================================
-        Choix devise
-    ========================================== */}
-
-    {phoneValid && (
-
-      <div className="space-y-5">
-
-        <h2 className="font-bold text-xl">
-
-          3. Choisissez la devise
-
-        </h2>
-
-        <div className="grid md:grid-cols-2 gap-5">
-
-          {/* USD */}
-
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => setCurrency("USD")}
-            className={`rounded-2xl border-2 p-6 text-left transition-all ${
-              currency === "USD"
-                ? "border-yellow-500 bg-yellow-50"
-                : "border-gray-200 hover:border-yellow-300"
-            }`}
-          >
-
-            <p className="text-gray-500">
-
-              Dollar Américain
-
-            </p>
-
-            <h3 className="mt-3 text-3xl font-bold">
-
-              💵 15 USD
-
-            </h3>
-
-          </button>
-
-          {/* CDF */}
-
-          <button
-            type="button"
-            disabled={loading}
-            onClick={() => setCurrency("CDF")}
-            className={`rounded-2xl border-2 p-6 text-left transition-all ${
-              currency === "CDF"
-                ? "border-green-500 bg-green-50"
-                : "border-gray-200 hover:border-green-300"
-            }`}
-          >
-
-            <p className="text-gray-500">
-
-              Franc Congolais
-
-            </p>
-
-            <h3 className="mt-3 text-3xl font-bold">
-
-              33 450 CDF
-
-            </h3>
-
-          </button>
-
         </div>
 
-      </div>
+        <div className="p-8 space-y-8">
 
-    )}
-
-    {/* ==========================================
-        Résumé du paiement
-    ========================================== */}
-
-    {phoneValid && (
-
-      <div className="rounded-2xl bg-gray-50 border p-6">
-
-        <h2 className="text-xl font-bold mb-5">
-
-          Résumé
-
-        </h2>
-
-        <div className="space-y-3 text-gray-700">
-
-          <div className="flex justify-between">
-
-            <span>Formation</span>
-
-            <span className="font-semibold">
-              Accès à la formation
-            </span>
-
-          </div>
-
-          <div className="flex justify-between">
-
-            <span>Opérateur</span>
-
-            <span className="font-semibold">
-              {selectedOperator?.name}
-            </span>
-
-          </div>
-
-          <div className="flex justify-between">
-
-            <span>Téléphone</span>
-
-            <span className="font-semibold">
-              {phone}
-            </span>
-
-          </div>
-
-          <div className="flex justify-between">
-
-            <span>Devise</span>
-
-            <span className="font-semibold">
-              {currency}
-            </span>
-
-          </div>
-
-          <div className="flex justify-between text-2xl font-bold border-t pt-4">
-
-            <span>Montant</span>
-
-            <span>
-
-              {currency === "USD"
-                ? "15 USD"
-                : "33 450 CDF"}
-
-            </span>
-
-          </div>
-
-        </div>
-
-      </div>
-
-    )}
-        {/* ==========================================
-        Message d'information
-    ========================================== */}
-
-    {message && (
-      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
-        <div className="flex items-start gap-3">
-          <div className="text-2xl">ℹ️</div>
+          {/* Choix opérateur */}
 
           <div>
-            <p className="font-semibold text-blue-700">
-              {message}
-            </p>
 
-            {loading && (
-              <p className="text-sm text-blue-600 mt-2">
-                Veuillez confirmer la demande sur votre téléphone.
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-    )}
+            <h2 className="font-bold text-xl mb-4">
 
-    {/* ==========================================
-        Bouton Paiement
-    ========================================== */}
+              1. Choisissez votre opérateur Mobile Money
 
-    {phoneValid && (
-      <div className="pt-4">
+            </h2>
 
-        <button
-          type="button"
-          onClick={pay}
-          disabled={loading}
-          className={`w-full rounded-2xl py-5 text-lg font-bold text-white transition-all duration-300 ${
-            loading
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 hover:shadow-xl"
-          }`}
-        >
-          {loading ? (
-            <div className="flex items-center justify-center gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
 
-              <svg
-                className="animate-spin h-6 w-6"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-20"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
+              {OPERATORS.map((operator) => (
 
-                <path
-                  className="opacity-80"
-                  fill="currentColor"
-                  d="M12 2a10 10 0 00-10 10h4a6 6 0 016-6V2z"
-                />
-              </svg>
+                <button
+                  key={operator.code}
+                  disabled={loading}
+                  onClick={() => setTelecom(operator.code)}
+                  className={`rounded-2xl border-2 p-5 transition-all hover:shadow-lg hover:scale-105 ${
+                    telecom === operator.code
+                      ? operator.color
+                      : "border-gray-200"
+                  }`}
+                >
 
-              Initialisation du paiement...
+                  <img
+                    src={operator.image}
+                    alt={operator.name}
+                    className="w-14 h-14 mx-auto object-contain"
+                  />
+
+                  <p className="mt-3 text-sm font-semibold">
+
+                    {operator.name}
+
+                  </p>
+
+                </button>
+
+              ))}
+
             </div>
-          ) : (
-            <>
-              Payer&nbsp;
-              <span className="font-extrabold">
-                {currency === "USD"
-                  ? "15 USD"
-                  : "33 450 CDF"}
-              </span>
-            </>
+
+          </div>
+
+          {/* ==========================================
+              Téléphone
+          ========================================== */}
+
+          {telecom && (
+
+            <div className="space-y-4">
+
+              <h2 className="font-bold text-xl">
+
+                2. Numéro Mobile Money
+
+              </h2>
+
+              <p className="text-gray-600">
+
+                Opérateur sélectionné :
+                <span className="ml-2 font-semibold">
+                  {selectedOperator?.name}
+                </span>
+
+              </p>
+
+              <div className="rounded-2xl border-2 border-gray-300 px-5 py-4 focus-within:border-yellow-500">
+
+                <input
+                  type="tel"
+                  placeholder="243XXXXXXXXX"
+                  value={phone}
+                  onChange={(e) => {
+
+                    let value = e.target.value.replace(/\D/g, "");
+
+                    if (!value.startsWith("243")) {
+                      value = "243";
+                    }
+
+                    if (value.length <= 12) {
+                      setPhone(value);
+                    }
+
+                  }}
+                  className="w-full outline-none text-xl"
+                />
+
+              </div>
+
+              {!phoneValid && phone.length > 3 && (
+
+                <p className="text-red-500 text-sm">
+
+                  Numéro invalide.
+
+                </p>
+
+              )}
+
+            </div>
+
           )}
-        </button>
+
+          {/* ==========================================
+              Choix devise
+          ========================================== */}
+
+          {phoneValid && (
+
+            <div className="space-y-5">
+
+              <h2 className="font-bold text-xl">
+
+                3. Choisissez la devise
+
+              </h2>
+
+              <div className="grid md:grid-cols-2 gap-5">
+
+                {/* USD */}
+
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => setCurrency("USD")}
+                  className={`rounded-2xl border-2 p-6 text-left transition-all ${
+                    currency === "USD"
+                      ? "border-yellow-500 bg-yellow-50"
+                      : "border-gray-200 hover:border-yellow-300"
+                  }`}
+                >
+
+                  <p className="text-gray-500">
+
+                    Dollar Américain
+
+                  </p>
+
+                  <h3 className="mt-3 text-3xl font-bold">
+
+                    💵 15 USD
+
+                  </h3>
+
+                </button>
+
+                {/* CDF */}
+
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={() => setCurrency("CDF")}
+                  className={`rounded-2xl border-2 p-6 text-left transition-all ${
+                    currency === "CDF"
+                      ? "border-green-500 bg-green-50"
+                      : "border-gray-200 hover:border-green-300"
+                  }`}
+                >
+
+                  <p className="text-gray-500">
+
+                    Franc Congolais
+
+                  </p>
+
+                  <h3 className="mt-3 text-3xl font-bold">
+
+                    33 450 CDF
+
+                  </h3>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          )}
+
+          {/* ==========================================
+              Résumé du paiement
+          ========================================== */}
+
+          {phoneValid && (
+
+            <div className="rounded-2xl bg-gray-50 border p-6">
+
+              <h2 className="text-xl font-bold mb-5">
+
+                Résumé
+
+              </h2>
+
+              <div className="space-y-3 text-gray-700">
+
+                <div className="flex justify-between">
+
+                  <span>Formation</span>
+
+                  <span className="font-semibold">
+                    Accès à la formation
+                  </span>
+
+                </div>
+
+                <div className="flex justify-between">
+
+                  <span>Opérateur</span>
+
+                  <span className="font-semibold">
+                    {selectedOperator?.name}
+                  </span>
+
+                </div>
+
+                <div className="flex justify-between">
+
+                  <span>Téléphone</span>
+
+                  <span className="font-semibold">
+                    {phone}
+                  </span>
+
+                </div>
+
+                <div className="flex justify-between">
+
+                  <span>Devise</span>
+
+                  <span className="font-semibold">
+                    {currency}
+                  </span>
+
+                </div>
+
+                <div className="flex justify-between text-2xl font-bold border-t pt-4">
+
+                  <span>Montant</span>
+
+                  <span>
+
+                    {currency === "USD"
+                      ? "15 USD"
+                      : "33 450 CDF"}
+
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          )}
+
+          {/* ==========================================
+              Message d'information
+          ========================================== */}
+
+          {message && (
+            <div className="rounded-2xl border border-blue-200 bg-blue-50 p-5">
+              <div className="flex items-start gap-3">
+                <div className="text-2xl">ℹ️</div>
+
+                <div>
+                  <p className="font-semibold text-blue-700">
+                    {message}
+                  </p>
+
+                  {loading && (
+                    <p className="text-sm text-blue-600 mt-2">
+                      Veuillez confirmer la demande sur votre téléphone.
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ==========================================
+              Bouton Paiement
+          ========================================== */}
+
+          {phoneValid && (
+            <div className="pt-4">
+
+              <button
+                type="button"
+                onClick={pay}
+                disabled={loading}
+                className={`w-full rounded-2xl py-5 text-lg font-bold text-white transition-all duration-300 ${
+                  loading
+                    ? "bg-gray-400 cursor-not-allowed"
+                    : "bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 hover:shadow-xl"
+                }`}
+              >
+                {loading ? (
+                  <div className="flex items-center justify-center gap-3">
+
+                    <svg
+                      className="animate-spin h-6 w-6"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-20"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+
+                      <path
+                        className="opacity-80"
+                        fill="currentColor"
+                        d="M12 2a10 10 0 00-10 10h4a6 6 0 016-6V2z"
+                      />
+                    </svg>
+
+                    Initialisation du paiement...
+                  </div>
+                ) : (
+                  <>
+                    Payer&nbsp;
+                    <span className="font-extrabold">
+                      {currency === "USD"
+                        ? "15 USD"
+                        : "33 450 CDF"}
+                    </span>
+                  </>
+                )}
+              </button>
+
+            </div>
+          )}
+
+        </div>
 
       </div>
-    )}
-    
-
-  </div>
-
-</div>
-
-);
+    </>
+  );
 }
