@@ -152,8 +152,8 @@ export default function HomePage() {
     />
 
     <span className="text-sm font-semibold text-gray-800 leading-relaxed">
-      Je comprends que la formation est gratuite et je m'engage à acheter
-      les deux livres d'accompagnement{" "}
+      Je comprends que la formation est gratuite et je m'engage et j'acheterai
+      les deux livres d'accompagnement 4 jours après le début de la formation {" "}
       <span className="text-red-600 font-bold bg-red-100 px-2 py-0.5 rounded">
         20 USD au total
       </span>{" "}
