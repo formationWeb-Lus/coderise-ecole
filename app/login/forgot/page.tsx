@@ -16,7 +16,7 @@ export default function ForgotPage() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  // 🔄 PROGRESSION STYLE PRO (comme register/login)
+  // 🔄 ANIMATION BARRE DE PROGRESSION
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
 
@@ -32,10 +32,16 @@ export default function ForgotPage() {
     return () => clearInterval(interval);
   }, [loading]);
 
-  // 1️⃣ CHECK USER
+  // 1️⃣ VERIFICATION DU COMPTE ETUDIANT / UTILISATEUR
   const checkIdentifier = async () => {
     setError("");
     setMsg("");
+
+    if (!identifier.trim()) {
+      setError("Veuillez saisir votre email ou votre numéro de téléphone.");
+      return;
+    }
+
     setLoading(true);
     setProgress(5);
 
@@ -48,7 +54,7 @@ export default function ForgotPage() {
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Utilisateur introuvable");
+      if (!res.ok) throw new Error(data.message || "Aucun compte associé à cet identifiant.");
 
       setProgress(100);
 
@@ -58,16 +64,27 @@ export default function ForgotPage() {
         setProgress(0);
       }, 400);
     } catch (err: any) {
-      setError(err.message || "Erreur");
+      setError(err.message || "Impossible de vérifier le compte.");
       setLoading(false);
       setProgress(0);
     }
   };
 
-  // 2️⃣ RESET PASSWORD
+  // 2️⃣ REINITIALISATION DU MOT DE PASSE
   const resetPassword = async () => {
     setError("");
     setMsg("");
+
+    if (!newPassword.trim()) {
+      setError("Veuillez saisir un nouveau mot de passe.");
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setError("Le nouveau mot de passe doit contenir au moins 6 caractères.");
+      return;
+    }
+
     setLoading(true);
     setProgress(5);
 
@@ -83,43 +100,47 @@ export default function ForgotPage() {
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data.message || "Erreur");
+      if (!res.ok) throw new Error(data.message || "Échec de la réinitialisation.");
 
       setProgress(100);
 
-      setMsg("Mot de passe mis à jour avec succès !");
+      setMsg("Votre mot de passe a été mis à jour avec succès ! Redirection...");
 
       setTimeout(() => {
-        router.push("/login");
+        router.push("/auth/signin");
       }, 1500);
     } catch (err: any) {
-      setError(err.message || "Erreur serveur");
+      setError(err.message || "Une erreur est survenue lors de la réinitialisation.");
       setLoading(false);
       setProgress(0);
     }
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page font-['IBM_Plex_Sans',system-ui,sans-serif]">
       <div className="auth-card">
 
-        {/* HEADER */}
+        {/* HEADER BRANDING */}
         <div className="auth-header">
-          <h1>Récupération du compte</h1>
-          <p>Retrouvez votre accès en toute sécurité</p>
+          <div className="brand-logo">
+            ANGLO <span>PHONY</span>
+          </div>
+          <p className="brand-sub">DRC School — Espace Sécurité</p>
+          <h1>Récupération d'Accès</h1>
+          <p className="auth-subtitle">Restaurez l'accès à votre espace de formation</p>
         </div>
 
-        {/* FORM */}
+        {/* FORMULAIRE */}
         <div className="auth-form">
 
           {!foundUser ? (
             <>
               <div className="field">
-                <label>Email / Téléphone / Username</label>
+                <label>Identifiant du compte</label>
                 <input
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="Ex: jean@gmail.com ou +243810000000"
+                  placeholder="Adresse email ou N° de téléphone"
                 />
               </div>
 
@@ -129,7 +150,7 @@ export default function ForgotPage() {
                 disabled={loading}
               >
                 <span className="btn-text">
-                  {loading ? "Vérification..." : "Vérifier le compte"}
+                  {loading ? "Vérification en cours..." : "Rechercher mon compte"}
                 </span>
 
                 {loading && (
@@ -143,12 +164,12 @@ export default function ForgotPage() {
           ) : (
             <>
               <div className="field">
-                <label>Nouveau mot de passe</label>
+                <label>Nouveau mot de passe sécurisé</label>
                 <input
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Ex: Abc12345"
+                  placeholder="Minimum 6 caractères"
                 />
               </div>
 
@@ -158,7 +179,7 @@ export default function ForgotPage() {
                 disabled={loading}
               >
                 <span className="btn-text">
-                  {loading ? "Mise à jour..." : "Réinitialiser"}
+                  {loading ? "Mise à jour en cours..." : "Confirmer le nouveau mot de passe"}
                 </span>
 
                 {loading && (
@@ -177,51 +198,75 @@ export default function ForgotPage() {
 
         {/* FOOTER */}
         <div className="auth-footer">
-          <button onClick={() => router.push("/login")}>
-            ← Retour à la connexion
+          <button onClick={() => router.push("/auth/signin")}>
+            ← Retourner à l'écran de connexion
           </button>
         </div>
       </div>
 
-      {/* ===== STYLE IDENTIQUE REGISTER ===== */}
+      {/* ===== STYLES PROFESSIONNELS (ANGLOPHONY / BRIGHTSPOT) ===== */}
       <style jsx>{`
         .auth-page {
           min-height: 100vh;
           display: flex;
           justify-content: center;
           align-items: center;
-          background: linear-gradient(135deg, #020617, #0f172a);
-          padding: 20px;
+          background: linear-gradient(135deg, #071b43, #174ea6);
+          padding: 24px 16px;
         }
 
         .auth-card {
-          background: white;
-          padding: 32px;
+          background: #ffffff;
+          padding: 40px 36px;
           border-radius: 16px;
           width: 100%;
-          max-width: 560px;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+          max-width: 520px;
+          box-shadow: 0 25px 50px -12px rgba(7, 27, 67, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .auth-header {
           text-align: center;
-          margin-bottom: 24px;
+          margin-bottom: 28px;
+        }
+
+        .brand-logo {
+          font-size: 28px;
+          font-weight: 900;
+          color: #071b43;
+          letter-spacing: -0.02em;
+          margin-bottom: 2px;
+        }
+
+        .brand-logo span {
+          color: #ed1c24;
+        }
+
+        .brand-sub {
+          font-size: 11px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: #174ea6;
+          margin-bottom: 16px;
         }
 
         .auth-header h1 {
-          font-size: clamp(26px, 4vw, 36px);
-          font-weight: 700;
+          font-size: 26px;
+          font-weight: 800;
+          color: #071b43;
+          margin-bottom: 4px;
         }
 
-        .auth-header p {
-          font-size: clamp(14px, 2vw, 18px);
-          color: #6b7280;
+        .auth-subtitle {
+          font-size: 14px;
+          color: #64748b;
         }
 
         .auth-form {
           display: flex;
           flex-direction: column;
-          gap: 20px;
+          gap: 18px;
         }
 
         .field {
@@ -231,22 +276,32 @@ export default function ForgotPage() {
         }
 
         .field label {
-          font-size: 17px;
-          font-weight: 600;
+          font-size: 14px;
+          font-weight: 700;
+          color: #071b43;
         }
 
         .field input {
           width: 100%;
-          padding: 16px 18px;
-          font-size: 16px;
-          border-radius: 12px;
-          border: 1px solid #d1d5db;
+          padding: 14px 16px;
+          font-size: 15px;
+          border-radius: 8px;
+          border: 1.5px solid #cbd5e1;
+          background: #f8fafc;
+          color: #071b43;
+          transition: all 0.2s ease;
+          outline: none;
+        }
+
+        .field input::placeholder {
+          color: #94a3b8;
+          font-size: 14px;
         }
 
         .field input:focus {
-          outline: none;
-          border-color: #2563eb;
-          box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+          border-color: #174ea6;
+          background: #ffffff;
+          box-shadow: 0 0 0 3px rgba(23, 78, 166, 0.15);
         }
 
         .submit {
@@ -254,13 +309,21 @@ export default function ForgotPage() {
           overflow: hidden;
           width: 100%;
           padding: 16px;
-          border-radius: 12px;
+          border-radius: 8px;
           border: none;
-          background: #0f172a;
+          background: #ed1c24;
           color: white;
-          font-size: 17px;
-          font-weight: 600;
+          font-size: 16px;
+          font-weight: 700;
           cursor: pointer;
+          transition: background 0.2s ease, transform 0.1s ease;
+          box-shadow: 0 4px 12px rgba(237, 28, 36, 0.25);
+          margin-top: 6px;
+        }
+
+        .submit:hover:not(:disabled) {
+          background: #c9151d;
+          transform: translateY(-1px);
         }
 
         .btn-text {
@@ -273,37 +336,53 @@ export default function ForgotPage() {
           left: 0;
           top: 0;
           height: 100%;
-          background: linear-gradient(90deg, #ca8a04, #facc15);
+          background: #071b43;
+          transition: width 0.2s ease;
           z-index: 1;
         }
 
         .success {
-          background: #dcfce7;
+          background: #f0fdf4;
           color: #166534;
-          padding: 10px;
-          border-radius: 10px;
+          border: 1px solid #bbf7d0;
+          padding: 12px;
+          border-radius: 8px;
           text-align: center;
+          font-size: 14px;
+          font-weight: 600;
         }
 
         .error {
-          background: #fee2e2;
-          color: #b91c1c;
-          padding: 10px;
-          border-radius: 10px;
+          background: #fef2f2;
+          color: #dc2626;
+          border: 1px solid #fecaca;
+          padding: 12px;
+          border-radius: 8px;
           text-align: center;
+          font-size: 14px;
+          font-weight: 600;
         }
 
         .auth-footer {
-          margin-top: 20px;
+          margin-top: 24px;
+          padding-top: 20px;
+          border-top: 1px solid #e2e8f0;
           text-align: center;
+          font-size: 14px;
         }
 
         .auth-footer button {
           border: none;
           background: none;
-          color: #2563eb;
-          font-weight: 600;
+          color: #174ea6;
+          font-weight: 700;
           cursor: pointer;
+          transition: color 0.2s ease;
+        }
+
+        .auth-footer button:hover {
+          color: #ed1c24;
+          text-decoration: underline;
         }
       `}</style>
     </div>

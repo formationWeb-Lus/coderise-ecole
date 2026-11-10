@@ -3,76 +3,62 @@
 import Image from "next/image";
 import Link from "next/link";
 
-
 export default function HomePage() {
-
-
-
   return (
+    <div className="min-h-screen bg-[#ffffff] text-[#071b43] font-['IBM_Plex_Sans',system-ui,sans-serif]">
+      {/* HEADER / BANNIÈRE DE PAIEMENT & INSCRIPTION */}
+      <section className="bg-[#ed1c24] text-white">
+        <div
+          className="
+            max-w-[1240px]
+            mx-auto
+            px-6
+            py-4
+            flex
+            flex-col
+            md:flex-row
+            items-center
+            justify-between
+            gap-4
+          "
+        >
+          <div>
+            <h2 className="text-2xl font-extrabold tracking-tight">
+              🎓 Programme d'Anglais en 2 Niveaux — Devenez Bilingue
+            </h2>
 
-    
+            <p className="mt-1 font-medium text-slate-100">
+              Frais d'inscription : <span className="font-extrabold underline">20 USD</span> | Mensualité : <span className="font-extrabold underline">50 USD / mois</span>
+            </p>
 
-    <div className="min-h-screen bg-[#08192d]">
+            <p className="text-sm mt-1 text-slate-200">
+              ⏳ Total à régler pour commencer : <span className="font-bold text-yellow-300">70 USD</span> (20$ Inscription + 50$ Premier Mois)
+            </p>
+          </div>
 
+          <Link
+            href="/register"
+            className="
+              bg-[#071b43]
+              text-white
+              px-8
+              py-4
+              rounded-lg
+              font-bold
+              hover:bg-[#174ea6]
+              transition
+              whitespace-nowrap
+              shadow-md
+            "
+          >
+            S'inscrire toi maintenant
+          </Link>
+        </div>
+      </section>
 
-      {/* HEADER */}
-
-        
-
-<section className="bg-yellow-400 text-[#08192d]">
-  <div
-    className="
-      max-w-7xl
-      mx-auto
-      px-6
-      py-4
-      flex
-      flex-col
-      md:flex-row
-      items-center
-      justify-between
-      gap-4
-    "
-  >
-    <div>
-      <h2 className="text-2xl font-extrabold">
-        🔥 Promotion exceptionnelle
-      </h2>
-
-      <p className="mt-1 font-medium">
-        Inscrivez-vous aujourd'hui et profitez toute la formation complete pour seulement
-        <span className="font-bold text-red-600"> 15 USD</span>.
-      </p>
-
-      <p className="text-sm mt-1">
-        ⏳ La promotion prendra bientôt fin.
-      </p>
-    </div>
-
-    <Link
-      href="/register"
-      className="
-        bg-[#08192d]
-        text-yellow-300
-        px-8
-        py-4
-        rounded-xl
-        font-bold
-        hover:bg-[#102c4e]
-        transition
-        whitespace-nowrap
-      "
-    >
-      Je profite de la promotion
-    </Link>
-  </div>
-</section>
-
-      <header className="border-b border-blue-900">
-
-
+      <header className="sticky top-0 z-50 bg-[#071b43] border-b border-blue-900/50 shadow-md">
         <div className="
-          max-w-7xl
+          max-w-[1240px]
           mx-auto
           px-6
           py-5
@@ -80,235 +66,199 @@ export default function HomePage() {
           items-center
           gap-4
         ">
-
-
           <Image
-
-            src="/favicon.png"
-
-            width={55}
-
-            height={55}
-
-            alt="CodeRise Academy"
-
-          />
-
+  src="/images/anglophony.png"
+  width={55}
+  height={55}
+  alt="ANGLOPHONY DRC School"
+/>
 
           <div>
-
             <h1 className="
               text-xl
-              font-bold
-              text-yellow-300
+              font-black
+              text-white
+              tracking-tight
             ">
-              CodeRise Academy
+              ANGLO <span className="text-[#ed1c24]">PHONY DRC</span>
             </h1>
 
-
             <p className="
-              text-gray-300
-              text-sm
+              text-[#174ea6]
+              text-xs
+              font-bold
+              uppercase
+              tracking-widest
             ">
-              Formation numérique professionnelle
+              DRC School — Académie d'Anglais Professionnel & Général
             </p>
-
-
           </div>
-
-
         </div>
-
-
       </header>
 
-
-
-
-
       {/* HERO */}
-
-
       <main>
-
-
         <section className="
           min-h-[calc(100vh-90px)]
+          bg-[#071b43]
           flex
           items-center
         ">
-
-
           <div className="
-            max-w-6xl
+            max-w-[1240px]
             mx-auto
             px-6
+            py-12
             grid
             md:grid-cols-2
             gap-12
             items-center
           ">
-
-
             {/* TEXTE */}
-
-
             <div>
-
-
               <h2 className="
-  text-5xl
-  font-bold
-  text-white
-  leading-tight
-">
-  Devenez
+                text-4xl
+                font-extrabold
+                text-white
+                leading-tight
+              ">
+                Parlez Anglais Comme un
 
-  <span className="text-yellow-300">
-    {" "}Développeur Web,
-  </span>
+                <span className="text-[#ed1c24]">
+                  {" "}Américain
+                </span>
+              </h2>
 
-  Mobile ou Expert en IA
-</h2>
+              <p className="
+                text-slate-200
+                text-base
+                mt-4
+                leading-relaxed
+              ">
+                Notre parcours d'excellence est structuré en <strong className="text-white">2 niveaux progressifs</strong>. Grâce à notre méthode d'immersion ciblée, nous vous garantissons d'acquérir une aisance totale et naturelle en anglais au terme de votre formation.
+              </p>
 
-<p className="
-  text-gray-300
-  text-lg
-  mt-6
-  leading-8
-">
-  Apprenez à créer des sites web modernes, des applications
-  mobiles et des solutions d'intelligence artificielle grâce
-  à une formation 100 % pratique, accompagnée par un mentor
-  expérimenté.
-</p>
+              <div className="mt-6 space-y-2 text-white font-medium text-sm">
+                <p>✅ Inscription obligatoire : 20 USD (une seule fois)</p>
+                <p>✅ Tarif mensuel : 50 USD / mois</p>
+                <p>✅ Parcours structuré en 2 Niveaux d'excellence</p>
+                <p>✅ Garantie de maîtrise totale (Niveau "American Native")</p>
+              </div>
 
-<div className="mt-8 space-y-2 text-white">
-
-  <p>✅ Formation 100 % pratique</p>
-
-  <p>✅ Projets professionnels</p>
-
-  <p>✅ Certificat de fin de formation</p>
-
-  <p>✅ Accompagnement personnalisé</p>
-
-</div>
-
-<p className="
-  mt-8
-  text-yellow-300
-  text-xl
-  font-bold
-">
-  🔥 Offre de lancement : seulement 15 USD
-</p>
-
-<p className="text-red-400 font-semibold mt-2">
-  ⏳ Places limitées. La promotion prendra bientôt fin.
-</p>
-
-
+              <div className="
+                mt-6
+                bg-white/10
+                border-l-4
+                border-[#ed1c24]
+                p-4
+                rounded-r-lg
+              ">
+                <p className="text-white text-base font-extrabold">
+                  💳 Total initial à régler : <span className="text-yellow-300">70 USD</span>
+                </p>
+                <p className="text-slate-300 text-xs mt-1">
+                  (Comprenant 20$ de frais d'inscription + 50$ pour votre premier mois de cours)
+                </p>
+              </div>
             </div>
 
-
-
-
-
-            {/* FORMULAIRE */}
-
-
+            {/* FORMULAIRE / OPTION D'ACCÈS */}
             <div className="
               bg-white
-              rounded-3xl
+              rounded-2xl
               p-8
-              shadow-xl
+              shadow-2xl
+              border
+              border-slate-100
             ">
-
-
               <h2 className="
                 text-3xl
                 font-bold
-                text-gray-900
+                text-[#071b43]
                 text-center
+                mb-2
               ">
-
-                Profiter de la promotion
-
+                Commencer la Formation
               </h2>
 
+              <p className="text-center text-sm text-slate-500 mb-6">
+                Réglez vos frais pour démarrer votre apprentissage immédiatement.
+              </p>
 
+              <div className="space-y-4 mb-6 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-600 font-semibold">Frais d'inscription :</span>
+                  <span className="font-bold text-[#071b43]">20 USD</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-slate-600 font-semibold">Frais du 1er mois :</span>
+                  <span className="font-bold text-[#071b43]">50 USD</span>
+                </div>
+                <div className="border-t border-slate-300 pt-2 flex justify-between items-center font-extrabold text-base">
+                  <span className="text-[#071b43]">Total au démarrage :</span>
+                  <span className="text-[#ed1c24]">70 USD</span>
+                </div>
+              </div>
 
+              <div className="space-y-4">
+                <Link
+                  href="/register"
+                  className="
+                    block
+                    w-full
+                    text-center
+                    bg-[#ed1c24]
+                    text-white
+                    font-bold
+                    py-4
+                    rounded-lg
+                    hover:bg-[#c9151d]
+                    transition
+                    shadow-md
+                  "
+                >
+                   S'inscrire toi maintenant
+                </Link>
 
-<div className="space-y-5">
-  <Link
-  href="/register"
-  className="
-    block
-    w-full
-    text-center
-    bg-yellow-400
-    text-[#08192d]
-    font-bold
-    py-4
-    rounded-xl
-    hover:bg-yellow-500
-    transition
-  "
->
-  Profiter de la promotion
-</Link>
+                <Link
+                  href="/auth/signin"
+                  className="
+                    block
+                    w-full
+                    text-center
+                    bg-[#174ea6]
+                    text-white
+                    font-bold
+                    py-4
+                    rounded-lg
+                    hover:bg-[#071b43]
+                    transition
+                    shadow-md
+                  "
+                >
+                  Se connecter (Étudiant déjà inscrit)
+                </Link>
 
-  <Link
-    href="/auth/signin"
-    className="
-      block
-      w-full
-      text-center
-      bg-blue-800
-      text-yellow-200
-      font-bold
-      py-4
-      rounded-xl
-      hover:bg-blue-700
-      transition
-    "
-  >
-    Se connecter
-  </Link>
-
-  <p className="text-center text-sm text-gray-500 mt-4">
-    Choisissez une option pour accéder à la plateforme.
-  </p>
-</div>
-
-
-
+                <p className="text-center text-xs text-slate-500 mt-4">
+                  Choisissez une option pour accéder à la plateforme d'apprentissage.
+                </p>
+              </div>
             </div>
-
-
-
           </div>
-
-
         </section>
 
-                {/* ================= STATISTIQUES ================= */}
-
-
+        {/* ================= STATISTIQUES ================= */}
         <section className="
-          bg-white
+          bg-slate-50
+          border-y
+          border-slate-200
           py-20
         ">
-
-
           <div className="
-            max-w-7xl
+            max-w-[1240px]
             mx-auto
             px-6
           ">
-
-
             <div className="
               grid
               grid-cols-2
@@ -316,997 +266,504 @@ export default function HomePage() {
               gap-10
               text-center
             ">
-
-
               <div>
-
                 <h2 className="
                   text-5xl
-                  font-bold
-                  text-blue-900
+                  font-black
+                  text-[#071b43]
+                ">
+                  2 Niveaux
+                </h2>
+                <p className="
+                  mt-3
+                  text-slate-600
+                  font-semibold
+                ">
+                  Parcours Structuré
+                </p>
+              </div>
+
+              <div>
+                <h2 className="
+                  text-5xl
+                  font-black
+                  text-[#071b43]
                 ">
                   500+
                 </h2>
-
                 <p className="
                   mt-3
-                  text-gray-600
+                  text-slate-600
+                  font-semibold
                 ">
-                  Étudiants
+                  Étudiants Formés
                 </p>
-
               </div>
 
-
-
-
               <div>
-
                 <h2 className="
                   text-5xl
-                  font-bold
-                  text-blue-900
-                ">
-                  15+
-                </h2>
-
-                <p className="
-                  mt-3
-                  text-gray-600
-                ">
-                  Formations
-                </p>
-
-              </div>
-
-
-
-
-              <div>
-
-                <h2 className="
-                  text-5xl
-                  font-bold
-                  text-blue-900
-                ">
-                  90%
-                </h2>
-
-                <p className="
-                  mt-3
-                  text-gray-600
-                ">
-                  Pratique
-                </p>
-
-              </div>
-
-
-
-
-              <div>
-
-                <h2 className="
-                  text-5xl
-                  font-bold
-                  text-blue-900
+                  font-black
+                  text-[#071b43]
                 ">
                   100%
                 </h2>
-
                 <p className="
                   mt-3
-                  text-gray-600
+                  text-slate-600
+                  font-semibold
                 ">
-                  En ligne
+                  Immersion & Pratique
                 </p>
-
               </div>
 
-
-
+              <div>
+                <h2 className="
+                  text-5xl
+                  font-black
+                  text-[#071b43]
+                ">
+                  Garantie
+                </h2>
+                <p className="
+                  mt-3
+                  text-slate-600
+                  font-semibold
+                ">
+                  Niveau Américain Natif
+                </p>
+              </div>
             </div>
-
-
           </div>
-
-
         </section>
 
-
-
-
-
-
-        {/* ================= POURQUOI NOUS ================= */}
-
-
-
+        {/* ================= COMMENT FONCTIONNE LE PARCOURS EN 2 NIVEAUX ================= */}
         <section
-
-          id="pourquoi"
-
+          id="formations"
           className="
-            bg-gray-100
+            bg-white
             py-20
           "
-
         >
-
-
-
           <div className="
-            max-w-7xl
+            max-w-[1240px]
             mx-auto
             px-6
           ">
-
-
-
             <div className="
               text-center
               mb-16
             ">
-
-
               <h2 className="
                 text-4xl
-                font-bold
-                text-[#08192d]
+                font-extrabold
+                text-[#071b43]
               ">
-
-                Pourquoi choisir CodeRise Academy ?
-
+                Notre Méthode Progressive en 2 Niveaux
               </h2>
 
+              <p className="
+                text-slate-600
+                mt-4
+                text-lg
+              ">
+                Un apprentissage intelligent conçu pour vous amérer pas à pas vers une maîtrise totale.
+              </p>
+            </div>
 
+            <div className="
+              grid
+              md:grid-cols-2
+              gap-8
+              max-w-4xl
+              mx-auto
+            ">
+              <div className="
+                bg-[#071b43]
+                rounded-xl
+                p-8
+                text-white
+                shadow-lg
+                border-b-4
+                border-[#ed1c24]
+                hover:-translate-y-2
+                transition
+              ">
+                <span className="text-xs font-bold uppercase tracking-widest text-[#ed1c24] bg-white/10 px-3 py-1 rounded">
+                  Premier Niveau
+                </span>
+                <h3 className="
+                  text-2xl
+                  font-bold
+                  text-white
+                  mt-4
+                  mb-3
+                ">
+                  Fondations & Immersion Guidée
+                </h3>
+
+                <p className="
+                  text-slate-300
+                  text-sm
+                  leading-relaxed
+                ">
+                  Idéal pour débuter. Ce niveau intègre <strong>beaucoup d'anglais et un peu de français</strong> pour vous permettre d'assimiler les bases en toute confiance et éliminer le blocage initial de la prise de parole.
+                </p>
+              </div>
+
+              <div className="
+                bg-[#071b43]
+                rounded-xl
+                p-8
+                text-white
+                shadow-lg
+                border-b-4
+                border-[#174ea6]
+                hover:-translate-y-2
+                transition
+              ">
+                <span className="text-xs font-bold uppercase tracking-widest text-[#174ea6] bg-white/10 px-3 py-1 rounded">
+                  Deuxième Niveau
+                </span>
+                <h3 className="
+                  text-2xl
+                  font-bold
+                  text-white
+                  mt-4
+                  mb-3
+                ">
+                  Perfectionnement & Maîtrise Avancée
+                </h3>
+
+                <p className="
+                  text-slate-300
+                  text-sm
+                  leading-relaxed
+                ">
+                  L'étape supérieure. Ce niveau propose <strong>beaucoup d'anglais et moins de français</strong>, basculant vers une fluidité professionnelle et une élocution naturelle digne d'un natif américain.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= POURQUOI NOUS ================= */}
+        <section
+          id="pourquoi"
+          className="
+            bg-slate-100
+            py-20
+          "
+        >
+          <div className="
+            max-w-[1240px]
+            mx-auto
+            px-6
+          ">
+            <div className="
+              text-center
+              mb-16
+            ">
+              <h2 className="
+                text-4xl
+                font-extrabold
+                text-[#071b43]
+              ">
+                Pourquoi choisir ANGLOPHONY DRC ?
+              </h2>
 
               <p className="
-                text-gray-600
+                text-slate-600
                 mt-5
                 text-lg
               ">
-
-                Une plateforme moderne conçue pour développer vos compétences.
-
+                La garantie de résultats concrets pour transformer votre avenir professionnel et personnel.
               </p>
-
-
             </div>
-
-
-
-
 
             <div className="
               grid
               md:grid-cols-3
               gap-8
             ">
-
-
-
-
               <div className="
                 bg-white
-                rounded-2xl
-                shadow-lg
+                rounded-xl
+                border-t-4
+                border-[#ed1c24]
+                shadow-md
                 p-8
               ">
-
-
                 <h3 className="
                   text-2xl
                   font-bold
-                  text-[#08192d]
+                  text-[#071b43]
                   mb-4
                 ">
-
-                  Formation pratique
-
+                  Progression garantie
                 </h3>
 
-
-
                 <p className="
-                  text-gray-600
+                  text-slate-600
                   leading-8
                 ">
-
-                  Réalisez des projets concrets afin
-                  d'acquérir une véritable expérience
-                  professionnelle.
-
+                  En terminant nos deux niveaux, vous parlez et pensez en anglais avec la précision d'un Américain natif.
                 </p>
-
-
               </div>
-
-
-
-
 
               <div className="
                 bg-white
-                rounded-2xl
-                shadow-lg
+                rounded-xl
+                border-t-4
+                border-[#174ea6]
+                shadow-md
                 p-8
               ">
-
-
                 <h3 className="
                   text-2xl
                   font-bold
-                  text-[#08192d]
+                  text-[#071b43]
                   mb-4
                 ">
-
-                  Mentorat
-
+                  Mentorat personnalisé
                 </h3>
 
-
-
                 <p className="
-                  text-gray-600
+                  text-slate-600
                   leading-8
                 ">
-
-                  Bénéficiez d'un accompagnement
-                  personnalisé par des professionnels
-                  expérimentés.
-
+                  Bénéficiez d'un suivi rigoureux de votre prononciation et de votre élocution à chaque étape par des formateurs experts.
                 </p>
-
-
               </div>
-
-
-
-
 
               <div className="
                 bg-white
-                rounded-2xl
-                shadow-lg
+                rounded-xl
+                border-t-4
+                border-[#071b43]
+                shadow-md
                 p-8
               ">
-
-
                 <h3 className="
                   text-2xl
                   font-bold
-                  text-[#08192d]
+                  text-[#071b43]
                   mb-4
                 ">
-
-                  Certificat
-
+                  Certificat d'Anglais
                 </h3>
 
-
-
                 <p className="
-                  text-gray-600
+                  text-slate-600
                   leading-8
                 ">
-
-                  Recevez un certificat à la fin
-                  de votre parcours de formation.
-
+                  Obtenez une certification reconnue validant vos compétences linguistiques à l'issue de votre formation.
                 </p>
-
-
               </div>
-
-
-
             </div>
-
-
           </div>
-
-
         </section>
 
-
-
-
-
-
-
-        {/* ================= FORMATIONS ================= */}
-
-
-
-        <section
-
-          id="formations"
-
-          className="
-            bg-white
-            py-20
-          "
-
-        >
-
-
-
-
-          <div className="
-            max-w-7xl
-            mx-auto
-            px-6
-          ">
-
-
-
-            <div className="
-              text-center
-              mb-16
-            ">
-
-
-
-              <h2 className="
-                text-4xl
-                font-bold
-                text-[#08192d]
-              ">
-
-                Nos domaines de formation
-
-              </h2>
-
-
-
-              <p className="
-                text-gray-600
-                mt-4
-                text-lg
-              ">
-
-                Choisissez la formation qui correspond
-                à vos objectifs.
-
-              </p>
-
-
-
-            </div>
-
-
-
-
-
-            <div className="
-              grid
-              md:grid-cols-2
-              lg:grid-cols-4
-              gap-7
-            ">
-
-
-
-
-
-              <div className="
-                bg-[#08192d]
-                rounded-2xl
-                p-8
-                text-white
-                shadow-lg
-                hover:-translate-y-2
-                transition
-              ">
-
-
-                <h3 className="
-                  text-xl
-                  font-bold
-                  text-yellow-300
-                  mb-4
-                ">
-
-                  Développement Web
-
-                </h3>
-
-
-                <p className="
-                  text-gray-300
-                ">
-
-                  HTML, CSS, JavaScript, React,
-                  Next.js, Node.js, Express,
-                  PostgreSQL, MongoDB et Prisma.
-
-                </p>
-
-
-              </div>
-
-
-
-
-
-              <div className="
-                bg-[#08192d]
-                rounded-2xl
-                p-8
-                text-white
-                shadow-lg
-                hover:-translate-y-2
-                transition
-              ">
-
-
-                <h3 className="
-                  text-xl
-                  font-bold
-                  text-yellow-300
-                  mb-4
-                ">
-
-                  Développement Mobile
-
-                </h3>
-
-
-                <p className="
-                  text-gray-300
-                ">
-
-                  Créez des applications Android
-                  et iOS avec React Native et Expo.
-
-                </p>
-
-
-              </div>
-
-
-
-
-
-              <div className="
-                bg-[#08192d]
-                rounded-2xl
-                p-8
-                text-white
-                shadow-lg
-                hover:-translate-y-2
-                transition
-              ">
-
-
-                <h3 className="
-                  text-xl
-                  font-bold
-                  text-yellow-300
-                  mb-4
-                ">
-
-                  Intelligence Artificielle
-
-                </h3>
-
-
-                <p className="
-                  text-gray-300
-                ">
-
-                  Découvrez Python, Machine Learning,
-                  ChatGPT et les outils IA modernes.
-
-                </p>
-
-
-              </div>
-
-
-
-
-
-              <div className="
-                bg-[#08192d]
-                rounded-2xl
-                p-8
-                text-white
-                shadow-lg
-                hover:-translate-y-2
-                transition
-              ">
-
-
-                <h3 className="
-                  text-xl
-                  font-bold
-                  text-yellow-300
-                  mb-4
-                ">
-
-                  Marketing Digital
-
-                </h3>
-
-
-                <p className="
-                  text-gray-300
-                ">
-
-                  Facebook Ads, Google Ads, SEO,
-                  Email Marketing et création de contenu.
-
-                </p>
-
-
-              </div>
-
-
-
-
-            </div>
-
-
-
-          </div>
-
-
-
-        </section>
-
-                {/* ================= CTA ================= */}
-
-
+        {/* ================= CTA ================= */}
         <section className="
-          bg-yellow-300
+          bg-[#ed1c24]
+          text-white
           py-24
         ">
-
-
           <div className="
             max-w-5xl
             mx-auto
             px-6
             text-center
           ">
-
-
             <h2 className="
               text-5xl
-              font-bold
-              text-[#08192d]
+              font-extrabold
               mb-6
             ">
-
-              Votre avenir commence aujourd'hui
-
+              Prêt à devenir bilingue comme un Américain ?
             </h2>
-
-
 
             <p className="
               text-xl
-              text-[#08192d]
+              text-slate-100
               mb-10
             ">
-
-              Remplissez vos informations et choisissez
-              la formation qui correspond à vos objectifs.
-
+              Réglez vos frais d'inscription (20 USD) et votre premier mois (50 USD) pour intégrer dès aujourd'hui le Premier Niveau.
             </p>
+
+            <div className="flex justify-center mt-8">
+              <Link
+                href="/register"
+                className="
+                  bg-[#071b43]
+                  text-white
+                  px-10
+                  py-4
+                  rounded-lg
+                  font-bold
+                  hover:bg-[#174ea6]
+                  transition
+                  shadow-xl
+                "
+              >
+                Payer les 70 USD & Commencer
+              </Link>
             </div>
-
-
-
-<div className="flex justify-center mt-8">
-  <Link
-    href="/register"
-    className="
-      bg-[#08192d]
-      text-yellow-300
-      px-10
-      py-4
-      rounded-xl
-      font-bold
-      hover:bg-[#102c4e]
-      transition
-    "
-  >
-    Je profite de la promotion 
-  </Link>
-</div>
-
-          
-
-
-
+          </div>
         </section>
-
-
-
-
-
-
-
       </main>
 
-
-
-
-
-
-
       {/* ================= FOOTER ================= */}
-
-
-
       <footer
-
         id="contact"
-
         className="
-          bg-[#08192d]
+          bg-[#071b43]
           text-white
+          border-t
+          border-slate-800
         "
-
       >
-
-
-
         <div className="
-          max-w-7xl
+          max-w-[1240px]
           mx-auto
           px-6
           py-16
         ">
-
-
-
           <div className="
             grid
             md:grid-cols-3
             gap-12
           ">
-
-
-
-
-
-            {/* LOGO */}
-
-
-
+            {/* LOGO & PRESENTATION */}
             <div>
-
-
-
               <div className="
                 flex
                 items-center
                 gap-3
                 mb-5
               ">
-
-
-                <Image
-
-                  src="/favicon.png"
-
-                  alt="CodeRise Academy"
-
-                  width={50}
-
-                  height={50}
-
-                />
-
-
+               <Image
+  src="/images/anglophony.png"
+  width={55}
+  height={55}
+  alt="ANGLOPHONY DRC School"
+/>
 
                 <h2 className="
                   text-2xl
-                  font-bold
-                  text-yellow-300
+                  font-black
+                  text-white
                 ">
-
-                  CodeRise Academy
-
+                  ANGLO <span className="text-[#ed1c24]">PHONY DRC</span>
                 </h2>
-
-
-
               </div>
 
-
-
-
-
               <p className="
-                text-gray-300
+                text-slate-300
                 leading-8
               ">
-
-                Nous aidons les jeunes africains
-                à acquérir les compétences numériques
-                recherchées par les entreprises.
-
+                Centre d'excellence pour l'apprentissage de la langue anglaise en RDC. Votre passerelle vers une maîtrise de type natif américain.
               </p>
-
-
-
             </div>
 
-
-
-
-
-
-
-
             {/* NAVIGATION */}
-
-
-
             <div>
-
-
-
               <h3 className="
                 text-xl
                 font-bold
-                text-yellow-300
+                text-white
                 mb-6
+                border-b
+                border-[#ed1c24]
+                pb-2
+                inline-block
               ">
-
                 Navigation
-
               </h3>
-
-
-
 
               <ul className="
                 space-y-3
-                text-gray-300
+                text-slate-300
               ">
-
-
-
                 <li>
-
-                  <a
-                    href="#"
-                    className="hover:text-yellow-300"
-                  >
-
+                  <a href="#" className="hover:text-[#ed1c24] transition">
                     Accueil
-
                   </a>
-
                 </li>
-
-
-
-
                 <li>
-
-                  <a
-                    href="#formations"
-                    className="hover:text-yellow-300"
-                  >
-
-                    Formations
-
+                  <a href="#formations" className="hover:text-[#ed1c24] transition">
+                    Les 2 Niveaux
                   </a>
-
                 </li>
-
-
-
-
                 <li>
-
-                  <a
-                    href="#pourquoi"
-                    className="hover:text-yellow-300"
-                  >
-
+                  <a href="#pourquoi" className="hover:text-[#ed1c24] transition">
                     Pourquoi nous ?
-
                   </a>
-
                 </li>
-
-
-
-
                 <li>
-
-                  <a
-                    href="#contact"
-                    className="hover:text-yellow-300"
-                  >
-
+                  <a href="#contact" className="hover:text-[#ed1c24] transition">
                     Contact
-
                   </a>
-
                 </li>
-
-
-
               </ul>
-
-
-
             </div>
 
-
-
-
-
-
-
-
-
             {/* CONTACT */}
-
-
-
             <div>
-
-
-
               <h3 className="
                 text-xl
                 font-bold
-                text-yellow-300
+                text-white
                 mb-6
+                border-b
+                border-[#ed1c24]
+                pb-2
+                inline-block
               ">
-
                 Contact
-
               </h3>
 
-
-
-
-
-              <p className="mb-3">
-
+              <p className="mb-3 text-slate-300">
                 📱 WhatsApp : +243 995271831
-
               </p>
 
-
-
-
-              <p className="mb-3">
-
+              <p className="mb-3 text-slate-300">
                 ✉ africoms879@gmail.com
-
               </p>
 
-
-
-
-              <p>
-
+              <p className="text-slate-300">
                 📍 République Démocratique du Congo
-
               </p>
-
-
-
-
 
               <div className="
                 flex
                 gap-5
                 mt-8
-                text-3xl
+                text-2xl
               ">
-
-
-                <a
-                  href="#"
-                  className="hover:text-yellow-300"
-                >
-                  🌐
-                </a>
-
-
-
-                <a
-                  href="#"
-                  className="hover:text-yellow-300"
-                >
-                  📘
-                </a>
-
-
-
-
-                <a
-                  href="#"
-                  className="hover:text-yellow-300"
-                >
-                  📸
-                </a>
-
-
-
-
-                <a
-                  href="#"
-                  className="hover:text-yellow-300"
-                >
-                  💼
-                </a>
-
-
-
-
-                <a
-                  href="#"
-                  className="hover:text-green-400"
-                >
-                  💬
-                </a>
-
-
-
+                <a href="#" className="hover:text-[#ed1c24] transition">🌐</a>
+                <a href="#" className="hover:text-[#ed1c24] transition">📘</a>
+                <a href="#" className="hover:text-[#ed1c24] transition">📸</a>
+                <a href="#" className="hover:text-[#ed1c24] transition">💼</a>
+                <a href="#" className="hover:text-emerald-400 transition">💬</a>
               </div>
-
-
-
             </div>
-
-
-
-
-
-
           </div>
-
-
-
-
-
-
 
           <div className="
             border-t
-            border-gray-700
+            border-slate-800
             mt-14
             pt-8
             text-center
-            text-gray-400
+            text-slate-400
+            text-sm
           ">
-
-
-            © {new Date().getFullYear()}
-            {" "}
-            CodeRise Academy — Tous droits réservés.
-
-
+            © {new Date().getFullYear()} ANGLOPHONY DRC School — Tous droits réservés.
           </div>
-
-
-
-
         </div>
-
-
-
       </footer>
-
-
-
-
-
     </div>
-
   );
 }

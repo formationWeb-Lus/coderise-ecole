@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <clipPath id="outerClip"><circle cx="256" cy="256" r="244"/></clipPath>
+    <clipPath id="innerClip"><circle cx="256" cy="256" r="171"/></clipPath>
+    <path id="topArc" d="M 103 230 A 153 153 0 0 1 409 230"/>
+  </defs>
+
+  <!-- American flag background -->
+  <g clip-path="url(#outerClip)">
+    <rect width="512" height="512" fill="#fff"/>
+    <rect y="0" width="512" height="39.4" fill="#e51b23"/>
+    <rect y="78.8" width="512" height="39.4" fill="#e51b23"/>
+    <rect y="157.6" width="512" height="39.4" fill="#e51b23"/>
+    <rect y="236.4" width="512" height="39.4" fill="#e51b23"/>
+    <rect y="315.2" width="512" height="39.4" fill="#e51b23"/>
+    <rect y="394" width="512" height="39.4" fill="#e51b23"/>
+    <rect y="472.8" width="512" height="39.4" fill="#e51b23"/>
+
+    <path d="M0 0H260V276H0Z" fill="#174ea6"/>
+    <g fill="#fff">
+      <g transform="translate(28 28)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(88 28)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(148 28)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(208 28)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(58 72)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(118 72)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(178 72)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(238 72)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(28 116)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(88 116)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(148 116)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(208 116)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(58 160)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(118 160)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(178 160)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(238 160)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(28 204)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(88 204)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(148 204)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+      <g transform="translate(208 204)">
+        <polygon points="0,-12 3.5,-4 12,-4 5.2,1 7.7,9 0,4.5 -7.7,9 -5.2,1 -12,-4 -3.5,-4"/>
+      </g>
+    </g>
+  </g>
+
+  <!-- Outer and inner seal -->
+  <circle cx="256" cy="256" r="246" fill="none" stroke="#071b43" stroke-width="12"/>
+  <circle cx="256" cy="256" r="173" fill="#fff" stroke="#071b43" stroke-width="9"/>
+
+  <!-- Curved name -->
+  <text font-family="Arial, Helvetica, sans-serif" font-size="31" font-weight="700" letter-spacing="2">
+    <textPath href="#topArc" startOffset="50%" text-anchor="middle">
+      <tspan fill="#ed1c24">ANGLO</tspan><tspan fill="#0b2d68"> PHONY</tspan>
+    </textPath>
+  </text>
+
+  <!-- DRC -->
+  <text x="256" y="205" text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
+        font-size="55" font-weight="800" fill="#0b2d68">DRC</text>
+
+  <!-- Laurel branches -->
+  <g fill="none" stroke="#0b2d68" stroke-width="5" stroke-linecap="round">
+    <path d="M175 355 C130 330 128 270 158 235"/>
+    <path d="M337 355 C382 330 384 270 354 235"/>
+  </g>
+  <g fill="#0b2d68">
+    <g transform="rotate(-25 158 318)"><ellipse cx="158" cy="318" rx="8" ry="20"/></g>
+    <g transform="rotate(-38 145 300)"><ellipse cx="145" cy="300" rx="8" ry="20"/></g>
+    <g transform="rotate(-48 139 278)"><ellipse cx="139" cy="278" rx="8" ry="20"/></g>
+    <g transform="rotate(-58 139 255)"><ellipse cx="139" cy="255" rx="8" ry="20"/></g>
+    <g transform="rotate(-67 146 237)"><ellipse cx="146" cy="237" rx="8" ry="19"/></g>
+    <g transform="rotate(25 354 318)"><ellipse cx="354" cy="318" rx="8" ry="20"/></g>
+    <g transform="rotate(38 367 300)"><ellipse cx="367" cy="300" rx="8" ry="20"/></g>
+    <g transform="rotate(48 373 278)"><ellipse cx="373" cy="278" rx="8" ry="20"/></g>
+    <g transform="rotate(58 373 255)"><ellipse cx="373" cy="255" rx="8" ry="20"/></g>
+    <g transform="rotate(67 366 237)"><ellipse cx="366" cy="237" rx="8" ry="19"/></g>
+  </g>
+
+  <!-- Graduation cap -->
+  <path d="M178 244 L256 211 L334 244 L256 274 Z" fill="#0b2d68"/>
+  <path d="M209 259 L209 300 Q256 327 303 300 L303 259 L256 281 Z" fill="#0b2d68"/>
+  <path d="M256 211 L334 244 L256 274 L178 244 Z" fill="#123a82"/>
+  <circle cx="256" cy="244" r="5.5" fill="#fff"/>
+  <path d="M256 244 H319" stroke="#fff" stroke-width="3" fill="none"/>
+  <path d="M319 244 V282" stroke="#0b2d68" stroke-width="3"/>
+  <path d="M313 282 Q319 292 325 282 V300 Q319 307 313 300 Z" fill="#0b2d68"/>
+
+  <!-- Books -->
+  <g fill="#0b2d68">
+    <rect x="211" y="311" width="90" height="8" rx="4"/>
+    <rect x="207" y="322" width="98" height="8" rx="4"/>
+    <rect x="203" y="333" width="106" height="8" rx="4"/>
+  </g>
+
+  <!-- School -->
+  <text x="256" y="388" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif"
+        font-size="42" font-weight="700" fill="#0b2d68">School</text>
+</svg>

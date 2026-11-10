@@ -1,11 +1,12 @@
 import "./globals.css";
 import Script from "next/script";
+import favicon from "./favicon.svg"; // 1. Import direct du fichier depuis le dossier app/
 
 export const metadata = {
-  title: "Coderise-École",
+  title: "Anglophony DRC",
   description: "Gestion des formations en ligne",
   icons: {
-    icon: "/favicon.png",
+    icon: favicon.src, // 2. Utilisation de l'URL générée par Next.js
   },
 };
 
@@ -17,7 +18,8 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <head>
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        {/* Balise link avec l'URL importée */}
+        <link rel="icon" href={favicon.src} type="image/svg+xml" />
 
         <Script id="facebook-pixel" strategy="afterInteractive">
           {`
